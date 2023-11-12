@@ -74,7 +74,12 @@ const Home: React.FC = () => {
   return <div className="bg-slate-700">
     <MovieCardVertical movie_id="ororYwNrXaxhbnzfPRrO" />
     
+    <MainButton type="filled" text="Text" />
     <MainButton type="filled" text="Text" icon={<BsFillPlayCircleFill />}/>
+    <MainButton type="outlined" text="Text" />
+    <MainButton type="outlined" text="Text" icon={<BsFillPlayCircleFill />}/>
+    <MainButton type="auth" text="Text" />
+    <MainButton type="auth" text="Text" icon={<BsFillPlayCircleFill />}/>
   </div>;
 };
 
