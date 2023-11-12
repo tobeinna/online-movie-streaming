@@ -1,9 +1,7 @@
 import {
   DocumentData,
-  collection,
   doc,
   getDoc,
-  getDocs,
 } from "firebase/firestore";
 import React, { useState, useEffect } from "react";
 import { LuDot } from "react-icons/lu";
@@ -12,8 +10,8 @@ import { AiFillStar } from "react-icons/ai";
 
 import { database } from "../../configs/firebaseConfig";
 import "./styles.scss";
-import clsx from "clsx";
 import { minutesToHoursAndMinutes } from "../../utils/timeUtils";
+import MainButton from "../Buttons/MainButton/MainButton";
 
 interface IMovieCardProps {
   movie_id: string;
@@ -77,14 +75,14 @@ const MovieCardVertical: React.FC<IMovieCardProps> = ({ movie_id }) => {
 
   return (
     <div
-      className={`movie-card mx-auto h-80 bg-center bg-cover bg-no-repeat rounded-2xl flex flex-col justify-end`}
+      className={`movie-card relative mx-auto bg-center bg-cover bg-no-repeat rounded-2xl flex flex-col justify-end overflow-hidden group`}
       style={{
         backgroundImage: `url(${data?.poster})`,
       }}
     >
-      <div className="movie-content-container rounded-bl-2xl rounded-br-2xl">
+      <div className="movie-content-container rounded-bl-2xl rounded-br-2xl z-20">
         <div className="mx-5 mb-4 movie-content w-54 flex flex-col">
-          <div className="flex justify-between">
+          <div className="flex justify-between mb-3">
             <h4 className="text-lg font-semibold text-white title">
               {data?.title}
             </h4>
@@ -94,22 +92,19 @@ const MovieCardVertical: React.FC<IMovieCardProps> = ({ movie_id }) => {
           </div>
           <div className="flex w-54">
             <div className="flex voted">
-              <AiFillStar className="mt-auto mb-0 mr-1 text-lg text-yellow-400" />
-              <span className="text-sm font-semibold text-white star">
+              <AiFillStar className="my-auto mr-1 text-lg text-yellow-400" />
+              <span className="my-auto text-sm font-semibold text-white star">
                 {averageVote}
               </span>
             </div>
-            <RxDividerVertical className="mt-auto text-xl text-gray-500" />
-            <div className="flex text-gray-500 movie-categories">
+            <RxDividerVertical className="my-auto text-xl text-gray-500" />
+            <div className="flex flex-wrap text-gray-500 movie-categories">
               {data?.categories &&
                 data.categories.map((item: number, index: number) => {
                   return (
                     <div className="flex" key={index}>
                       {index !== 0 && <LuDot className="mt-auto mb-0.5" />}
-                      <span
-                        key={index}
-                        className="text-sm font-medium category"
-                      >
+                      <span className="text-sm font-medium whitespace-nowrap overflow-hidden break-words category">
                         {item}
                       </span>
                     </div>
@@ -117,6 +112,12 @@ const MovieCardVertical: React.FC<IMovieCardProps> = ({ movie_id }) => {
                 })}
             </div>
           </div>
+        </div>
+      </div>
+      <div className="overlay absolute inset-0 group-hover:bg-gradient-to-b from-transparent to-black opacity-0 group-hover:opacity-100 transition-all duration-500 z-10">
+        <div className="button-container absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+          <MainButton type="filled" text="Watch now" className="mr-0.5" />
+          <MainButton type="outlined" text="Details" className="ml-0.5" />
         </div>
       </div>
     </div>

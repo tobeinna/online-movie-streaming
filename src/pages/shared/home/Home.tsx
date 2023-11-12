@@ -5,6 +5,8 @@ import { BsFillPlayCircleFill } from "react-icons/bs";
 import MovieCardVertical from "../../../components/MovieCardVertical/MovieCardVertical";
 import { database } from "../../../configs/firebaseConfig";
 import MainButton from "../../../components/Buttons/MainButton/MainButton";
+import HeaderNav from "../../../components/HeaderNav/HeaderNav";
+import JustReleaseSlider from "../../../components/JustReleaseSlider/JustReleaseSlider";
 
 //Movie interface
 
@@ -36,7 +38,7 @@ const Home: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const moviesCollectionRef = collection(database, 'movies');
+        const moviesCollectionRef = collection(database, "movies");
         const moviesSnapshot = await getDocs(moviesCollectionRef);
 
         const combinedDataArray: CombinedMovieData[] = [];
@@ -44,43 +46,47 @@ const Home: React.FC = () => {
         // Process movies collection documents
         for (const doc of moviesSnapshot.docs) {
           const movieDocData: any = {
-            id: doc.id, ...doc.data(),
+            id: doc.id,
+            ...doc.data(),
           };
 
           // Process votes
           const votesRef = collection(database, `movies/${doc.id}/votes`); // Replace with your votes name
           const votesSnapshot = await getDocs(votesRef);
 
-          const votesDataArray: any = votesSnapshot.docs.map(subDoc => ({
+          const votesDataArray: any = votesSnapshot.docs.map((subDoc) => ({
             ...subDoc.data(),
           }));
 
           // Combine movie doc data with votes data
-          const combinedMovieData: CombinedMovieData = { ...movieDocData, votes: votesDataArray };
+          const combinedMovieData: CombinedMovieData = {
+            ...movieDocData,
+            votes: votesDataArray,
+          };
           combinedDataArray.push(combinedMovieData);
         }
 
         setMoviesData(combinedDataArray);
         console.log("combined arrar", combinedDataArray);
-        
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error("Error fetching data:", error);
       }
     };
 
     fetchData();
   }, []); // Empty dependency array to run the effect only once on mount
 
-  return <div className="bg-slate-700">
-    <MovieCardVertical movie_id="ororYwNrXaxhbnzfPRrO" />
-    
-    <MainButton type="filled" text="Text" />
-    <MainButton type="filled" text="Text" icon={<BsFillPlayCircleFill />}/>
-    <MainButton type="outlined" text="Text" />
-    <MainButton type="outlined" text="Text" icon={<BsFillPlayCircleFill />}/>
-    <MainButton type="auth" text="Text" />
-    <MainButton type="auth" text="Text" icon={<BsFillPlayCircleFill />}/>
-  </div>;
+  return (
+    <div className="">
+      <JustReleaseSlider />
+      <MainButton type="filled" text="Text" />
+      <MainButton type="filled" text="Text" icon={<BsFillPlayCircleFill />} />
+      <MainButton type="outlined" text="Text" />
+      <MainButton type="outlined" text="Text" icon={<BsFillPlayCircleFill />} />
+      <MainButton type="auth" text="Text" />
+      <MainButton type="auth" text="Text" icon={<BsFillPlayCircleFill />} />
+    </div>
+  );
 };
 
 export default Home;

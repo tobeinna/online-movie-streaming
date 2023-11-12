@@ -1,13 +1,14 @@
 import { Outlet } from "react-router-dom";
+import HeaderSlider from "../../components/HeaderSlider/HeaderSlider";
 
 const MainLayout = () => {
   return (
-    <>
-    <header>Header</header>
-    <Outlet />
-    <footer>Footer</footer>
-    </>
-  )
-}
+    <div className="w-full">
+      <HeaderSlider />
+      <Outlet />
+      <footer>Footer</footer>
+    </div>
+  );
+};
 
-export default MainLayout
+export default MainLayout;

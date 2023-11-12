@@ -4,7 +4,7 @@ import { ReactNode } from "react";
 interface IButton {
   type: string;
   className?: string;
-  text: string;
+  text?: string;
   isSubmit?: boolean;
   onClick?: React.MouseEventHandler<HTMLButtonElement>;
   icon?: ReactNode;
@@ -22,21 +22,25 @@ const MainButton = ({
     <button
       type={isSubmit ? "submit" : "button"}
       className={clsx(
-        "flex justify-center h-9 w-full mx-auto lg:h-10",
+        "flex justify-center gap-1 h-9 w-fit mx-auto lg:h-10",
         className && className,
         type === "filled" &&
           "transition-colors bg-green-600 hover:bg-green-500 text-sm lg:text-base text-slate-200 px-4 py-2 sm:px-4 sm:py-2 lg:px-5 lg:py-2 rounded-md",
         type === "outlined" &&
           "transition-colors text-sm lg:text-base text-slate-200 hover:text-white px-4 py-2 sm:px-4 sm:py-2 lg:px-5 lg:py-2 border-2 border-slate-200 hover:border-white rounded-md",
         type === "auth" &&
-          "transition-colors bg-white hover:bg-slate-200 text-sm lg:text-base text-slate-600 hover:text-slate-900 px-4 py-2 sm:px-4 sm:py-2 lg:px-5 lg:py-2 rounded-md"
+          "transition-colors bg-white hover:bg-slate-200 text-sm lg:text-base text-slate-600 hover:text-slate-900 px-4 py-2 sm:px-4 sm:py-2 lg:px-5 lg:py-2 rounded-md",
+        type === "icon-only" &&
+          "transition-colors hover:bg-white hover:bg-opacity-20 text-base lg:text-lg text-white px-2 py-2 sm:px-2 sm:py-2 lg:px-3 lg:py-3 rounded-md"
       )}
       onClick={onClick && onClick}
     >
       {icon && (
-        <span className="mr-1 h-full flex flex-col justify-center">{icon}</span>
+        <span className="h-full flex flex-col justify-center ">{icon}</span>
       )}
-      <p className="text-wrapper self-center">{text}</p>
+      {text && (
+        <span className="self-center font-medium">{text}</span>
+      )}
     </button>
   );
 };

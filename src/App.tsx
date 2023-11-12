@@ -1,15 +1,10 @@
 import { RouterProvider } from "react-router-dom";
 
 import { router } from "./routes/routes";
-import "./styles/App.css"
+import "./styles/App.css";
 
 function App() {
-  return (
-    <div className="w-1/4 mx-auto my-auto">
-      <RouterProvider router={router} />
-      
-    </div>
-  );
+  return <RouterProvider router={router} />;
 }
 
 export default App;
