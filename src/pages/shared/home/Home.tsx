@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { collection, getDocs } from "firebase/firestore";
+import { BsFillPlayCircleFill } from "react-icons/bs";
 
 import MovieCardVertical from "../../../components/MovieCardVertical/MovieCardVertical";
 import { database } from "../../../configs/firebaseConfig";
+import MainButton from "../../../components/Buttons/MainButton/MainButton";
 
 //Movie interface
 
@@ -69,8 +71,10 @@ const Home: React.FC = () => {
     fetchData();
   }, []); // Empty dependency array to run the effect only once on mount
 
-  return <div>
+  return <div className="bg-slate-700">
     <MovieCardVertical movie_id="ororYwNrXaxhbnzfPRrO" />
+    
+    <MainButton type="filled" text="Text" icon={<BsFillPlayCircleFill />}/>
   </div>;
 };
 
