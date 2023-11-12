@@ -1,0 +1,14 @@
+.background {
+    width: 100vw;
+    min-height: fit-content;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background: linear-gradient(
+        0deg,
+        rgba(2, 13, 55, 0.7) 0%,
+        rgba(2, 13, 55, 0.7) 100%
+      ),
+      lightgray 0px 0px / 100% 100% no-repeat !important;
+  }
