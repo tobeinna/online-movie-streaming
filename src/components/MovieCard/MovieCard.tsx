@@ -1,8 +1,4 @@
-import {
-  DocumentData,
-  doc,
-  getDoc,
-} from "firebase/firestore";
+import { DocumentData, doc, getDoc } from "firebase/firestore";
 import React, { useState, useEffect } from "react";
 import { LuDot } from "react-icons/lu";
 import { RxDividerVertical } from "react-icons/rx";
@@ -18,7 +14,7 @@ interface IMovieCardProps {
   movie_id: string;
 }
 
-const MovieCardVertical: React.FC<IMovieCardProps> = ({ movie_id }) => {
+const MovieCard: React.FC<IMovieCardProps> = ({ movie_id }) => {
   const [data, setData] = useState<DocumentData>();
   // const [votes, setVotes] = useState<IVote[]>([]);
 
@@ -75,14 +71,26 @@ const MovieCardVertical: React.FC<IMovieCardProps> = ({ movie_id }) => {
   console.log(data);
 
   return (
-    <div
-      className={`movie-card-vertical relative mx-auto bg-center bg-cover bg-no-repeat rounded-2xl flex flex-col justify-end overflow-hidden group`}
-      style={{
-        backgroundImage: `url(${data?.poster})`,
-      }}
-    >
-      <div className="movie-content-container rounded-bl-2xl rounded-br-2xl z-20">
-        <div className="mx-5 mb-4 movie-content w-54 flex flex-col">
+    <div className="flex flex-col">
+      <div
+        className={`movie-card relative mx-auto bg-center bg-cover bg-no-repeat rounded-2xl flex flex-col justify-end overflow-hidden group`}
+        style={{
+          backgroundImage: `url(${data?.poster})`,
+        }}
+      >
+        <div className="overlay absolute inset-0 group-hover:bg-gradient-to-b from-transparent to-black opacity-0 group-hover:opacity-100 transition-all duration-500 z-10">
+          <div className="button-container absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+            <MainButton
+              type="filled"
+              text="Watch"
+              icon={<BsFillPlayCircleFill />}
+              className="mr-0.5"
+            />
+            <MainButton type="outlined" text="Details" className="ml-0.5" />
+          </div>
+        </div>
+      </div>
+        <div className="mt-4 movie-content w-54 flex flex-col">
           <div className="flex justify-between mb-3">
             <h4 className="text-lg font-semibold text-white title">
               {data?.title}
@@ -114,15 +122,8 @@ const MovieCardVertical: React.FC<IMovieCardProps> = ({ movie_id }) => {
             </div>
           </div>
         </div>
-      </div>
-      <div className="overlay absolute inset-0 group-hover:bg-gradient-to-b from-transparent to-black opacity-0 group-hover:opacity-100 transition-all duration-500 z-10">
-        <div className="button-container absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-          <MainButton type="filled" text="Watch" icon={<BsFillPlayCircleFill />} className="mr-0.5" />
-          <MainButton type="outlined" text="Details" className="ml-0.5" />
-        </div>
-      </div>
     </div>
   );
 };
 
-export default MovieCardVertical;
+export default MovieCard;
