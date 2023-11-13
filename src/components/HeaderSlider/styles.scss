@@ -1,0 +1,23 @@
+/* YourComponent.css */
+.swiper {
+    position: relative;
+}
+
+.swiper-pagination {
+  width: fit-content !important;
+  position: absolute;
+  left: 90% !important; /* Adjust the right position as needed */
+  bottom: 64px !important; /* Adjust the bottom position as needed */
+}
+
+.swiper-pagination-bullet {
+  width: 8px; /* Adjust the width of the dots as needed */
+  height: 8px; /* Adjust the height of the dots as needed */
+  background-color: white !important; /* Change the color of the dots as needed */
+  opacity: 0.5; /* Adjust the opacity of inactive dots as needed */
+  transition: background-color 0.3s ease; /* Add a transition effect if desired */
+}
+
+.swiper-pagination-bullet-active {
+  opacity: 1; /* Adjust the opacity of the active dot as needed */
+}

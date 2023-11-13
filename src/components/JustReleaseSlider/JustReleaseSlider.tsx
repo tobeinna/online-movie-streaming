@@ -2,7 +2,7 @@ import MovieCardVertical from "../MovieCardVertical/MovieCardVertical";
 
 const JustReleaseSlider = () => {
   return (
-    <div className="w-5/6 mx-auto">
+    <div className="w-5/6 mx-auto pt-3">
       <h1 className="text-2xl font-bold text-slate-200">Just Release</h1>
       <div className="card-list flex my-6">
         <MovieCardVertical movie_id="ororYwNrXaxhbnzfPRrO" />

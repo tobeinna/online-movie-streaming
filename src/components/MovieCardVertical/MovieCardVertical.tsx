@@ -42,12 +42,16 @@ const MovieCardVertical: React.FC<IMovieCardProps> = ({ movie_id }) => {
   useEffect(() => {
     if (data?.votes) {
       const sum = [...data?.votes].reduce((accumulator, currentValue) => {
+
         return accumulator + currentValue.voted;
+        
       }, 0);
 
       setAverageVote(sum / [...data?.votes].length);
+
+      
     }
-  }, [data?.votes]);
+  }, [data?.votes]);  
 
   useEffect(() => {
     const getCategoriesFromIdList = async () => {

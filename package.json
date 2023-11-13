@@ -17,7 +17,8 @@
     "react-icons": "^4.11.0",
     "react-router": "^6.18.0",
     "react-router-dom": "^6.18.0",
-    "scss": "^0.2.4"
+    "scss": "^0.2.4",
+    "swiper": "^11.0.4"
   },
   "devDependencies": {
     "@types/firebase": "^3.2.1",
