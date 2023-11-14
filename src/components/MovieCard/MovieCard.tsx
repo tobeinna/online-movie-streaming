@@ -5,7 +5,7 @@ import { RxDividerVertical } from "react-icons/rx";
 import { AiFillStar } from "react-icons/ai";
 import { BsFillPlayCircleFill } from "react-icons/bs";
 
-import "./styles.scss"
+import "./styles.scss";
 import { database } from "../../configs/firebaseConfig";
 import { minutesToHoursAndMinutes } from "../../utils/timeUtils";
 import MainButton from "../Buttons/MainButton/MainButton";
@@ -45,29 +45,6 @@ const MovieCard: React.FC<IMovieCardProps> = ({ movie_id }) => {
     }
   }, [data?.votes]);
 
-  useEffect(() => {
-    const getCategoriesFromIdList = async () => {
-      const promises = await data?.category_id.map((id: string) => {
-        const docRef = doc(database, `categories/${id}`);
-        return getDoc(docRef);
-      });
-
-      try {
-        const snapshots = await Promise.all(promises);
-        const documentsData: DocumentData[] = snapshots.map(
-          (snapshot) => snapshot.data() as DocumentData
-        );
-        setData((prevState) => ({ ...prevState, categories: documentsData }));
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
-    if (data?.category_id) {
-      getCategoriesFromIdList();
-    }
-  }, [data?.category_id]);
-
   console.log(data);
 
   return (
@@ -90,38 +67,40 @@ const MovieCard: React.FC<IMovieCardProps> = ({ movie_id }) => {
           </div>
         </div>
       </div>
-        <div className="mt-4 movie-content w-54 flex flex-col">
-          <div className="flex justify-between mb-3">
-            <h4 className="text-lg font-semibold text-white title">
-              {data?.title}
-            </h4>
-            <span className="text-gray-200">
-              {minutesToHoursAndMinutes(data?.duration)}
+      <div className="mt-4 movie-content w-54 flex flex-col">
+        <div className="flex justify-between mb-3">
+          <h4 className="text-lg font-semibold text-white title">
+            {data?.title}
+          </h4>
+          <span className="text-gray-200">
+            {minutesToHoursAndMinutes(data?.duration)}
+          </span>
+        </div>
+        <div className="flex w-54">
+          <div className="flex voted">
+            <AiFillStar className="my-auto mr-1 text-lg text-yellow-400" />
+            <span className="my-auto text-sm font-semibold text-white star">
+              {averageVote}
             </span>
           </div>
-          <div className="flex w-54">
-            <div className="flex voted">
-              <AiFillStar className="my-auto mr-1 text-lg text-yellow-400" />
-              <span className="my-auto text-sm font-semibold text-white star">
-                {averageVote}
-              </span>
-            </div>
-            <RxDividerVertical className="my-auto text-xl text-gray-500" />
-            <div className="flex flex-wrap text-gray-500 movie-categories">
-              {data?.categories &&
-                data.categories.map((item: number, index: number) => {
+          <RxDividerVertical className="my-auto text-xl text-gray-500" />
+          <div className="flex flex-wrap text-gray-500 movie-categories">
+            {data?.categories &&
+              data.categories.map(
+                (item: { id: string; name: string }, index: number) => {
                   return (
                     <div className="flex" key={index}>
                       {index !== 0 && <LuDot className="mt-auto mb-0.5" />}
                       <span className="text-sm font-medium whitespace-nowrap overflow-hidden break-words category">
-                        {item}
+                        {item.name}
                       </span>
                     </div>
                   );
-                })}
-            </div>
+                }
+              )}
           </div>
         </div>
+      </div>
     </div>
   );
 };
