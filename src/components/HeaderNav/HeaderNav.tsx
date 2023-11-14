@@ -25,7 +25,11 @@ const HeaderNav = () => {
   }, []);
 
   return (
-    <header className={`fixed z-50 w-full transition-all duration-300 ${scrolling ? 'bg-black' : 'bg-transparent'}`}>
+    <header
+      className={`fixed z-50 w-full transition-all duration-300 ${
+        scrolling ? "bg-black" : "bg-transparent"
+      }`}
+    >
       <div className=" flex justify-between w-5/6 mx-auto">
         <Link to={"/"}>
           <img
@@ -45,8 +49,12 @@ const HeaderNav = () => {
         </nav>
         <div className="nav-button-group flex justify-between gap-2 my-auto">
           <MainButton type="icon-only" icon={<HiOutlineSearch />} />
-          <MainButton type="outlined" text="Sign up" />
-          <MainButton type="filled" text="Login" />
+          <Link to={"/auth/register"}>
+            <MainButton type="outlined" text="Sign up" />
+          </Link>
+          <Link to={"/auth/login"}>
+            <MainButton type="filled" text="Login" />
+          </Link>
         </div>
       </div>
     </header>
