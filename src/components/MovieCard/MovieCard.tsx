@@ -25,8 +25,6 @@ const MovieCard: React.FC<IMovieCardProps> = ({ movie_id }) => {
 
       if (docSnap.exists()) {
         setData(docSnap.data());
-      } else {
-        console.log("No such document!");
       }
     }
 
@@ -44,8 +42,6 @@ const MovieCard: React.FC<IMovieCardProps> = ({ movie_id }) => {
       setAverageVote(sum / [...data?.votes].length);
     }
   }, [data?.votes]);
-
-  console.log(data);
 
   return (
     <div className="flex flex-col">

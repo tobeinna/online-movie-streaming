@@ -1,5 +1,5 @@
 export interface AuthType {
-  displayName: string;
-  role: string;
+  displayName?: string;
+  role?: string;
   photoUrl?: string;
 }

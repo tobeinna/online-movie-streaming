@@ -25,8 +25,6 @@ const MovieCardVertical: React.FC<IMovieCardProps> = ({ movie_id }) => {
 
       if (docSnap.exists()) {
         setData(docSnap.data());
-      } else {
-        console.log("No such document!");
       }
     }
 
@@ -44,31 +42,6 @@ const MovieCardVertical: React.FC<IMovieCardProps> = ({ movie_id }) => {
       setAverageVote(sum / [...data?.votes].length);
     }
   }, [data?.votes]);
-
-  // useEffect(() => {
-  //   const getCategoriesFromIdList = async () => {
-  //     const promises = await data?.category_id.map((id: string) => {
-  //       const docRef = doc(database, `categories/${id}`);
-  //       return getDoc(docRef);
-  //     });
-
-  //     try {
-  //       const snapshots = await Promise.all(promises);
-  //       const documentsData: DocumentData[] = snapshots.map(
-  //         (snapshot) => snapshot.data() as DocumentData
-  //       );
-  //       setData((prevState) => ({ ...prevState, categories: documentsData }));
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-  //   };
-
-  //   if (data?.category_id) {
-  //     getCategoriesFromIdList();
-  //   }
-  // }, [data?.category_id]);
-
-  console.log(data);
 
   return (
     <div

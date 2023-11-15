@@ -4,9 +4,9 @@ import "./auth-layout.scss";
 
 const AuthLayout = () => {
   return (
-    <div className="background">
-      <Outlet />
-    </div>
+      <div className="background">
+        <Outlet />
+      </div>
   );
 };
 

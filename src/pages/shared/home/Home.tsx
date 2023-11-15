@@ -68,7 +68,6 @@ const Home: React.FC = () => {
         }
 
         setMoviesData(combinedDataArray);
-        console.log("combined arrar", combinedDataArray);
       } catch (error) {
         console.error("Error fetching data:", error);
       }

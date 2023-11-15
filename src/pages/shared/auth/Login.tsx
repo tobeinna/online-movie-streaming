@@ -5,7 +5,7 @@ import {
   signInWithEmailAndPassword,
   signInWithPopup,
 } from "firebase/auth";
-import { useState, useContext, useEffect } from "react";
+import { useState } from "react";
 import { SiGoogle, SiFacebook } from "react-icons/si";
 import { PiEyeSlashFill, PiEyeFill } from "react-icons/pi";
 import { useForm } from "react-hook-form";
@@ -14,15 +14,14 @@ import { Link, useNavigate } from "react-router-dom";
 
 import { auth, database } from "../../../configs/firebaseConfig";
 import MainButton from "../../../components/Buttons/MainButton/MainButton";
-import { AuthContext } from "../../../stores/AuthContext";
-import { AuthType } from "../../../types/auth.types";
 
 const Login = () => {
   const googleProvider = new GoogleAuthProvider();
   const facebookProvider = new FacebookAuthProvider();
-  const authContext = useContext(AuthContext);
   const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
   const [loginError, setLoginError] = useState<string>("");
+
+  const navigate = useNavigate();
 
   const {
     register,
@@ -34,14 +33,12 @@ const Login = () => {
       password: "",
     },
   });
-  const navigate = useNavigate();
 
   const handleLoginSocialUser = async (user: User) => {
     if (!user) return;
 
     const userDocRef = doc(database, `users/${user.uid}`);
     const userSnapshot = await getDoc(userDocRef);
-    console.log(userSnapshot.data());
 
     if (!userSnapshot.exists()) {
       const { displayName, photoURL } = user;
@@ -53,25 +50,12 @@ const Login = () => {
         role: "user",
       })
         .then(() => {
-          const loginAuth: AuthType = {
-            displayName: String(userSnapshot.data()?.displayName),
-            photoUrl: String(userSnapshot.data()?.photoURL),
-            role: String(userSnapshot.data()?.role),
-          };
-          authContext.setAuth(loginAuth);
           navigate("/");
         })
         .catch((error: Error) => {
           setLoginError(error.message);
         });
     } else {
-      const loginAuth: AuthType = {
-        displayName: String(userSnapshot.data()?.displayName),
-        photoUrl: String(userSnapshot.data()?.photoURL),
-        role: String(userSnapshot.data()?.role),
-      };
-      authContext.setAuth(loginAuth);
-
       switch (userSnapshot.data()?.role) {
         case "user":
           navigate("/");
@@ -83,25 +67,17 @@ const Login = () => {
         default:
           break;
       }
+
     }
   };
 
   const onSubmit = (data: any) => {
     signInWithEmailAndPassword(auth, data.email, data.password)
       .then(async (res) => {
-        console.log(res);
-
         const userDocRef = doc(database, `users/${res.user.uid}`);
         const userSnapshot = await getDoc(userDocRef);
 
         if (userSnapshot.exists()) {
-          const loginAuth: AuthType = {
-            displayName: String(userSnapshot.data()?.displayName),
-            photoUrl: String(userSnapshot.data()?.photoURL),
-            role: String(userSnapshot.data()?.role),
-          };
-          authContext.setAuth(loginAuth);
-
           switch (userSnapshot.data()?.role) {
             case "user":
               navigate("/");
@@ -163,7 +139,7 @@ const Login = () => {
           <input
             type="text"
             id="email"
-            className="block px-2.5 pb-1.5 pt-4 w-full text-sm bg-[#08070A] text-gray-300 rounded-md border-2 border-[#28262D] border-[#28262D] transition-colors duration-300 focus:border-gray-300 focus:outline-none peer"
+            className="block px-2.5 pb-1.5 pt-4 w-full text-sm bg-[#08070A] text-gray-300 rounded-md border-2 border-[#28262D] transition-colors duration-300 focus:border-gray-300 focus:outline-none peer"
             placeholder=" "
             {...register("email", {
               required: "Email is required.",
@@ -197,19 +173,6 @@ const Login = () => {
             placeholder=" "
             {...register("password", {
               required: "Password is required.",
-              minLength: {
-                value: 8,
-                message: "Minimum length is 8 characters.",
-              },
-              maxLength: {
-                value: 32,
-                message: "Maximum length is 32 characters.",
-              },
-              validate: (value) => {
-                if (!value.match(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/)) {
-                  return "Password must contains at least 1 character and 1 number.";
-                }
-              },
             })}
           />
           <label

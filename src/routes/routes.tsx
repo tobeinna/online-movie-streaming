@@ -1,4 +1,4 @@
-import { Navigate, createBrowserRouter } from "react-router-dom";
+import { Navigate, Route, Routes, createBrowserRouter } from "react-router-dom";
 
 import {
   PATH_AUTH,
@@ -25,6 +25,7 @@ import ManageLayout from "../layouts/ManageLayout/ManageLayout";
 import ManageCategories from "../pages/manage/ManageCategories";
 import ManageMovies from "../pages/manage/ManageMovies";
 import ManageUsers from "../pages/manage/ManageUsers";
+import RequireAuth from "../components/RequireAuth/RequireAuth";
 
 export const router = createBrowserRouter([
   {
@@ -65,24 +66,29 @@ export const router = createBrowserRouter([
       },
     ],
   },
-  {
-    path: PATH_MANAGE,
-    element: <ManageLayout />,
-    children: [
+  // {
+  //   element: <RequireAuth allowedRole="admin"/>,
+  //   children: [
       {
-        path: PATH_CATEGORIES,
-        element: <ManageCategories />,
+        path: PATH_MANAGE,
+        element: <RequireAuth allowedRole="admin"><ManageLayout /></RequireAuth>,
+        children: [
+          {
+            path: PATH_CATEGORIES,
+            element: <ManageCategories />,
+          },
+          {
+            path: PATH_MOVIES,
+            element: <ManageMovies />,
+          },
+          {
+            path: PATH_USERS,
+            element: <ManageUsers />,
+          },
+        ],
       },
-      {
-        path: PATH_MOVIES,
-        element: <ManageMovies />,
-      },
-      {
-        path: PATH_USERS,
-        element: <ManageUsers />,
-      },
-    ],
-  },
+  //   ],
+  // },
   {
     path: "*",
     element: <Navigate to="/" replace />,

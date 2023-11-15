@@ -31,8 +31,6 @@ const HeaderSlider: React.FC = () => {
 
       if (docSnap.exists()) {
         setData(docSnap.data());
-      } else {
-        console.log("No such document!");
       }
     }
 
@@ -42,8 +40,6 @@ const HeaderSlider: React.FC = () => {
   useEffect(() => {
     if (data?.release_date) {
       const date = new Date(data.release_date.seconds * 1000);
-
-      console.log(data.release_date.nanoseconds);
 
       setYear(date.getFullYear());
     }
