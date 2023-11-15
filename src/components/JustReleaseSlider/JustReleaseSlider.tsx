@@ -35,7 +35,7 @@ const JustReleaseSlider = () => {
   }, []);
 
   return (
-    <div className="w-5/6 mx-auto pt-3">
+    <div className="w-11/12 ml-auto pt-3">
       <h1 className="text-2xl font-bold text-slate-200 mb-4">Just Release</h1>
       <Swiper
         ref={sliderRef}
@@ -45,11 +45,20 @@ const JustReleaseSlider = () => {
         }}
         spaceBetween={30}
         freeMode={true}
+        allowTouchMove={false}
         slidesPerView={"auto"}
-        onReachBeginning={() => setIsDisplayedPrev(false)}
-        onReachEnd={() => setIsDisplayedNext(false)}
-        onSlideNextTransitionStart={() => setIsDisplayedPrev(true)}
         onSlidePrevTransitionStart={() => setIsDisplayedNext(true)}
+        onSlidePrevTransitionEnd={() => setIsDisplayedNext(true)}
+        onReachBeginning={() => {
+          setIsDisplayedPrev(false);
+          setIsDisplayedNext(true);
+        }}
+        onSlideNextTransitionStart={() => setIsDisplayedPrev(true)}
+        onSlideNextTransitionEnd={() => setIsDisplayedPrev(true)}
+        onReachEnd={() => {
+          setIsDisplayedNext(false);
+          setIsDisplayedPrev(true);
+        }}
       >
         {movies_id.map((item, index) => {
           return (

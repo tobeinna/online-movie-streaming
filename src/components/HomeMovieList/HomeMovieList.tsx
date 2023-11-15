@@ -35,7 +35,7 @@ const HomeMovieList = () => {
   }, []);
 
   return (
-    <div className="w-5/6 mx-auto pt-3">
+    <div className="w-11/12 ml-auto pt-3">
       <h1 className="text-2xl font-bold text-slate-200 mb-4">Movies</h1>
       <Swiper
         ref={sliderRef}
@@ -51,6 +51,7 @@ const HomeMovieList = () => {
           momentumRatio: 0,
           momentumBounceRatio: 0,
         }}
+        allowTouchMove={false}
         slidesPerView={"auto"}
         onSlidePrevTransitionStart={() => setIsDisplayedNext(true)}
         onSlidePrevTransitionEnd={() => setIsDisplayedNext(true)}

@@ -1,91 +1,145 @@
 import {
   FacebookAuthProvider,
   GoogleAuthProvider,
+  User,
   signInWithEmailAndPassword,
   signInWithPopup,
 } from "firebase/auth";
-import { useState } from "react";
+import { useState, useContext, useEffect } from "react";
 import { SiGoogle, SiFacebook } from "react-icons/si";
 import { PiEyeSlashFill, PiEyeFill } from "react-icons/pi";
+import { useForm } from "react-hook-form";
+import { doc, getDoc, setDoc } from "firebase/firestore";
+import { Link, useNavigate } from "react-router-dom";
 
-import { auth } from "../../../configs/firebaseConfig";
+import { auth, database } from "../../../configs/firebaseConfig";
 import MainButton from "../../../components/Buttons/MainButton/MainButton";
-import { Link } from "react-router-dom";
+import { AuthContext } from "../../../stores/AuthContext";
+import { AuthType } from "../../../types/auth.types";
 
 const Login = () => {
   const googleProvider = new GoogleAuthProvider();
   const facebookProvider = new FacebookAuthProvider();
+  const authContext = useContext(AuthContext);
   const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
+  const [loginError, setLoginError] = useState<string>("");
 
-  const [data, setData] = useState({ email: "", password: "" });
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
+  const navigate = useNavigate();
 
-  const handleUpdateInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let newInput = { [e.target.name]: e.target.value };
-    setData({ ...data, ...newInput });
+  const handleLoginSocialUser = async (user: User) => {
+    if (!user) return;
+
+    const userDocRef = doc(database, `users/${user.uid}`);
+    const userSnapshot = await getDoc(userDocRef);
+    console.log(userSnapshot.data());
+
+    if (!userSnapshot.exists()) {
+      const { displayName, photoURL } = user;
+
+      setDoc(userDocRef, {
+        displayName,
+        photoURL,
+        createdAt: new Date(),
+        role: "user",
+      })
+        .then(() => {
+          const loginAuth: AuthType = {
+            displayName: String(userSnapshot.data()?.displayName),
+            photoUrl: String(userSnapshot.data()?.photoURL),
+            role: String(userSnapshot.data()?.role),
+          };
+          authContext.setAuth(loginAuth);
+          navigate("/");
+        })
+        .catch((error: Error) => {
+          setLoginError(error.message);
+        });
+    } else {
+      const loginAuth: AuthType = {
+        displayName: String(userSnapshot.data()?.displayName),
+        photoUrl: String(userSnapshot.data()?.photoURL),
+        role: String(userSnapshot.data()?.role),
+      };
+      authContext.setAuth(loginAuth);
+
+      switch (userSnapshot.data()?.role) {
+        case "user":
+          navigate("/");
+          break;
+        case "admin":
+          navigate("/manage");
+          break;
+
+        default:
+          break;
+      }
+    }
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
+  const onSubmit = (data: any) => {
     signInWithEmailAndPassword(auth, data.email, data.password)
-      .then((res) => {
-        console.log(res.user);
+      .then(async (res) => {
+        console.log(res);
+
+        const userDocRef = doc(database, `users/${res.user.uid}`);
+        const userSnapshot = await getDoc(userDocRef);
+
+        if (userSnapshot.exists()) {
+          const loginAuth: AuthType = {
+            displayName: String(userSnapshot.data()?.displayName),
+            photoUrl: String(userSnapshot.data()?.photoURL),
+            role: String(userSnapshot.data()?.role),
+          };
+          authContext.setAuth(loginAuth);
+
+          switch (userSnapshot.data()?.role) {
+            case "user":
+              navigate("/");
+              break;
+            case "admin":
+              navigate("/manage");
+              break;
+
+            default:
+              break;
+          }
+        } else {
+          setLoginError("User data does not exist in database.");
+        }
       })
       .catch((error: Error) => {
-        alert(error.message);
+        setLoginError(error.message);
       });
   };
 
   const handleGoogleLogin = () => {
     signInWithPopup(auth, googleProvider)
       .then((result) => {
-        // This gives you a Google Access Token. You can use it to access the Google API.
-        const credential = GoogleAuthProvider.credentialFromResult(result);
-        const token = credential?.accessToken;
-        // The signed-in user info.
-        const user = result.user;
-        // IdP data available using getAdditionalUserInfo(result)
-        // ...
-        console.log(result);
+        handleLoginSocialUser(result.user);
       })
-      .catch((error) => {
-        // Handle Errors here.
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        // The email of the user's account used.
-        const email = error.customData.email;
-        // The AuthCredential type that was used.
-        const credential = GoogleAuthProvider.credentialFromError(error);
-        // ...
-        console.log(error);
+      .catch((error: Error) => {
+        setLoginError(error.message);
       });
   };
 
   const handleFacebookLogin = () => {
     signInWithPopup(auth, facebookProvider)
       .then((result) => {
-        // The signed-in user info.
         const user = result.user;
-
-        // This gives you a Facebook Access Token. You can use it to access the Facebook API.
-        const credential = FacebookAuthProvider.credentialFromResult(result);
-        const accessToken = credential?.accessToken;
-
-        // IdP data available using getAdditionalUserInfo(result)
-        // ...
-        console.log(user);
+        handleLoginSocialUser(user);
       })
-      .catch((error) => {
-        // Handle Errors here.
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        // The email of the user's account used.
-        const email = error.customData.email;
-        // The AuthCredential type that was used.
-        const credential = FacebookAuthProvider.credentialFromError(error);
-
-        // ...
-        alert(errorCode);
+      .catch((error: Error) => {
+        setLoginError(error.message);
       });
   };
 
@@ -102,16 +156,30 @@ const Login = () => {
       </span>
       <form
         className="flex w-5/6 mx-auto flex-col gap-4"
-        onSubmit={(e) => handleSubmit(e)}
+        onSubmit={handleSubmit(onSubmit)}
       >
+        <p className="error-message text-[#dd2b0e]">{loginError}</p>
         <div className="relative">
           <input
             type="text"
             id="email"
-            name="email"
             className="block px-2.5 pb-1.5 pt-4 w-full text-sm bg-[#08070A] text-gray-300 rounded-md border-2 border-[#28262D] border-[#28262D] transition-colors duration-300 focus:border-gray-300 focus:outline-none peer"
             placeholder=" "
-            onChange={(e) => handleUpdateInput(e)}
+            {...register("email", {
+              required: "Email is required.",
+              minLength: {
+                value: 8,
+                message: "Minimum length is 8 characters.",
+              },
+              maxLength: {
+                value: 32,
+                message: "Maximum length is 32 characters.",
+              },
+              pattern: {
+                value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                message: "Invalid email address",
+              },
+            })}
           />
           <label
             htmlFor="email"
@@ -120,14 +188,29 @@ const Login = () => {
             Email
           </label>
         </div>
+        <p className="error-message text-[#dd2b0e]">{errors.email?.message}</p>
         <div className="relative">
           <input
             type={isPasswordVisible ? "text" : "password"}
             id="password"
-            name="password"
             className="block px-2.5 pb-1.5 pt-4 w-full text-sm bg-[#08070A] text-gray-300 rounded-md border-2 border-[#28262D] transition-colors duration-300 focus:border-gray-300 focus:outline-none peer"
             placeholder=" "
-            onChange={(e) => handleUpdateInput(e)}
+            {...register("password", {
+              required: "Password is required.",
+              minLength: {
+                value: 8,
+                message: "Minimum length is 8 characters.",
+              },
+              maxLength: {
+                value: 32,
+                message: "Maximum length is 32 characters.",
+              },
+              validate: (value) => {
+                if (!value.match(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/)) {
+                  return "Password must contains at least 1 character and 1 number.";
+                }
+              },
+            })}
           />
           <label
             htmlFor="password"
@@ -146,9 +229,12 @@ const Login = () => {
             )}
           </div>
         </div>
+        <p className="error-message text-[#dd2b0e]">
+          {errors.password?.message}
+        </p>
         <MainButton
           className="w-full"
-          type="auth"
+          type="filled"
           text="Login"
           isSubmit={true}
         />

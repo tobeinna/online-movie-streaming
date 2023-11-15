@@ -1,17 +1,18 @@
-import { Outlet } from "react-router-dom";
+import { Navigate, Outlet } from "react-router-dom";
 
-import ManageSideNav from "../../components/ManageSideNav/ManageSideNav"
+import ManageSideNav from "../../components/ManageSideNav/ManageSideNav";
 
 const ManageLayout = () => {
   return (
     <>
-    <header>Header</header>
-    <div className="container">
+      <Navigate to={"/manage/movies"} replace />
+      <header>Header</header>
+      <div className="container">
         <ManageSideNav />
         <Outlet />
-    </div>
+      </div>
     </>
-  )
-}
+  );
+};
 
-export default ManageLayout
+export default ManageLayout;
