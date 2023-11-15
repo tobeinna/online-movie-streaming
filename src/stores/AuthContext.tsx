@@ -20,9 +20,10 @@ type AuthContextProviderProps = {
 };
 
 export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
-  const [authState, setAuthState] = useState<AuthType | undefined>();
+  const [authState, setAuthState] = useState<AuthType | undefined>(undefined);
 
   const logOut = () => {
+    setAuthState(undefined);
     return signOut(auth);
   };
 
