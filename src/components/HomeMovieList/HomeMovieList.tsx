@@ -35,7 +35,12 @@ const HomeMovieList = () => {
 
       try {
         let data: Movie[] = [];
-        querySnapshot.docs.map((doc: DocumentData) => data.push(doc.data()));
+        querySnapshot.docs.map((doc: DocumentData) => {
+          data.push({
+            id: doc.id,
+            ...doc.data(),
+          });
+        });
         setMoviesData(data);
       } catch (error) {
         console.log(error);
@@ -99,7 +104,7 @@ const HomeMovieList = () => {
 
   if (moviesData) {
     return (
-      <div className="w-11/12 ml-auto pt-3">
+      <div className="w-11/12 ml-auto mr-4 max-md:mr-1 pt-3">
         <h1 className="text-2xl font-bold text-slate-200 mb-4">
           Highest Rating
         </h1>

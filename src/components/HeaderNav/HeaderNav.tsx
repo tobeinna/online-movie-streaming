@@ -143,7 +143,7 @@ const HeaderNav = () => {
             <MainButton
               type="icon-only"
               icon={<IoMdClose />}
-              className="text-black z-10 absolute float-right top-4 right-4 border-none w-9 h-9 p-0"
+              className="text-[black] z-10 absolute float-right top-4 right-4 border-none w-9 h-9 p-0"
               onClick={handleHideModal}
             />
             {authState && authState.displayName && (

@@ -10,6 +10,7 @@ export const PATH_REGISTER = "register";
 export const PATH_MOVIE = "movie";
 export const PATH_WATCH = "watch";
 export const PATH_DETAIL = "detail";
+export const PATH_SEARCH = "search";
 
 // Manage
 export const PATH_MANAGE = "/manage";

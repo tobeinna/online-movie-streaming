@@ -1,12 +1,20 @@
-import { Outlet } from "react-router-dom";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
 
-import RecommendedMoviesSidebar from "../../components/RecommendedMoviesSidebar/RecommendedMoviesSidebar";
+import HeaderNav from "../../components/HeaderNav/HeaderNav";
 
 const MovieLayout = () => {
+  const location = useLocation();
+  if (location.pathname === "/movie" || location.pathname === "/movie/") {
+    return <Navigate to={`/`} state={{ from: location }} replace />;
+  }
+
   return (
     <>
+      <header>
+        <HeaderNav />
+      </header>
       <Outlet />
-      <RecommendedMoviesSidebar />
+      <footer>Footer</footer>
     </>
   );
 };

@@ -3,6 +3,7 @@ import { LuDot } from "react-icons/lu";
 import { RxDividerVertical } from "react-icons/rx";
 import { AiFillStar } from "react-icons/ai";
 import { BsFillPlayCircleFill } from "react-icons/bs";
+import { useNavigate } from "react-router";
 
 import "./styles.scss";
 import { minutesToHoursAndMinutes } from "../../utils/timeUtils";
@@ -14,6 +15,8 @@ interface IMovieCardProps {
 }
 
 const MovieCardVertical: React.FC<IMovieCardProps> = ({ movie_data }) => {
+  const navigate = useNavigate();
+
   return (
     <div
       className={`movie-card-vertical relative mx-auto bg-center bg-cover bg-no-repeat rounded-2xl flex flex-col justify-end overflow-hidden group`}
@@ -34,7 +37,7 @@ const MovieCardVertical: React.FC<IMovieCardProps> = ({ movie_data }) => {
           <div className="flex w-54">
             <div className="flex voted">
               <AiFillStar className="my-auto mr-1 text-lg text-yellow-400" />
-              <span className="my-auto text-sm font-semibold text-white star">
+              <span className="my-auto w-min text-sm font-semibold text-white star">
                 {movie_data.averageVote ? movie_data.averageVote : "Not voted"}
               </span>
             </div>
@@ -45,8 +48,8 @@ const MovieCardVertical: React.FC<IMovieCardProps> = ({ movie_data }) => {
                   (item: { id: string; name: string }, index: number) => {
                     return (
                       <div className="flex" key={index}>
-                        {index !== 0 && <LuDot className="mt-auto mb-0.5" />}
-                        <span className="text-sm font-medium whitespace-nowrap overflow-hidden break-words category">
+                        {index !== 0 && <LuDot className="my-auto" />}
+                        <span className="my-auto text-sm font-medium whitespace-nowrap overflow-hidden break-words category">
                           {item.name}
                         </span>
                       </div>
@@ -64,8 +67,14 @@ const MovieCardVertical: React.FC<IMovieCardProps> = ({ movie_data }) => {
             text="Watch"
             icon={<BsFillPlayCircleFill />}
             className="mr-0.5"
+            onClick={() => navigate(`/movie/${movie_data.id}/watch`)}
           />
-          <MainButton type="outlined" text="Details" className="ml-0.5" />
+          <MainButton
+            type="outlined"
+            text="Details"
+            className="ml-0.5"
+            onClick={() => navigate(`/movie/${movie_data.id}/detail`)}
+          />
         </div>
       </div>
     </div>

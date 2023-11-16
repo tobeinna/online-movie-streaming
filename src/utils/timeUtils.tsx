@@ -8,3 +8,11 @@ export function minutesToHoursAndMinutes(minute: number) {
   }
   return result;
 }
+
+export function timestampToYear(timestamp: number) {
+  if(timestamp) {
+    const date = new Date(timestamp * 1000);
+
+    return date.getFullYear()
+  }
+}

@@ -10,6 +10,7 @@ import {
   PATH_MOVIES,
   PATH_REGISTER,
   PATH_ROOT,
+  PATH_SEARCH,
   PATH_USERS,
   PATH_WATCH,
 } from "./route.paths";
@@ -26,70 +27,92 @@ import ManageCategories from "../pages/manage/ManageCategories";
 import ManageMovies from "../pages/manage/ManageMovies";
 import ManageUsers from "../pages/manage/ManageUsers";
 import RequireAuth from "../components/RequireAuth/RequireAuth";
+import MovieNavigator from "../pages/shared/movie/MovieNavigator";
+import { ScrollToTop } from "../utils/scrollToTop";
+import SearchMovie from "../pages/shared/movie/SearchMovie";
 
 export const router = createBrowserRouter([
   {
-    path: PATH_ROOT,
-    element: <MainLayout />,
+    element: <ScrollToTop />,
     children: [
       {
-        index: true,
-        element: <Home />,
+        path: PATH_ROOT,
+        element: <MainLayout />,
+        children: [
+          {
+            index: true,
+            element: <Home />,
+          },
+        ],
       },
       {
         path: PATH_MOVIE,
         element: <MovieLayout />,
         children: [
           {
-            path: ":movie_id/" + PATH_DETAIL,
-            element: <MovieDetail />,
+            path: ":movie_id",
+            element: <MovieNavigator />,
+            children: [
+              {
+                path: PATH_DETAIL,
+                element: <MovieDetail />,
+              },
+              {
+                path: PATH_WATCH,
+                element: <WatchMovie />,
+              },
+              {
+                path: "*",
+                element: <Navigate to="" replace />,
+              },
+            ],
           },
           {
-            path: ":movie_id/" + PATH_WATCH,
-            element: <WatchMovie />,
+            path: PATH_SEARCH,
+            element: <SearchMovie />
+          }
+        ],
+      },
+      {
+        path: PATH_AUTH,
+        element: <AuthLayout />,
+        children: [
+          {
+            path: PATH_LOGIN,
+            element: <Login />,
+          },
+          {
+            path: PATH_REGISTER,
+            element: <Register />,
           },
         ],
       },
-    ],
-  },
-  {
-    path: PATH_AUTH,
-    element: <AuthLayout />,
-    children: [
       {
-        path: PATH_LOGIN,
-        element: <Login />,
+        path: PATH_MANAGE,
+        element: (
+          <RequireAuth allowedRole="admin">
+            <ManageLayout />
+          </RequireAuth>
+        ),
+        children: [
+          {
+            path: PATH_CATEGORIES,
+            element: <ManageCategories />,
+          },
+          {
+            path: PATH_MOVIES,
+            element: <ManageMovies />,
+          },
+          {
+            path: PATH_USERS,
+            element: <ManageUsers />,
+          },
+        ],
       },
       {
-        path: PATH_REGISTER,
-        element: <Register />,
-      },
-    ],
-  },
-  {
-    path: PATH_MANAGE,
-    element: (
-      <RequireAuth allowedRole="admin">
-        <ManageLayout />
-      </RequireAuth>
-    ),
-    children: [
-      {
-        path: PATH_CATEGORIES,
-        element: <ManageCategories />,
-      },
-      {
-        path: PATH_MOVIES,
-        element: <ManageMovies />,
-      },
-      {
-        path: PATH_USERS,
-        element: <ManageUsers />,
+        path: "*",
+        element: <Navigate to="/" replace />,
       },
     ],
-  },
-  {
-    path: "*",
-    element: <Navigate to="/" replace />,
   },
 ]);

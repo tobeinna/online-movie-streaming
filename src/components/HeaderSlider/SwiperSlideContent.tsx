@@ -1,9 +1,9 @@
 import { LuDot } from "react-icons/lu";
 import { BsFillPlayCircleFill } from "react-icons/bs";
-import { useEffect, useState } from "react";
+import { useNavigate } from "react-router";
 
 import { Movie } from "../../types/movie.types";
-import { minutesToHoursAndMinutes } from "../../utils/timeUtils";
+import { minutesToHoursAndMinutes, timestampToYear } from "../../utils/timeUtils";
 import MainButton from "../Buttons/MainButton/MainButton";
 
 interface SwiperSlideContentProp {
@@ -13,34 +13,26 @@ interface SwiperSlideContentProp {
 const SwiperSlideContent: React.FC<SwiperSlideContentProp> = ({
   slide_data,
 }) => {
-  const [year, setYear] = useState<number>();
-
-  useEffect(() => {
-    if (slide_data?.release_date) {
-      const date = new Date(slide_data.release_date.seconds * 1000);
-
-      setYear(date.getFullYear());
-    }
-  }, [slide_data]);
+  const navigate = useNavigate()
 
   return (
     <div
-      className="bg-center bg-cover bg-no-repeat flex overflow-hidden h-[572px]"
+      className="bg-center bg-cover bg-no-repeat flex overflow-hidden w-screen h-[572px]"
       style={{
         backgroundImage: `url(${slide_data?.poster})`,
       }}
     >
-      <div className="overlay block w-full h-full fixed z-10  bg-gradient-to-b from-transparent to-[#0D0C0F]"></div>
-      <div className="slider-content-container z-20 w-5/6 mx-auto mb-16 mt-auto">
-        <h2 className="text-4xl text-white mb-4 font-bold">
+      <div className="overlay block w-full h-[572px] fixed z-10 bg-gradient-to-b from-transparent to-[#0D0C0F]"></div>
+      <div className="slider-content-container z-20 w-5/12 max-sm:w-5/6 mx-[8.333333%] mb-16 mt-auto">
+        <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl text-white mb-4 font-bold">
           {slide_data?.title}
         </h2>
-        <div className="flex w-54 flex-wrap text-gray-500 text-sm font-medium mb-4">
+        <div className="text-xs md:text-sm flex w-54 flex-wrap text-gray-500 font-medium mb-4">
           <span className="duration">
             {minutesToHoursAndMinutes(slide_data?.duration)}
           </span>
           <LuDot className="mt-auto mb-0.5" />
-          <span className="year">{year}</span>
+          <span className="year">{timestampToYear(slide_data.release_date.seconds)}</span>
           <LuDot className="mt-auto mb-0.5" />
           <div className="flex flex-wrap movie-categories">
             {slide_data?.categories &&
@@ -58,16 +50,23 @@ const SwiperSlideContent: React.FC<SwiperSlideContentProp> = ({
               )}
           </div>
         </div>
-        <p className="w-1/2 text-slate-200 text-base font-normal mb-5">
+        <p className="text-sm md:text-md w-full text-slate-200 font-normal mb-5">
           {slide_data?.description}
         </p>
-        <div className="header-slider-button-group w-fit flex justify-between gap-5">
+        <div className="header-slider-button-group w-fit max-sm:w-full flex justify-between gap-5">
           <MainButton
             type="filled"
             text="Watch"
             icon={<BsFillPlayCircleFill />}
+            onClick={() => navigate(`/movie/${slide_data.id}/watch`)}
+            className="max-sm:w-full"
           />
-          <MainButton type="outlined" text="Detail" />
+          <MainButton
+            type="outlined"
+            text="Detail"
+            onClick={() => navigate(`/movie/${slide_data.id}/detail`)}
+            className="max-sm:w-full"
+          />
         </div>
       </div>
     </div>

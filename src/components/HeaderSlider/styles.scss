@@ -6,7 +6,7 @@
 .swiper-pagination {
   width: fit-content !important;
   position: absolute;
-  left: 90% !important; /* Adjust the right position as needed */
+  left: 85% !important; /* Adjust the right position as needed */
   bottom: 64px !important; /* Adjust the bottom position as needed */
 }
 
@@ -20,4 +20,12 @@
 
 .swiper-pagination-bullet-active {
   opacity: 1; /* Adjust the opacity of the active dot as needed */
+}
+
+@media (max-width: 639.5px) {
+  .swiper-pagination {
+    bottom: 1% !important;
+    left: 50% !important;
+    transform: translateX(-50%)
+  }
 }

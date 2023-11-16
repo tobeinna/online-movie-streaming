@@ -33,7 +33,12 @@ const HeaderSlider: React.FC = () => {
 
       try {
         let data: Movie[] = [];
-        querySnapshot.docs.map((doc: DocumentData) => data.push(doc.data()));
+        querySnapshot.docs.map((doc: DocumentData) => {
+          data.push({
+            id: doc.id,
+            ...doc.data(),
+          });
+        });
         setMoviesData(data);
       } catch (error) {
         console.log(error);
