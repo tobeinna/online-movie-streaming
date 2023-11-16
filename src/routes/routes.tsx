@@ -66,29 +66,28 @@ export const router = createBrowserRouter([
       },
     ],
   },
-  // {
-  //   element: <RequireAuth allowedRole="admin"/>,
-  //   children: [
+  {
+    path: PATH_MANAGE,
+    element: (
+      <RequireAuth allowedRole="admin">
+        <ManageLayout />
+      </RequireAuth>
+    ),
+    children: [
       {
-        path: PATH_MANAGE,
-        element: <RequireAuth allowedRole="admin"><ManageLayout /></RequireAuth>,
-        children: [
-          {
-            path: PATH_CATEGORIES,
-            element: <ManageCategories />,
-          },
-          {
-            path: PATH_MOVIES,
-            element: <ManageMovies />,
-          },
-          {
-            path: PATH_USERS,
-            element: <ManageUsers />,
-          },
-        ],
+        path: PATH_CATEGORIES,
+        element: <ManageCategories />,
       },
-  //   ],
-  // },
+      {
+        path: PATH_MOVIES,
+        element: <ManageMovies />,
+      },
+      {
+        path: PATH_USERS,
+        element: <ManageUsers />,
+      },
+    ],
+  },
   {
     path: "*",
     element: <Navigate to="/" replace />,

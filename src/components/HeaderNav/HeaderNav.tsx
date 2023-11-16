@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { HiOutlineSearch } from "react-icons/hi";
 import { SlMenu } from "react-icons/sl";
 import { IoMdClose } from "react-icons/io";
@@ -9,6 +9,8 @@ import MainButton from "../Buttons/MainButton/MainButton.js";
 import useAuth from "../../hooks/useAuth.js";
 
 const HeaderNav = () => {
+  const location = useLocation()
+
   const [scrolling, setScrolling] = useState(false);
   const [displayModal, setDisplayModal] = useState("none");
   const [tooltipVisible, setTooltipVisible] = useState(false);
@@ -152,9 +154,8 @@ const HeaderNav = () => {
                 {authState.role === "admin" && (
                   <Link
                     to={"/manage"}
-                    onClick={() => {
-                      logOut();
-                    }}
+                    replace
+                    state={{from: location}}
                     className="font-semibold mx-5 transition-colors duration-300 hover:bg-slate-300"
                   >
                     Manage
@@ -235,10 +236,10 @@ const HeaderNav = () => {
                       </p>
                       {authState.role === "admin" && (
                         <Link
-                          to={"/manage"}
-                          onClick={() => {
-                            logOut();
-                          }}
+                          to={"manage"}
+                          replace
+                          state={{from: location}}
+                          onClick={() => {}}
                           className="mx-2 font-semibold"
                         >
                           Manage

@@ -1,7 +1,10 @@
 export type Movie = {
   title: string;
   poster: string;
-  release_date: Date;
+  release_date:{
+        seconds: number;
+        nanoseconds: number;
+      };
   duration: number;
   video: string;
   description: string;
@@ -12,4 +15,18 @@ export type Movie = {
       name: string;
     },
   ];
+  votes?: [
+    {
+      uid: string;
+      voted: number;
+    },
+  ];
+  comments?: [
+    {
+      uid: string;
+      comment: string;
+      date: Date;
+    },
+  ];
+  averageVote?: number;
 };
