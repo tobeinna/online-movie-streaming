@@ -8,7 +8,6 @@ import { auth, database } from "../configs/firebaseConfig";
 type AuthContextType = {
   authState: AuthType | undefined;
   logOut: () => Promise<void>;
-  // setAuthState: React.Dispatch<React.SetStateAction<AuthType | undefined>>;
 };
 
 export const AuthContext = createContext<AuthContextType>(
@@ -32,6 +31,8 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
       // This function is called whenever the authentication state changes
       if (user) {
         getCurrentUser(user.uid);
+      } else {
+        setAuthState(undefined);
       }
     });
 
@@ -50,14 +51,11 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
         role: String(userSnapshot.data()?.role),
       };
 
-      console.log(currentAuth);
-
       setAuthState(currentAuth);
     }
   };
 
   return (
-    // <AuthContext.Provider value={{ authState, logOut, setAuthState }}>
     <AuthContext.Provider value={{ authState, logOut }}>
       {children}
     </AuthContext.Provider>
