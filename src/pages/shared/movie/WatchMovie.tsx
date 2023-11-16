@@ -1,7 +1,5 @@
 const WatchMovie = () => {
-  return (
-    <div>WatchMovie</div>
-  )
-}
+  return <div>WatchMovie</div>;
+};
 
-export default WatchMovie
+export default WatchMovie;

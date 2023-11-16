@@ -1,9 +1,9 @@
 import React, { createContext, useState, useEffect } from "react";
+import { doc, getDoc } from "firebase/firestore";
+import { User, signOut } from "firebase/auth";
 
 import { AuthType } from "../types/auth.types";
 import { auth, database } from "../configs/firebaseConfig";
-import { doc, getDoc } from "firebase/firestore";
-import { User, signOut } from "firebase/auth";
 
 type AuthContextType = {
   authState: AuthType | undefined;

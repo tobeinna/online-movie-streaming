@@ -67,7 +67,6 @@ const Login = () => {
         default:
           break;
       }
-
     }
   };
 

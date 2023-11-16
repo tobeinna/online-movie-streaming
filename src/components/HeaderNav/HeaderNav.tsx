@@ -9,7 +9,7 @@ import MainButton from "../Buttons/MainButton/MainButton.js";
 import useAuth from "../../hooks/useAuth.js";
 
 const HeaderNav = () => {
-  const location = useLocation()
+  const location = useLocation();
 
   const [scrolling, setScrolling] = useState(false);
   const [displayModal, setDisplayModal] = useState("none");
@@ -155,7 +155,7 @@ const HeaderNav = () => {
                   <Link
                     to={"/manage"}
                     replace
-                    state={{from: location}}
+                    state={{ from: location }}
                     className="font-semibold mx-5 transition-colors duration-300 hover:bg-slate-300"
                   >
                     Manage
@@ -238,7 +238,7 @@ const HeaderNav = () => {
                         <Link
                           to={"manage"}
                           replace
-                          state={{from: location}}
+                          state={{ from: location }}
                           onClick={() => {}}
                           className="mx-2 font-semibold"
                         >

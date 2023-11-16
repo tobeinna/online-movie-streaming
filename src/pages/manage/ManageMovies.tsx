@@ -1,7 +1,5 @@
 const ManageMovies = () => {
-  return (
-    <div>ManageMovies</div>
-  )
-}
+  return <div>ManageMovies</div>;
+};
 
-export default ManageMovies
+export default ManageMovies;

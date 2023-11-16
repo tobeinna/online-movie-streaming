@@ -1,7 +1,5 @@
 const ManageSideNav = () => {
-  return (
-    <div>ManageSideNav</div>
-  )
-}
+  return <div>ManageSideNav</div>;
+};
 
-export default ManageSideNav
+export default ManageSideNav;

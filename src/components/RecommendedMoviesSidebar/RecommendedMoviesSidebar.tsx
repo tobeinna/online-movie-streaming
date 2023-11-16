@@ -1,7 +1,5 @@
 const RecommendedMoviesSidebar = () => {
-  return (
-    <div>RecommendedMoviesSidebar</div>
-  )
-}
+  return <div>RecommendedMoviesSidebar</div>;
+};
 
-export default RecommendedMoviesSidebar
+export default RecommendedMoviesSidebar;

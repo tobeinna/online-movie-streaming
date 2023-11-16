@@ -1,10 +1,10 @@
 export type Movie = {
   title: string;
   poster: string;
-  release_date:{
-        seconds: number;
-        nanoseconds: number;
-      };
+  release_date: {
+    seconds: number;
+    nanoseconds: number;
+  };
   duration: number;
   video: string;
   description: string;

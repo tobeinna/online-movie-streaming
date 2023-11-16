@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { LuDot } from "react-icons/lu";
 import { RxDividerVertical } from "react-icons/rx";
 import { AiFillStar } from "react-icons/ai";
@@ -14,7 +14,6 @@ interface IMovieCardProps {
 }
 
 const MovieCardVertical: React.FC<IMovieCardProps> = ({ movie_data }) => {
-
   return (
     <div
       className={`movie-card-vertical relative mx-auto bg-center bg-cover bg-no-repeat rounded-2xl flex flex-col justify-end overflow-hidden group`}

@@ -1,10 +1,6 @@
-import MovieCardVertical from "../MovieCardVertical/MovieCardVertical";
-
 import SwiperCore from "swiper";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination, FreeMode } from "swiper/modules";
-import "swiper/css";
-import "swiper/swiper-bundle.css"; // Import the Swiper styles
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
   DocumentData,
@@ -14,8 +10,12 @@ import {
   orderBy,
   query,
 } from "firebase/firestore";
+
 import { database } from "../../configs/firebaseConfig";
 import { Movie } from "../../types/movie.types";
+import MovieCardVertical from "../MovieCardVertical/MovieCardVertical";
+import "swiper/css";
+import "swiper/swiper-bundle.css"; // Import the Swiper styles
 
 SwiperCore.use([Pagination, FreeMode]);
 

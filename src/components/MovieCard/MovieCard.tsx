@@ -1,12 +1,10 @@
-import { DocumentData, doc, getDoc } from "firebase/firestore";
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { LuDot } from "react-icons/lu";
 import { RxDividerVertical } from "react-icons/rx";
 import { AiFillStar } from "react-icons/ai";
 import { BsFillPlayCircleFill } from "react-icons/bs";
 
 import "./styles.scss";
-import { database } from "../../configs/firebaseConfig";
 import { minutesToHoursAndMinutes } from "../../utils/timeUtils";
 import MainButton from "../Buttons/MainButton/MainButton";
 import { Movie } from "../../types/movie.types";

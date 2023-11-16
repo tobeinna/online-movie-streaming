@@ -1,4 +1,3 @@
-
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
@@ -15,7 +14,7 @@ const firebaseConfig = {
   storageBucket: "online-movie-streaming-1610.appspot.com",
   messagingSenderId: "31136552793",
   appId: "1:31136552793:web:20e5e1c377abbfae32de48",
-  measurementId: "G-J6B4DQDJ48"
+  measurementId: "G-J6B4DQDJ48",
 };
 
 // Initialize Firebase

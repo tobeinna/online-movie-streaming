@@ -1,7 +1,5 @@
 const ManageCategories = () => {
-  return (
-    <div>ManageCategories</div>
-  )
-}
+  return <div>ManageCategories</div>;
+};
 
-export default ManageCategories
+export default ManageCategories;
