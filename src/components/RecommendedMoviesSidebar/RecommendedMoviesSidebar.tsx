@@ -28,39 +28,78 @@ const RecommendedMoviesSidebar: React.FC<RecommendedMoviesSidebarProp> = ({
   const [moviesData, setMoviesData] = useState<Movie[]>();
 
   // Get all movies data
-  useEffect(() => {
-    async function getMovies() {
-      const collectionRef = collection(database, "movies");
+  async function getMovies() {
+    const collectionRef = collection(database, "movies");
 
-      const q = query(
-        collectionRef,
-        where(
-          "categories",
-          "array-contains-any",
-          original_movie_data.categories
-        ),
-        orderBy("release_date", "desc"),
-        limit(6)
-      );
-      const querySnapshot = await getDocs(q);
+    const q = query(
+      collectionRef,
+      where("categories", "array-contains-any", original_movie_data.categories),
+      orderBy("release_date", "desc"),
+      limit(6)
+    );
+    const querySnapshot = await getDocs(q);
 
-      try {
-        let data: Movie[] = [];
-        querySnapshot.docs.map((doc: DocumentData) => {
-          data.push({
-            id: doc.id,
-            ...doc.data(),
-          });
+    try {
+      let data: Movie[] = [];
+      querySnapshot.docs.map((doc: DocumentData) => {
+        data.push({
+          id: doc.id,
+          ...doc.data(),
         });
+      });
 
-        setMoviesData(data);
-      } catch (error) {
-        console.log(error);
-      }
+      console.log(data);
+
+      setMoviesData(data);
+    } catch (error) {
+      console.log(error);
     }
+  }
 
+  useEffect(() => {
     getMovies();
   }, []);
+
+  useEffect(() => {
+    getMovies();
+  }, [original_movie_data]);
+
+  useEffect(() => {
+    if (moviesData) {
+      const calculatedVotesMoviesData: Movie[] = moviesData.map((item) => {
+        if (
+          Array.isArray(item?.votes) &&
+          (item.votes as { uid: string; voted: number }[]).length !== 0 &&
+          !item.hasOwnProperty("averageVote")
+        ) {
+          const sum = item?.votes.reduce((accumulator, currentValue) => {
+            return accumulator + Number(currentValue.voted);
+          }, 0);
+
+          return {
+            ...item,
+            averageVote: Number((sum / item.votes.length).toFixed(1)),
+          };
+        } else {
+          return item;
+        }
+      });
+
+      if (
+        JSON.stringify(calculatedVotesMoviesData) !== JSON.stringify(moviesData)
+      ) {
+        // setMoviesData(calculatedVotesMoviesData);
+        setMoviesData(
+          calculatedVotesMoviesData.sort((a, b) => {
+            if (!a.averageVote) return 1;
+            if (!b.averageVote) return -1;
+
+            return b.averageVote - a.averageVote;
+          })
+        );
+      }
+    }
+  }, [moviesData]);
 
   // Control slider actions
   const [isDisplayedPrev, setIsDisplayedPrev] = useState<boolean>(false);
