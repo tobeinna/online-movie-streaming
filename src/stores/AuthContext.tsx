@@ -49,6 +49,7 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
         displayName: String(userSnapshot.data()?.displayName),
         photoUrl: String(userSnapshot.data()?.photoURL),
         role: String(userSnapshot.data()?.role),
+        id: uid,
       };
 
       setAuthState(currentAuth);

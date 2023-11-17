@@ -8,6 +8,7 @@ interface IButton {
   isSubmit?: boolean;
   onClick?: React.MouseEventHandler<HTMLButtonElement>;
   icon?: ReactNode;
+  isDisabled?: boolean
 }
 
 const MainButton = ({
@@ -17,6 +18,7 @@ const MainButton = ({
   isSubmit,
   onClick,
   icon,
+  isDisabled
 }: IButton) => {
   return (
     <button
@@ -34,6 +36,7 @@ const MainButton = ({
         className && className
       )}
       onClick={onClick && onClick}
+      disabled={isDisabled}
     >
       {icon && (
         <span className="h-full flex flex-col justify-center ">{icon}</span>

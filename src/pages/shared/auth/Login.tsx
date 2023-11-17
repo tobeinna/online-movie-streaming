@@ -14,12 +14,14 @@ import { Link, useNavigate } from "react-router-dom";
 
 import { auth, database } from "../../../configs/firebaseConfig";
 import MainButton from "../../../components/Buttons/MainButton/MainButton";
+import Spinner from "../../../components/Spinner/Spinner";
+import { toast } from "react-toastify";
 
 const Login = () => {
   const googleProvider = new GoogleAuthProvider();
   const facebookProvider = new FacebookAuthProvider();
   const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
-  const [loginError, setLoginError] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const navigate = useNavigate();
 
@@ -50,12 +52,23 @@ const Login = () => {
         role: "user",
       })
         .then(() => {
+          setIsLoading(false);
+          toast.success("Logged in successfully!", {
+            position: toast.POSITION.TOP_RIGHT,
+          });
           navigate("/");
         })
         .catch((error: Error) => {
-          setLoginError(error.message);
+          setIsLoading(false);
+          toast.error(`Error: ${error.message}`, {
+            position: toast.POSITION.TOP_RIGHT,
+          });
         });
     } else {
+      setIsLoading(false);
+      toast.success("Logged in successfully!", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
       switch (userSnapshot.data()?.role) {
         case "user":
           navigate("/");
@@ -71,12 +84,17 @@ const Login = () => {
   };
 
   const onSubmit = (data: any) => {
+    setIsLoading(true);
     signInWithEmailAndPassword(auth, data.email, data.password)
       .then(async (res) => {
         const userDocRef = doc(database, `users/${res.user.uid}`);
         const userSnapshot = await getDoc(userDocRef);
 
         if (userSnapshot.exists()) {
+          setIsLoading(false);
+          toast.success("Logged in successfully!", {
+            position: toast.POSITION.TOP_RIGHT,
+          });
           switch (userSnapshot.data()?.role) {
             case "user":
               navigate("/");
@@ -89,32 +107,45 @@ const Login = () => {
               break;
           }
         } else {
-          setLoginError("User data does not exist in database.");
+          toast.error("User data does not exist in database.", {
+            position: toast.POSITION.TOP_RIGHT,
+          });
         }
       })
       .catch((error: Error) => {
-        setLoginError(error.message);
+        setIsLoading(false);
+        toast.error(`Error: ${error.message}`, {
+          position: toast.POSITION.TOP_RIGHT,
+        });
       });
   };
 
   const handleGoogleLogin = () => {
+    setIsLoading(true);
     signInWithPopup(auth, googleProvider)
       .then((result) => {
         handleLoginSocialUser(result.user);
       })
       .catch((error: Error) => {
-        setLoginError(error.message);
+        setIsLoading(false);
+        toast.error(`Error: ${error.message}`, {
+          position: toast.POSITION.TOP_RIGHT,
+        });
       });
   };
 
   const handleFacebookLogin = () => {
+    setIsLoading(true);
     signInWithPopup(auth, facebookProvider)
       .then((result) => {
         const user = result.user;
         handleLoginSocialUser(user);
       })
       .catch((error: Error) => {
-        setLoginError(error.message);
+        setIsLoading(false);
+        toast.error(`Error: ${error.message}`, {
+          position: toast.POSITION.TOP_RIGHT,
+        });
       });
   };
 
@@ -133,7 +164,6 @@ const Login = () => {
         className="flex w-5/6 mx-auto flex-col gap-4"
         onSubmit={handleSubmit(onSubmit)}
       >
-        <p className="error-message text-[#dd2b0e]">{loginError}</p>
         <div className="relative">
           <input
             type="text"
@@ -194,12 +224,23 @@ const Login = () => {
         <p className="error-message text-[#dd2b0e]">
           {errors.password?.message}
         </p>
-        <MainButton
-          className="w-full"
-          type="filled"
-          text="Login"
-          isSubmit={true}
-        />
+        {isLoading ? (
+          <MainButton
+            className="w-full "
+            type="filled"
+            text=""
+            icon={<Spinner />}
+            isSubmit={true}
+            isDisabled
+          />
+        ) : (
+          <MainButton
+            className="w-full"
+            type="filled"
+            text="Login"
+            isSubmit={true}
+          />
+        )}
       </form>
 
       <span className="text-[#9CA4AB] text-xs mx-auto">

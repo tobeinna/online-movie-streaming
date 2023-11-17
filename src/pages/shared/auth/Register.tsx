@@ -4,15 +4,20 @@ import { PiEyeSlashFill, PiEyeFill } from "react-icons/pi";
 import { User, createUserWithEmailAndPassword } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 import { useForm } from "react-hook-form";
+import { toast } from "react-toastify";
 
 import MainButton from "../../../components/Buttons/MainButton/MainButton";
 import { auth, database } from "../../../configs/firebaseConfig";
+import Spinner from "../../../components/Spinner/Spinner";
+import useAuth from "../../../hooks/useAuth";
 
 const Register = () => {
   const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
   const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] =
     useState<boolean>(false);
-  const [registerError, setRegisterError] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const { logOut } = useAuth();
 
   const {
     register,
@@ -38,20 +43,38 @@ const Register = () => {
       createdAt: new Date(),
       role: "user",
     })
-      .then(() => navigate("/auth/login"))
+      .then(() => {
+        logOut();
+        toast.success("Registered successfully!", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+        setIsLoading(false);
+        navigate("/auth/login");
+      })
       .catch((error: Error) => {
-        setRegisterError(error.message);
+        toast.error(`Error: ${error.message}`, {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+        setIsLoading(false);
       });
   };
 
-  const onSubmit = (data: any) => {
+  const onSubmit = (data: {
+    name: string;
+    email: string;
+    password: string;
+  }) => {
+    setIsLoading(true);
     createUserWithEmailAndPassword(auth, data.email, data.password)
       .then((res) => {
         handleCreateUser(res.user, data.name);
         console.log(res);
       })
       .catch((error: Error) => {
-        setRegisterError(error.message);
+        toast.error(`Error: ${error.message}`, {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+        setIsLoading(false);
       });
   };
 
@@ -70,7 +93,6 @@ const Register = () => {
         className="flex w-5/6 mx-auto flex-col gap-4"
         onSubmit={handleSubmit(onSubmit)}
       >
-        <p className="error-message text-[#dd2b0e]">{registerError}</p>
         <div className="relative">
           <input
             type="text"
@@ -199,12 +221,23 @@ const Register = () => {
         <p className="error-message text-[#dd2b0e]">
           {errors["confirm-password"]?.message}
         </p>
-        <MainButton
-          className="w-full"
-          type="filled"
-          text="Create account"
-          isSubmit={true}
-        />
+        {isLoading ? (
+          <MainButton
+            className="w-full "
+            type="filled"
+            text=""
+            icon={<Spinner />}
+            isSubmit={true}
+            isDisabled
+          />
+        ) : (
+          <MainButton
+            className="w-full"
+            type="filled"
+            text="Create account"
+            isSubmit={true}
+          />
+        )}
       </form>
 
       <span className="text-[#9CA4AB] text-xs mx-auto">
