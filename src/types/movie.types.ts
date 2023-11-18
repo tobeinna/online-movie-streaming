@@ -1,6 +1,12 @@
+export type Category = {
+  id: string;
+  name: string;
+};
+
 export type Movie = {
-  id: string
+  id: string;
   title: string;
+  search_title?: string;
   poster: string;
   release_date: {
     seconds: number;
@@ -10,12 +16,7 @@ export type Movie = {
   video: string;
   description: string;
   status: boolean;
-  categories?: [
-    {
-      id: string;
-      name: string;
-    },
-  ];
+  categories?: [Category];
   votes?: [
     {
       uid: string;

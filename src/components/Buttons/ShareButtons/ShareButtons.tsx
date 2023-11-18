@@ -8,6 +8,7 @@ import { HiOutlineLink } from "react-icons/hi";
 import CopyToClipboard from "react-copy-to-clipboard";
 
 import MainButton from "../MainButton/MainButton";
+import { toast } from "react-toastify";
 
 const getCurrentUrl = () => {
   const location = useLocation();
@@ -30,7 +31,17 @@ export const CopyURLToClipboardButton: React.FC = () => {
 
   return (
     <CopyToClipboard text={currentUrl}>
-      <MainButton type="icon-only" icon={<HiOutlineLink />} className="mx-0" />
+      <MainButton
+        type="icon-only"
+        icon={<HiOutlineLink />}
+        className="mx-0"
+        onClick={() => {
+          toast.success("Link copied!", {
+            position: toast.POSITION.TOP_RIGHT,
+            autoClose: 1500
+          });
+        }}
+      />
     </CopyToClipboard>
   );
 };

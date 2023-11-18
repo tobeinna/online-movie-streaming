@@ -35,7 +35,7 @@ const RecommendedMoviesSidebar: React.FC<RecommendedMoviesSidebarProp> = ({
       collectionRef,
       where("categories", "array-contains-any", original_movie_data.categories),
       orderBy("release_date", "desc"),
-      limit(6)
+      limit(5)
     );
     const querySnapshot = await getDocs(q);
 
@@ -161,13 +161,14 @@ const RecommendedMoviesSidebar: React.FC<RecommendedMoviesSidebarProp> = ({
               setIsDisplayedPrev(true);
             }}
           >
-            {moviesData?.map((item, index) => {
-              return (
-                <SwiperSlide className="w-auto" key={index}>
-                  <MovieCard movie_data={item} />
-                </SwiperSlide>
-              );
-            })}
+            {moviesData?.map(
+              (item, index) =>
+                item.id !== original_movie_data.id && (
+                  <SwiperSlide className="w-auto" key={index}>
+                    <MovieCard movie_data={item} />
+                  </SwiperSlide>
+                )
+            )}
             {isDisplayedPrev && (
               <div
                 onClick={handlePrev}

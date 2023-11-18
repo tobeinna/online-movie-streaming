@@ -4,8 +4,8 @@ export const headerNavLinks = [
     link: "/",
   },
   {
-    text: "Discover",
-    link: "/",
+    text: "Search",
+    link: "/movie/search",
   },
   {
     text: "Movie release",

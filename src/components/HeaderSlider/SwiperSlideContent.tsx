@@ -50,7 +50,7 @@ const SwiperSlideContent: React.FC<SwiperSlideContentProp> = ({
               )}
           </div>
         </div>
-        <p className="text-sm md:text-md w-full text-slate-200 font-normal mb-5">
+        <p className="text-sm md:text-md w-full text-slate-200 font-normal mb-5 line-clamp-4">
           {slide_data?.description}
         </p>
         <div className="header-slider-button-group w-fit max-sm:w-full flex justify-between gap-5">
@@ -63,7 +63,7 @@ const SwiperSlideContent: React.FC<SwiperSlideContentProp> = ({
           />
           <MainButton
             type="outlined"
-            text="Detail"
+            text="Details"
             onClick={() => navigate(`/movie/${slide_data.id}/detail`)}
             className="max-sm:w-full"
           />
