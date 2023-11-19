@@ -4,19 +4,11 @@ export const headerNavLinks = [
     link: "/",
   },
   {
-    text: "Search",
+    text: "Movies",
     link: "/movie/search",
   },
   {
-    text: "Movie release",
-    link: "/",
-  },
-  {
-    text: "Forum",
-    link: "/",
-  },
-  {
-    text: "About",
+    text: "Category",
     link: "/",
   },
 ];

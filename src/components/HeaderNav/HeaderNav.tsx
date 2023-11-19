@@ -113,7 +113,7 @@ const HeaderNav = () => {
         <nav className="my-auto hidden lg:block">
           {headerNavLinks.map((item, index) => (
             <Link to={item.link} key={index} className="">
-              <span className="transition-colors duration-500 hover:bg-white hover:bg-opacity-20 px-3 py-2 rounded-md text-slate-200 hover:text-white font-medium">
+              <span className="transition-colors duration-500 hover:bg-white hover:bg-opacity-20 px-5 py-2 rounded-md text-slate-200 hover:text-white font-medium">
                 {item.text}
               </span>
             </Link>
