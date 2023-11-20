@@ -8,6 +8,7 @@ import {
   PATH_MANAGE,
   PATH_MOVIE,
   PATH_MOVIES,
+  PATH_NOT_FOUND,
   PATH_REGISTER,
   PATH_ROOT,
   PATH_SEARCH,
@@ -30,6 +31,7 @@ import RequireAuth from "../components/RequireAuth/RequireAuth";
 import MovieNavigator from "../pages/shared/movie/MovieNavigator";
 import { ScrollToTop } from "../utils/scrollToTop";
 import SearchMovie from "../pages/shared/movie/SearchMovie";
+import NotFound from "../pages/shared/NotFound";
 
 export const router = createBrowserRouter([
   {
@@ -44,6 +46,10 @@ export const router = createBrowserRouter([
             element: <Home />,
           },
         ],
+      },
+      {
+        path: PATH_NOT_FOUND,
+        element: <NotFound />
       },
       {
         path: PATH_MOVIE,

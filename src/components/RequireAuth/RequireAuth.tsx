@@ -12,7 +12,7 @@ const RequireAuth: React.FC<RequireAuthType> = ({ children, allowedRole }) => {
   const location = useLocation();
 
   if (!authState || authState.role !== allowedRole) {
-    return <Navigate to={"/auth/login"} state={{ from: location }} replace />;
+    return <Navigate to={"/not-found"} state={{ from: location }} replace />;
   } else {
     return children;
   }

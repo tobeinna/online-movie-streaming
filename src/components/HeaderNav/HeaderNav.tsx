@@ -1,4 +1,4 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { HiOutlineSearch } from "react-icons/hi";
 import { SlMenu } from "react-icons/sl";
 import { IoMdClose } from "react-icons/io";
@@ -7,13 +7,16 @@ import { useEffect, useRef, useState } from "react";
 import { headerNavLinks } from "./HeaderNav.constants.js";
 import MainButton from "../Buttons/MainButton/MainButton.js";
 import useAuth from "../../hooks/useAuth.js";
+import { ConfigProvider, Modal } from "antd";
 
 const HeaderNav = () => {
   const location = useLocation();
+  const navigate = useNavigate();
 
   const [scrolling, setScrolling] = useState(false);
   const [displayModal, setDisplayModal] = useState("none");
   const [tooltipVisible, setTooltipVisible] = useState(false);
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState<boolean>(false);
   const sideNavRef = useRef<HTMLDivElement>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
 
@@ -161,15 +164,14 @@ const HeaderNav = () => {
                     Manage
                   </Link>
                 )}
-                <Link
-                  to={"/auth/login"}
+                <button
                   onClick={() => {
-                    logOut();
+                    setIsLogoutModalOpen(true);
                   }}
-                  className="text-[#dd2b0e] font-semibold mx-5"
+                  className="text-[#dd2b0e] font-semibold w-fit mx-5"
                 >
                   Log out
-                </Link>
+                </button>
               </div>
             )}
             <ul className="mt-5 flex flex-col gap-5 h-max">
@@ -245,15 +247,14 @@ const HeaderNav = () => {
                           Manage
                         </Link>
                       )}
-                      <Link
-                        to={"/auth/login"}
+                      <button
                         onClick={() => {
-                          logOut();
+                          setIsLogoutModalOpen(true);
                         }}
-                        className="mx-2 text-[#dd2b0e] font-semibold"
+                        className="mx-2 text-[#dd2b0e] font-semibold w-fit"
                       >
                         Log out
-                      </Link>
+                      </button>
                     </div>
                   </div>
                 </>
@@ -262,6 +263,20 @@ const HeaderNav = () => {
           )}
         </div>
       </div>
+      <ConfigProvider>
+        <Modal
+          open={isLogoutModalOpen}
+          onOk={() => {
+            logOut();
+            navigate("/auth/login");
+          }}
+          okButtonProps={{ className: "text-[#dd2b0e] hover:text-[#dd2b0e]" }}
+          okText="Log out"
+          onCancel={() => setIsLogoutModalOpen(false)}
+        >
+          <p>Are you sure to log out of this account?</p>
+        </Modal>
+      </ConfigProvider>
     </header>
   );
 };

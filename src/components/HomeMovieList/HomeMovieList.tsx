@@ -13,7 +13,7 @@ import {
 
 import { database } from "../../configs/firebaseConfig";
 import MovieCard from "../MovieCard/MovieCard";
-import { Movie } from "../../types/movie.types";
+import { Category, Movie } from "../../types/movie.types";
 import "swiper/css";
 import "swiper/swiper-bundle.css"; // Import the Swiper styles
 
@@ -21,70 +21,54 @@ SwiperCore.use([Pagination, FreeMode]);
 
 const HomeMovieList = () => {
   const [moviesData, setMoviesData] = useState<Movie[]>();
+  const [categoriesData, setCategoriesData] = useState<Category[]>();
+
+  async function getMovies() {
+    const collectionRef = collection(database, "movies");
+    const q = query(collectionRef, orderBy("release_date", "desc"), limit(10));
+    const querySnapshot = await getDocs(q);
+
+    try {
+      let data: Movie[] = [];
+      querySnapshot.docs.map((doc: DocumentData) => {
+        data.push({
+          id: doc.id,
+          ...doc.data(),
+        });
+      });
+      setMoviesData(data);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async function getCategories() {
+    const collectionRef = collection(database, "categories");
+    const q = query(collectionRef);
+    const querySnapshot = await getDocs(q);
+
+    try {
+      let data: Category[] = [];
+      querySnapshot.docs.map((doc: DocumentData) => {
+        data.push({
+          id: doc.id,
+          ...doc.data(),
+        });
+      });
+      setCategoriesData(data);
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   // Get all movies data
   useEffect(() => {
-    async function getMovies() {
-      const collectionRef = collection(database, "movies");
-      const q = query(
-        collectionRef,
-        orderBy("release_date", "desc"),
-        limit(10)
-      );
-      const querySnapshot = await getDocs(q);
-
-      try {
-        let data: Movie[] = [];
-        querySnapshot.docs.map((doc: DocumentData) => {
-          data.push({
-            id: doc.id,
-            ...doc.data(),
-          });
-        });
-        setMoviesData(data);
-      } catch (error) {
-        console.log(error);
-      }
-    }
-
     getMovies();
+    getCategories();
   }, []);
 
   useEffect(() => {
-    if (moviesData) {
-      const calculatedVotesMoviesData: Movie[] = moviesData.map((item) => {
-        if (
-          Array.isArray(item?.votes) &&
-          (item.votes as { uid: string; voted: number }[]).length !== 0 &&
-          !item.hasOwnProperty("averageVote")
-        ) {
-          const sum = item?.votes.reduce((accumulator, currentValue) => {
-            return accumulator + Number(currentValue.voted);
-          }, 0);
-
-          return {
-            ...item,
-            averageVote: Number((sum / item.votes.length).toFixed(1)),
-          };
-        } else {
-          return item;
-        }
-      });
-
-      if (
-        JSON.stringify(calculatedVotesMoviesData) !== JSON.stringify(moviesData)
-      ) {
-        // setMoviesData(calculatedVotesMoviesData);
-        setMoviesData(
-          calculatedVotesMoviesData.sort((a, b) => {
-            if (!a.averageVote) return 1;
-            if (!b.averageVote) return -1;
-
-            return b.averageVote - a.averageVote;
-          })
-        );
-      }
-    }
+    getCategories();
   }, [moviesData]);
 
   // Control slider actions
@@ -134,7 +118,10 @@ const HomeMovieList = () => {
           {moviesData?.map((item, index) => {
             return (
               <SwiperSlide className="w-auto" key={index}>
-                <MovieCard movie_data={item} />
+                <MovieCard
+                  movie_data={item}
+                  categories_data={categoriesData as Category[]}
+                />
               </SwiperSlide>
             );
           })}

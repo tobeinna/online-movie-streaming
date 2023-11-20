@@ -1,5 +1,5 @@
 import { doc, getDoc } from "firebase/firestore";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { FaLightbulb, FaRegLightbulb } from "react-icons/fa6";
 
@@ -17,6 +17,7 @@ const WatchMovie = () => {
   const movieParam = useParams();
   const [data, setData] = useState<Movie>();
   const [isLightOff, setIsLightOff] = useState<boolean>(false);
+  const lightRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (data) {
@@ -60,10 +61,35 @@ const WatchMovie = () => {
     getMovie();
   }, [movieParam]);
 
+  const handleClickOverlay = (e: MouseEvent) => {
+    e.stopPropagation();
+    if (lightRef.current && !lightRef.current.contains(e.target as Node)) {
+      setIsLightOff(false);
+    }
+  };
+
+  const handleClickOverlayDocumentMouseDown: EventListener = (e) => {
+    handleClickOverlay(e as unknown as MouseEvent);
+  };
+
+  useEffect(() => {
+    document.addEventListener("mousedown", handleClickOverlayDocumentMouseDown);
+
+    return () => {
+      document.removeEventListener(
+        "mousedown",
+        handleClickOverlayDocumentMouseDown
+      );
+    };
+  }, []);
+
   if (data) {
     return (
       <>
-        <div className="nav-temp-overlay fixed bg-black w-full h-[70px] z-30"></div>
+        <div
+          ref={lightRef}
+          className="nav-temp-overlay fixed bg-black w-full h-[70px] z-30"
+        ></div>
         <div className="body-container w-5/6 mx-auto flex max-md:flex-col pt-20">
           <div className="body-left w-full mr-6 flex flex-col gap-2">
             <h4 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl text-white mb-4 font-bold">
@@ -88,7 +114,7 @@ const WatchMovie = () => {
               <div className="share-button flex justify-between gap-3 max-md:gap-4 w-fit h-fit mx-auto">
                 <MainButton
                   type="outlined"
-                  text={isLightOff ? "Lights off" : "Lights on"}
+                  text={isLightOff ? "Lights on" : "Lights off"}
                   icon={isLightOff ? <FaLightbulb /> : <FaRegLightbulb />}
                   className={clsx(
                     "my-auto relative z-20",

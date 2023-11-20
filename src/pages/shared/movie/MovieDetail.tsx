@@ -1,11 +1,18 @@
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import {
+  DocumentData,
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  updateDoc,
+} from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import { AiFillStar } from "react-icons/ai";
 import ReactStars from "react-stars";
 
 import { database } from "../../../configs/firebaseConfig";
-import { Movie } from "../../../types/movie.types";
+import { Category, Movie } from "../../../types/movie.types";
 import RecommendedMoviesSidebar from "../../../components/RecommendedMoviesSidebar/RecommendedMoviesSidebar";
 import useAuth from "../../../hooks/useAuth";
 import { toast } from "react-toastify";
@@ -16,6 +23,7 @@ import Spinner from "../../../components/Spinner/Spinner";
 const MovieDetail = () => {
   const movieParam = useParams();
   const [data, setData] = useState<Movie>();
+  const [categoriesData, setCategoriesData] = useState<Category[]>();
 
   const { authState } = useAuth();
 
@@ -55,9 +63,45 @@ const MovieDetail = () => {
     }
   };
 
+  async function getCategories() {
+    const collectionRef = collection(database, "categories");
+    const querySnapshot = await getDocs(collectionRef);
+
+    try {
+      let data: Category[] = [];
+      querySnapshot.docs.map((doc: DocumentData) => {
+        data.push({
+          id: doc.id,
+          ...doc.data(),
+        });
+      });
+      setCategoriesData(data);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  const setCategoryToMovie = () => {
+    setData({
+      ...data,
+      categories: data?.categoriesId?.map((id: string) => ({
+        id: id,
+        name: categoriesData?.find((category: Category) => category.id === id)
+          ?.name,
+      })) as Category[],
+    } as Movie);
+  };
+
   useEffect(() => {
     getMovie();
+    getCategories();
   }, [movieParam]);
+
+  useEffect(() => {
+    if (data && categoriesData) {
+      setCategoryToMovie();
+    }
+  }, [categoriesData]);
 
   const handleRatingChange = async (newRating: number) => {
     const votes = data?.votes ? [...data.votes] : [];
@@ -153,7 +197,11 @@ const MovieDetail = () => {
       </div>
     );
   } else {
-    return <span className="mx-auto my-auto"><Spinner /></span>;
+    return (
+      <span className="mx-auto my-auto">
+        <Spinner />
+      </span>
+    );
   }
 };
 

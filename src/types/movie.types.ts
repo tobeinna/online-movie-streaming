@@ -16,7 +16,8 @@ export type Movie = {
   video: string;
   description: string;
   status: boolean;
-  categories?: [Category];
+  categoriesId?: string[];
+  categories?: Category[];
   votes?: [
     {
       uid: string;

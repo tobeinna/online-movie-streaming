@@ -1,5 +1,6 @@
 //Root
 export const PATH_ROOT = "/";
+export const PATH_NOT_FOUND = "not-found";
 
 // Auth
 export const PATH_AUTH = "auth";
