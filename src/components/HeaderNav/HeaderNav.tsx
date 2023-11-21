@@ -3,11 +3,24 @@ import { HiOutlineSearch } from "react-icons/hi";
 import { SlMenu } from "react-icons/sl";
 import { IoMdClose } from "react-icons/io";
 import { useEffect, useRef, useState } from "react";
+import Select, { MultiValue } from "react-select";
+import makeAnimated from "react-select/animated";
+import { ConfigProvider, Modal } from "antd";
 
-import { headerNavLinks } from "./HeaderNav.constants.js";
+// import { headerNavLinks } from "./HeaderNav.constants.js";
 import MainButton from "../Buttons/MainButton/MainButton.js";
 import useAuth from "../../hooks/useAuth.js";
-import { ConfigProvider, Modal } from "antd";
+import { Category } from "../../types/movie.types.js";
+import { collection, getDocs } from "firebase/firestore";
+import { database } from "../../configs/firebaseConfig.js";
+import { toast } from "react-toastify";
+
+const animatedComponents = makeAnimated();
+
+interface ISelectItem {
+  value: string;
+  label: string;
+}
 
 const HeaderNav = () => {
   const location = useLocation();
@@ -17,10 +30,37 @@ const HeaderNav = () => {
   const [displayModal, setDisplayModal] = useState("none");
   const [tooltipVisible, setTooltipVisible] = useState(false);
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState<boolean>(false);
+  const [isSearchModalOpen, setIsSearchModalOpen] = useState<boolean>(false);
+  const [titleInput, setTitleInput] = useState<string>("");
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [categoriesSelectItem, setCategoriesSelectItem] = useState<
+    ISelectItem[]
+  >([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+
   const sideNavRef = useRef<HTMLDivElement>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
 
   const { authState, logOut } = useAuth();
+
+  const getCategories = async () => {
+    const categoriesRef = collection(database, "categories");
+    const catagoriesSnapshot = await getDocs(categoriesRef);
+
+    try {
+      let result: Category[] = [];
+      catagoriesSnapshot.forEach((doc) =>
+        result.push({ id: doc.id, name: doc.data().name })
+      );
+      setCategories(result);
+    } catch (error) {
+      toast("Error while get category list!", { type: "error" });
+    }
+  };
+
+  useEffect(() => {
+    getCategories();
+  }, []);
 
   const handleDisplayModal = () => {
     setDisplayModal("block");
@@ -106,14 +146,14 @@ const HeaderNav = () => {
       }`}
     >
       <div className=" flex justify-between w-11/12 lg:w-5/6 mx-auto">
-        <Link to={"/"} className="flex flex-col justify-center">
+        <Link to={"/"} className="flex flex-col justify-center max-md:w-1/2">
           <img
             src="/src/assets/saint_stream_logo.png"
             alt="Logo"
             className="object-cover w-max h-auto my-auto"
           />
         </Link>
-        <nav className="my-auto hidden lg:block">
+        {/* <nav className="my-auto hidden lg:block">
           {headerNavLinks.map((item, index) => (
             <Link to={item.link} key={index} className="">
               <span className="transition-colors duration-500 hover:bg-white hover:bg-opacity-20 px-5 py-2 rounded-md text-slate-200 hover:text-white font-medium">
@@ -121,9 +161,15 @@ const HeaderNav = () => {
               </span>
             </Link>
           ))}
-        </nav>
+        </nav> */}
         <div className="nav-button-group flex justify-between gap-2 my-auto">
-          <MainButton type="icon-only" icon={<HiOutlineSearch />} />
+          {location.pathname !== "/movie/search" && (
+            <MainButton
+              type="icon-only"
+              icon={<HiOutlineSearch />}
+              onClick={() => setIsSearchModalOpen(true)}
+            />
+          )}
           <MainButton
             type="icon-only"
             icon={<SlMenu />}
@@ -174,7 +220,7 @@ const HeaderNav = () => {
                 </button>
               </div>
             )}
-            <ul className="mt-5 flex flex-col gap-5 h-max">
+            {/* <ul className="mt-5 flex flex-col gap-5 h-max">
               {headerNavLinks.map((item, index) => {
                 return (
                   <li key={index} className="mx-5">
@@ -182,7 +228,7 @@ const HeaderNav = () => {
                   </li>
                 );
               })}
-            </ul>
+            </ul> */}
             {!authState && (
               <div className="flex w-[210px] mx-[20px] justify-between absolute bottom-2">
                 <Link to={"/auth/register"}>
@@ -275,6 +321,80 @@ const HeaderNav = () => {
           onCancel={() => setIsLogoutModalOpen(false)}
         >
           <p>Are you sure to log out of this account?</p>
+        </Modal>
+        <Modal
+          title="Search for your movies"
+          style={{ top: 20 }}
+          open={isSearchModalOpen}
+          okButtonProps={{ className: "text-slate-600" }}
+          okText="Search"
+          onOk={() => {
+            navigate(
+              `/movie/search?title=${titleInput}&categories=${JSON.stringify(
+                selectedCategories
+              )}`
+            );
+            setIsSearchModalOpen(false);
+          }}
+          onCancel={() => {
+            setIsSearchModalOpen(false);
+          }}
+        >
+          <div className="filter w-full flex flex-col gap-4">
+            <div className="title-input flex flex-col gap-2">
+              <span className="text-slate-800 text-lg">
+                Enter movie's title
+              </span>
+              <input
+                type="text"
+                name="title"
+                id="title"
+                value={titleInput || ""}
+                className="block px-2.5 py-2 w-full text-sm rounded-md border-2 border-[#28262D] transition-colors duration-300 focus:border-gray-300 focus:outline-none"
+                placeholder="Title"
+                onChange={(e) => setTitleInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    navigate(
+                      `/movie/search?title=${titleInput}&categories=${JSON.stringify(
+                        selectedCategories
+                      )}`
+                    );
+                  }
+                }}
+              />
+            </div>
+            <div className="category-input flex flex-col gap-2">
+              <span className="text-slate-800 text-lg">
+                Select movie's category
+              </span>
+              <div className="category-list mt-2 flex flex-wrap gap-2">
+                <Select
+                  closeMenuOnSelect={false}
+                  components={animatedComponents}
+                  isMulti
+                  value={categoriesSelectItem}
+                  options={categories.map((item) => {
+                    return { value: item.id, label: item.name };
+                  })}
+                  className="w-full z-20"
+                  placeholder=""
+                  onChange={(newValue: MultiValue<unknown> | ISelectItem[]) => {
+                    // Ensure that selectedValues is an array
+                    const selectedItems = newValue as ISelectItem[];
+
+                    setCategoriesSelectItem(selectedItems);
+
+                    const tempCategories = (
+                      newValue as { value: string; label: string }[]
+                    ).map((item) => item.value);
+
+                    setSelectedCategories(tempCategories);
+                  }}
+                />
+              </div>
+            </div>
+          </div>
         </Modal>
       </ConfigProvider>
     </header>

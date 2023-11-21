@@ -42,11 +42,10 @@ const SearchMovie: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams({
     title: "",
     categories: [],
-    page: "1",
   });
   const titleInput = searchParams.get("title");
-  const selectedCategories = JSON.parse(searchParams.get("categories") as string) || [];
-  const currentPage = searchParams.get("page");
+  const selectedCategories =
+    JSON.parse(searchParams.get("categories") as string) || [];
 
   const [categories, setCategories] = useState<Category[]>([]);
   const [categoriesSelectItem, setCategoriesSelectItem] = useState<
@@ -56,6 +55,7 @@ const SearchMovie: React.FC = () => {
   const [isReset, setIsReset] = useState<boolean>(false);
   const [isQuerrying, setIsQuerrying] = useState<boolean>(false);
   // Pagination states
+  const [currentPage, setCurrentPage] = useState<number>(1);
   const [previousPage, setPreviousPage] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(2);
   const [resultCount, setResultCount] = useState<number>(0);
@@ -127,13 +127,9 @@ const SearchMovie: React.FC = () => {
       // );
 
       // If first page
-      if (Number(currentPage) === 1) {
+      if (currentPage === 1) {
         // If categories filter selected
         if (selectedCategories.length > 0) {
-          const sortedCategories = selectedCategories.sort(
-            (a: string, b: string) => a.localeCompare(b)
-          );
-
           q = query(
             moviesRef,
             and(
@@ -180,13 +176,9 @@ const SearchMovie: React.FC = () => {
         // If not first page
       } else {
         // If go to next page
-        if (Number(currentPage) > previousPage) {
+        if (currentPage > previousPage) {
           //If categories filter selected
           if (selectedCategories.length > 0) {
-            const sortedCategories = selectedCategories.sort(
-              (a: string, b: string) => a.localeCompare(b)
-            );
-
             q = query(
               moviesRef,
               and(
@@ -234,13 +226,9 @@ const SearchMovie: React.FC = () => {
           }
         }
         // If go to previous page
-        if (Number(currentPage) < previousPage) {
+        if (currentPage < previousPage) {
           // If categories filter selected
           if (selectedCategories.length > 0) {
-            const sortedCategories = selectedCategories.sort(
-              (a: string, b: string) => a.localeCompare(b)
-            );
-
             q = query(
               moviesRef,
               and(
@@ -396,13 +384,7 @@ const SearchMovie: React.FC = () => {
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
                     setIsQuerrying(true);
-                    setSearchParams(
-                      (prev) => {
-                        prev.set("page", "1");
-                        return prev;
-                      },
-                      { replace: true }
-                    );
+                    setCurrentPage(1);
                     setPreviousPage(1);
                     handleSearch();
                   }
@@ -459,13 +441,7 @@ const SearchMovie: React.FC = () => {
                     { replace: true }
                   );
                   setIsReset(!isReset);
-                  setSearchParams(
-                    (prev) => {
-                      prev.set("page", "1");
-                      return prev;
-                    },
-                    { replace: true }
-                  );
+                  setCurrentPage(1);
                   setPreviousPage(1);
                   setIsQuerrying(true);
                 }}
@@ -478,13 +454,7 @@ const SearchMovie: React.FC = () => {
                 icon={<HiOutlineSearch />}
                 onClick={() => {
                   setIsQuerrying(true);
-                  setSearchParams(
-                    (prev) => {
-                      prev.set("page", "1");
-                      return prev;
-                    },
-                    { replace: true }
-                  );
+                  setCurrentPage(1);
                   setPreviousPage(1);
                   handleSearch();
                 }}
@@ -518,7 +488,7 @@ const SearchMovie: React.FC = () => {
                   showQuickJumper={false}
                   // hideOnSinglePage
                   disabled={isQuerrying}
-                  current={Number(currentPage)}
+                  current={currentPage}
                   defaultCurrent={1}
                   total={resultCount}
                   pageSize={pageSize}
@@ -527,13 +497,7 @@ const SearchMovie: React.FC = () => {
                   showSizeChanger
                   onShowSizeChange={(current, size) => {
                     setPageSize(size);
-                    setSearchParams(
-                      (prev) => {
-                        prev.set("page", "1");
-                        return prev;
-                      },
-                      { replace: true }
-                    );
+                    setCurrentPage(1);
                     setPreviousPage(1);
                   }}
                   className="text-slate-500 font-semibold float-right"
@@ -544,11 +508,8 @@ const SearchMovie: React.FC = () => {
                     <MdNavigateNext className="transition-colors duration-300 rounded-md text-slate-300 h-full w-8 mx-auto hover:text-white hover:bg-white hover:bg-opacity-20 px-1" />
                   }
                   onChange={(page, size) => {
-                    setPreviousPage(Number(currentPage));
-                    setSearchParams(prev => {
-                      prev.set("page", JSON.stringify(page));
-                      return prev;
-                    }, { replace: true })
+                    setPreviousPage(currentPage);
+                    setCurrentPage(page);
                   }}
                 />
               </div>

@@ -7,8 +7,4 @@ export const headerNavLinks = [
     text: "Movies",
     link: "/movie/search",
   },
-  {
-    text: "Category",
-    link: "/",
-  },
 ];
