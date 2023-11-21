@@ -79,9 +79,45 @@ const SearchMovie: React.FC = () => {
         a.localeCompare(b)
       );
 
-      let q = query(moviesRef)
-      let allMoviesQuery = query(moviesRef)
+      let q = query(moviesRef);
+      let allMoviesQuery = query(moviesRef);
 
+      // let q = query(
+      //   moviesRef,
+      //   and(
+      //     where("search_title", ">=", lowercaseSearchTitle),
+      //     where("search_title", "<=", lowercaseSearchTitle + "\uf8ff"),
+      //     sortedCategories.length > 0
+      //       ? or(
+      //           where("categoriesId", "array-contains", sortedCategories[0]),
+      //           where("categoriesId", "==", sortedCategories)
+      //         )
+      //       : or()
+      //   ),
+      //   currentPage === 1
+      //     ? (orderBy("search_title"), limit(pageSize))
+      //     : currentPage > previousPage
+      //     ? (orderBy("search_title"), startAfter(lastDoc), limit(pageSize))
+      //     : currentPage < previousPage
+      //     ? (orderBy("search_title"),
+      //       limitToLast(pageSize),
+      //       endBefore(firstDoc))
+      //     : (orderBy("search_title"), limit(pageSize))
+      // );
+      // let allMoviesQuery = query(
+      //   moviesRef,
+      //   and(
+      //     where("search_title", ">=", lowercaseSearchTitle),
+      //     where("search_title", "<=", lowercaseSearchTitle + "\uf8ff"),
+      //     sortedCategories.length > 0
+      //       ? or(
+      //           where("categoriesId", "array-contains", sortedCategories[0]),
+      //           where("categoriesId", "==", sortedCategories)
+      //         )
+      //       : or()
+      //   ),
+      //   orderBy("search_title")
+      // );
 
       // If first page
       if (currentPage === 1) {
@@ -261,13 +297,8 @@ const SearchMovie: React.FC = () => {
           queryResult.push({ ...(doc.data() as Movie), id: doc.id });
         });
         setResult(queryResult);
-        setIsQuerrying(false);
-      } else {
-        setResult([]);
-        setCurrentPage(1);
-        setPreviousPage(1);
-        setIsQuerrying(false);
       }
+      setIsQuerrying(false);
     } catch (error) {
       console.log(error);
 
@@ -421,7 +452,7 @@ const SearchMovie: React.FC = () => {
               Found {resultCount} movie(s)
             </span>
             <div className="result w-11/12 mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-y-6">
-              {isQuerrying
+              {isQuerrying && result.length > 0
                 ? Array.from({ length: pageSize }, (_, index) => (
                     <MovieCardSkeleton key={index} />
                   ))

@@ -1,12 +1,16 @@
-import React, { createContext, useState, useEffect } from "react";
-import { doc, getDoc } from "firebase/firestore";
-import { User, signOut } from "firebase/auth";
+import React, {
+  createContext,
+  useState,
+  useLayoutEffect,
+  useCallback,
+} from "react";
+import { signOut } from "firebase/auth";
 
 import { AuthType } from "../types/auth.types";
-import { auth, database } from "../configs/firebaseConfig";
+import { auth } from "../configs/firebaseConfig";
 
 type AuthContextType = {
-  authState: AuthType | undefined;
+  authState: AuthType | null;
   logOut: () => Promise<void>;
 };
 
@@ -19,46 +23,44 @@ type AuthContextProviderProps = {
 };
 
 export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
-  const [authState, setAuthState] = useState<AuthType | undefined>(undefined);
+  const [authState, setAuthState] = useState<AuthType | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const logOut = () => {
-    setAuthState(undefined);
+    setAuthState(null);
     return signOut(auth);
   };
 
-  useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user: User | null) => {
-      // This function is called whenever the authentication state changes
-      if (user) {
-        getCurrentUser(user.uid);
-      } else {
-        setAuthState(undefined);
-      }
+  const setCredentialUserForApp = useCallback((user: AuthType | null): void => {
+    setAuthState(user);
+    setIsLoading(false);
+  }, []);
+
+  useLayoutEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      setCredentialUserForApp(
+        user
+          ? {
+              id: user.uid as string,
+              email: user.email as string,
+              displayName: user.displayName as string,
+              photoUrl: user.photoURL as string,
+              role: "user",
+            }
+          : null
+      );
     });
 
-    // Cleanup function to unsubscribe when the component unmounts
     return () => unsubscribe();
   }, []);
 
-  const getCurrentUser = async (uid: string) => {
-    const userDocRef = doc(database, `users/${uid}`);
-    const userSnapshot = await getDoc(userDocRef);
-
-    if (userSnapshot.exists()) {
-      const currentAuth = {
-        displayName: String(userSnapshot.data()?.displayName),
-        photoUrl: String(userSnapshot.data()?.photoURL),
-        role: String(userSnapshot.data()?.role),
-        id: uid,
-      };
-
-      setAuthState(currentAuth);
-    }
-  };
-
-  return (
-    <AuthContext.Provider value={{ authState, logOut }}>
-      {children}
-    </AuthContext.Provider>
-  );
+  if (isLoading) {
+    return null;
+  } else {
+    return (
+      <AuthContext.Provider value={{ authState, logOut }}>
+        {children}
+      </AuthContext.Provider>
+    );
+  }
 };
