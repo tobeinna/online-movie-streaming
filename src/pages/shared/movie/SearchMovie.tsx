@@ -75,9 +75,13 @@ const SearchMovie: React.FC = () => {
       let moviesRef = collection(database, "movies");
 
       const lowercaseSearchTitle = titleInput.toLowerCase().trim();
+      const sortedCategories = selectedCategories.sort((a, b) =>
+        a.localeCompare(b)
+      );
 
-      let q = query(moviesRef);
-      let allMoviesQuery = query(moviesRef);
+      let q = query(moviesRef)
+      let allMoviesQuery = query(moviesRef)
+
 
       // If first page
       if (currentPage === 1) {
@@ -272,9 +276,9 @@ const SearchMovie: React.FC = () => {
     }
   };
 
-  useLayoutEffect(() => {
-    handleSearch();
-  }, []);
+  // useLayoutEffect(() => {
+  //   handleSearch();
+  // }, []);
 
   useEffect(() => {
     getCategories();
@@ -434,6 +438,7 @@ const SearchMovie: React.FC = () => {
               <div className="text-center w-11/12 mx-auto mt-4 flex justify-end">
                 <Pagination
                   simple
+                  showQuickJumper={false}
                   // hideOnSinglePage
                   disabled={isQuerrying}
                   current={currentPage}

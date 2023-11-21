@@ -13,7 +13,6 @@ import {
 
 import "swiper/css";
 import "swiper/swiper-bundle.css"; // Import the Swiper styles
-import "./styles.scss";
 import { database } from "../../configs/firebaseConfig";
 import { Category, Movie } from "../../types/movie.types";
 import SwiperSlideContent from "./SwiperSlideContent";

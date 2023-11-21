@@ -117,9 +117,10 @@ const HomeMovieList = () => {
         >
           {moviesData?.map((item, index) => {
             return (
-              <SwiperSlide className="w-auto" key={index}>
+              <SwiperSlide className="w-auto" key={item.id}>
                 <MovieCard
                   movie_data={item}
+                  key={item.id}
                   categories_data={categoriesData as Category[]}
                 />
               </SwiperSlide>

@@ -45,7 +45,7 @@ const Login = () => {
     if (!userSnapshot.exists()) {
       const { displayName, photoURL } = user;
 
-      setDoc(userDocRef, {
+      await setDoc(userDocRef, {
         displayName,
         photoURL,
         createdAt: new Date(),
@@ -107,6 +107,7 @@ const Login = () => {
               break;
           }
         } else {
+          setIsLoading(false);
           toast.error("User data does not exist in database.", {
             position: toast.POSITION.TOP_RIGHT,
           });
@@ -125,6 +126,7 @@ const Login = () => {
     signInWithPopup(auth, googleProvider)
       .then((result) => {
         handleLoginSocialUser(result.user);
+        setIsLoading(false);
       })
       .catch((error: Error) => {
         setIsLoading(false);
@@ -140,6 +142,7 @@ const Login = () => {
       .then((result) => {
         const user = result.user;
         handleLoginSocialUser(user);
+        setIsLoading(false);
       })
       .catch((error: Error) => {
         setIsLoading(false);
