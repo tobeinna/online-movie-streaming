@@ -29,6 +29,7 @@ import { database } from "../../../configs/firebaseConfig";
 import { Category, Movie } from "../../../types/movie.types";
 import CategoryChip from "../../../components/Chip/CategoryChip";
 import MovieCardSkeleton from "../../../components/Skeleton/MovieCardSkeleton";
+import { useSearchParams } from "react-router-dom";
 
 const animatedComponents = makeAnimated();
 
@@ -38,9 +39,16 @@ interface ISelectItem {
 }
 
 const SearchMovie: React.FC = () => {
-  const [titleInput, setTitleInput] = useState<string>("");
+  const [searchParams, setSearchParams] = useSearchParams({
+    title: "",
+    categories: [],
+    page: "1",
+  });
+  const titleInput = searchParams.get("title");
+  const selectedCategories = JSON.parse(searchParams.get("categories") as string) || [];
+  const currentPage = searchParams.get("page");
+
   const [categories, setCategories] = useState<Category[]>([]);
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [categoriesSelectItem, setCategoriesSelectItem] = useState<
     ISelectItem[]
   >([]);
@@ -48,7 +56,6 @@ const SearchMovie: React.FC = () => {
   const [isReset, setIsReset] = useState<boolean>(false);
   const [isQuerrying, setIsQuerrying] = useState<boolean>(false);
   // Pagination states
-  const [currentPage, setCurrentPage] = useState<number>(1);
   const [previousPage, setPreviousPage] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(2);
   const [resultCount, setResultCount] = useState<number>(0);
@@ -74,9 +81,9 @@ const SearchMovie: React.FC = () => {
     try {
       let moviesRef = collection(database, "movies");
 
-      const lowercaseSearchTitle = titleInput.toLowerCase().trim();
-      const sortedCategories = selectedCategories.sort((a, b) =>
-        a.localeCompare(b)
+      const lowercaseSearchTitle = titleInput?.toLowerCase().trim();
+      const sortedCategories = selectedCategories?.sort(
+        (a: string, b: string) => a.localeCompare(b)
       );
 
       let q = query(moviesRef);
@@ -120,11 +127,11 @@ const SearchMovie: React.FC = () => {
       // );
 
       // If first page
-      if (currentPage === 1) {
+      if (Number(currentPage) === 1) {
         // If categories filter selected
         if (selectedCategories.length > 0) {
-          const sortedCategories = selectedCategories.sort((a, b) =>
-            a.localeCompare(b)
+          const sortedCategories = selectedCategories.sort(
+            (a: string, b: string) => a.localeCompare(b)
           );
 
           q = query(
@@ -173,11 +180,11 @@ const SearchMovie: React.FC = () => {
         // If not first page
       } else {
         // If go to next page
-        if (currentPage > previousPage) {
+        if (Number(currentPage) > previousPage) {
           //If categories filter selected
           if (selectedCategories.length > 0) {
-            const sortedCategories = selectedCategories.sort((a, b) =>
-              a.localeCompare(b)
+            const sortedCategories = selectedCategories.sort(
+              (a: string, b: string) => a.localeCompare(b)
             );
 
             q = query(
@@ -227,11 +234,11 @@ const SearchMovie: React.FC = () => {
           }
         }
         // If go to previous page
-        if (currentPage < previousPage) {
+        if (Number(currentPage) < previousPage) {
           // If categories filter selected
           if (selectedCategories.length > 0) {
-            const sortedCategories = selectedCategories.sort((a, b) =>
-              a.localeCompare(b)
+            const sortedCategories = selectedCategories.sort(
+              (a: string, b: string) => a.localeCompare(b)
             );
 
             q = query(
@@ -374,14 +381,28 @@ const SearchMovie: React.FC = () => {
                 type="text"
                 name="title"
                 id="title"
-                value={titleInput}
+                value={titleInput || ""}
                 className="block px-2.5 py-2 w-full text-sm rounded-md border-2 border-[#28262D] transition-colors duration-300 focus:border-gray-300 focus:outline-none"
                 placeholder="Title"
-                onChange={(e) => setTitleInput(e.target.value)}
+                onChange={(e) =>
+                  setSearchParams(
+                    (prev) => {
+                      prev.set("title", e.target.value);
+                      return prev;
+                    },
+                    { replace: true }
+                  )
+                }
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
                     setIsQuerrying(true);
-                    setCurrentPage(1);
+                    setSearchParams(
+                      (prev) => {
+                        prev.set("page", "1");
+                        return prev;
+                      },
+                      { replace: true }
+                    );
                     setPreviousPage(1);
                     handleSearch();
                   }
@@ -408,10 +429,17 @@ const SearchMovie: React.FC = () => {
                     const selectedItems = newValue as ISelectItem[];
 
                     setCategoriesSelectItem(selectedItems);
-                    setSelectedCategories(
-                      (newValue as { value: string; label: string }[]).map(
-                        (item) => item.value
-                      )
+
+                    const tempCategories = (
+                      newValue as { value: string; label: string }[]
+                    ).map((item) => item.value);
+
+                    setSearchParams(
+                      (prev) => {
+                        prev.set("categories", JSON.stringify(tempCategories));
+                        return prev;
+                      },
+                      { replace: true }
                     );
                   }}
                 />
@@ -422,10 +450,22 @@ const SearchMovie: React.FC = () => {
                 type="outlined"
                 text="Reset filter"
                 onClick={() => {
-                  setTitleInput("");
-                  setSelectedCategories([]);
+                  setSearchParams(
+                    (prev) => {
+                      prev.set("title", "");
+                      prev.set("categories", JSON.stringify([]));
+                      return prev;
+                    },
+                    { replace: true }
+                  );
                   setIsReset(!isReset);
-                  setCurrentPage(1);
+                  setSearchParams(
+                    (prev) => {
+                      prev.set("page", "1");
+                      return prev;
+                    },
+                    { replace: true }
+                  );
                   setPreviousPage(1);
                   setIsQuerrying(true);
                 }}
@@ -438,7 +478,13 @@ const SearchMovie: React.FC = () => {
                 icon={<HiOutlineSearch />}
                 onClick={() => {
                   setIsQuerrying(true);
-                  setCurrentPage(1);
+                  setSearchParams(
+                    (prev) => {
+                      prev.set("page", "1");
+                      return prev;
+                    },
+                    { replace: true }
+                  );
                   setPreviousPage(1);
                   handleSearch();
                 }}
@@ -472,7 +518,7 @@ const SearchMovie: React.FC = () => {
                   showQuickJumper={false}
                   // hideOnSinglePage
                   disabled={isQuerrying}
-                  current={currentPage}
+                  current={Number(currentPage)}
                   defaultCurrent={1}
                   total={resultCount}
                   pageSize={pageSize}
@@ -481,7 +527,13 @@ const SearchMovie: React.FC = () => {
                   showSizeChanger
                   onShowSizeChange={(current, size) => {
                     setPageSize(size);
-                    setCurrentPage(1);
+                    setSearchParams(
+                      (prev) => {
+                        prev.set("page", "1");
+                        return prev;
+                      },
+                      { replace: true }
+                    );
                     setPreviousPage(1);
                   }}
                   className="text-slate-500 font-semibold float-right"
@@ -492,8 +544,11 @@ const SearchMovie: React.FC = () => {
                     <MdNavigateNext className="transition-colors duration-300 rounded-md text-slate-300 h-full w-8 mx-auto hover:text-white hover:bg-white hover:bg-opacity-20 px-1" />
                   }
                   onChange={(page, size) => {
-                    setPreviousPage(currentPage);
-                    setCurrentPage(page);
+                    setPreviousPage(Number(currentPage));
+                    setSearchParams(prev => {
+                      prev.set("page", JSON.stringify(page));
+                      return prev;
+                    }, { replace: true })
                   }}
                 />
               </div>
