@@ -1,6 +1,7 @@
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 
 import HeaderNav from "../../components/HeaderNav/HeaderNav";
+import { FloatButton } from "antd";
 
 const MovieLayout = () => {
   const location = useLocation();
@@ -15,6 +16,7 @@ const MovieLayout = () => {
       </header>
       <Outlet />
       <footer>Footer</footer>
+      <FloatButton.BackTop />
     </>
   );
 };

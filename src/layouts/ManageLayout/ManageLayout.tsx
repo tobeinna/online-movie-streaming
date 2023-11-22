@@ -1,6 +1,13 @@
-import { Navigate, Outlet, useLocation } from "react-router-dom";
+import {
+  Navigate,
+  Outlet,
+  useLocation,
+} from "react-router-dom";
 
 import ManageSideNav from "../../components/ManageSideNav/ManageSideNav";
+import { Layout } from "antd";
+
+const { Content, Footer } = Layout;
 
 const ManageLayout = () => {
   const location = useLocation();
@@ -9,15 +16,18 @@ const ManageLayout = () => {
       <Navigate to={"/manage/movies"} state={{ from: location }} replace />
     );
   }
-
   return (
-    <>
-      <header>Header</header>
-      <div className="container">
-        <ManageSideNav />
-        <Outlet />
-      </div>
-    </>
+    <Layout hasSider className="min-h-screen">
+      <ManageSideNav />
+      <Layout>
+        <Content className="bg-white">
+          <Outlet />
+        </Content>
+        <Footer className="bg-white text-right">
+          <span className="text-slate-800">Saint Stream ©2023</span>
+        </Footer>
+      </Layout>
+    </Layout>
   );
 };
 

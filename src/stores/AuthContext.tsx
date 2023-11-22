@@ -4,10 +4,12 @@ import React, {
   useLayoutEffect,
   useCallback,
 } from "react";
-import { signOut } from "firebase/auth";
+import { User, signOut } from "firebase/auth";
 
 import { AuthType } from "../types/auth.types";
-import { auth } from "../configs/firebaseConfig";
+import { auth, database } from "../configs/firebaseConfig";
+import { doc, getDoc } from "firebase/firestore";
+import { toast } from "react-toastify";
 
 type AuthContextType = {
   authState: AuthType | null;
@@ -36,21 +38,36 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
     setIsLoading(false);
   }, []);
 
+  const setUserData = async (user: User | null) => {
+    if (!user) return;
+    try {
+      const userRef = doc(database, `users/${user.uid}`);
+      const userSnapshot = await getDoc(userRef);
+
+      if (userSnapshot.exists()) {
+        setCredentialUserForApp(
+          user
+            ? {
+                id: user.uid as string,
+                email: user.email as string,
+                displayName: user.displayName as string,
+                photoUrl: user.photoURL as string,
+                role: userSnapshot.data().role as string,
+              }
+            : null
+        );
+      }
+    } catch (error) {
+      toast.error(`Error: ${error}`, {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+    }
+  };
+
   useLayoutEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
-      setCredentialUserForApp(
-        user
-          ? {
-              id: user.uid as string,
-              email: user.email as string,
-              displayName: user.displayName as string,
-              photoUrl: user.photoURL as string,
-              role: "user",
-            }
-          : null
-      );
+      setUserData(user ? user : null);
     });
-
     return () => unsubscribe();
   }, []);
 
