@@ -103,6 +103,8 @@ const ManageUsers = () => {
   const [searchInput, setSearchInput] = useState<string>("");
   const [tableData, setTableData] = useState<User[]>([]);
   const [isLoadingTable, setIsLoadingTable] = useState<boolean>(false);
+  const [isLoadingSearchInput, setIsLoadingSearchInput] =
+    useState<boolean>(false);
 
   const getUsersData = async () => {
     try {
@@ -155,11 +157,13 @@ const ManageUsers = () => {
 
       setTableData(resultData);
       setIsLoadingTable(false);
+      setIsLoadingSearchInput(false);
     } catch (error) {
       toast.error(`${error}`, { position: "top-right" });
       console.log(error);
 
       setIsLoadingTable(false);
+      setIsLoadingSearchInput(false);
     }
   };
 
@@ -179,8 +183,10 @@ const ManageUsers = () => {
             onChange={(e) => setSearchInput(e.target.value)}
             onSearch={() => {
               setIsLoadingTable(true);
+              setIsLoadingSearchInput(true);
               searchUsers(searchInput);
             }}
+            loading={isLoadingSearchInput}
             className="w-1/3"
           />
           <div className="flex gap-2">
