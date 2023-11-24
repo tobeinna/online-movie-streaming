@@ -2,12 +2,11 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { HiOutlineSearch } from "react-icons/hi";
 import { SlMenu } from "react-icons/sl";
 import { IoMdClose } from "react-icons/io";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import Select, { MultiValue } from "react-select";
 import makeAnimated from "react-select/animated";
 import { ConfigProvider, Modal } from "antd";
 
-// import { headerNavLinks } from "./HeaderNav.constants.js";
 import MainButton from "../Buttons/MainButton/MainButton.js";
 import useAuth from "../../hooks/useAuth.js";
 import { Category } from "../../types/movie.types.js";
@@ -58,7 +57,7 @@ const HeaderNav = () => {
     }
   };
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     getCategories();
   }, []);
 

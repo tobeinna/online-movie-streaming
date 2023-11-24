@@ -17,7 +17,7 @@ const ManageLayout = () => {
     );
   }
   return (
-    <Layout hasSider className="min-h-screen">
+    <Layout hasSider className="h-screen">
       <ManageSideNav />
       <Layout>
         <Content className="bg-white">

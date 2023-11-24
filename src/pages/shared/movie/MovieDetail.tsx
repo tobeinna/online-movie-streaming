@@ -6,8 +6,8 @@ import {
   getDocs,
   updateDoc,
 } from "firebase/firestore";
-import { useEffect, useState } from "react";
-import { useParams } from "react-router";
+import { useEffect, useLayoutEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router";
 import { AiFillStar } from "react-icons/ai";
 import ReactStars from "react-stars";
 
@@ -25,7 +25,8 @@ const MovieDetail = () => {
   const [data, setData] = useState<Movie>();
   const [categoriesData, setCategoriesData] = useState<Category[]>();
 
-  const { authState } = useAuth();
+  const { authState, logOut } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (data) {
@@ -92,10 +93,10 @@ const MovieDetail = () => {
     } as Movie);
   };
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     getMovie();
     getCategories();
-  }, [movieParam]);
+  }, []);
 
   useEffect(() => {
     if (data && categoriesData) {
@@ -104,6 +105,15 @@ const MovieDetail = () => {
   }, [categoriesData]);
 
   const handleRatingChange = async (newRating: number) => {
+    if (authState && authState.status === false) {
+      logOut();
+      navigate("/auth/login");
+      toast.error("Your account is disabled", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+      return; 
+    }
+
     const votes = data?.votes ? [...data.votes] : [];
     const filteredVotes = votes.filter((item) => item.uid !== authState?.id);
     const movieRef = doc(database, `movies/${data?.id}`);

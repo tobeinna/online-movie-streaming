@@ -20,7 +20,7 @@ const ManageSideNav = () => {
       collapsible
       collapsed={collapsed}
       onCollapse={(value) => setCollapsed(value)}
-      className={"fixed top-0 left-0 bottom-0 h-screen"}
+      className={"fixed top-0 left-0 bottom-0 h-full"}
     >
       <div>
         <Link to={"/manage"} className="overflow-hidden w-max mx-auto">

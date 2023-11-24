@@ -50,22 +50,27 @@ const Login = () => {
         photoURL,
         createdAt: new Date(),
         role: "user",
+        status: true,
       })
         .then(() => {
-          setIsLoading(false);
           toast.success("Logged in successfully!", {
             position: toast.POSITION.TOP_RIGHT,
           });
           navigate("/");
         })
         .catch((error: Error) => {
-          setIsLoading(false);
           toast.error(`Error: ${error.message}`, {
             position: toast.POSITION.TOP_RIGHT,
           });
         });
     } else {
-      setIsLoading(false);
+      if (userSnapshot.data().status === false) {
+        toast.error("Your account is disabled", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+        return;
+      }
+
       toast.success("Logged in successfully!", {
         position: toast.POSITION.TOP_RIGHT,
       });
@@ -92,6 +97,16 @@ const Login = () => {
 
         if (userSnapshot.exists()) {
           setIsLoading(false);
+
+          if (userSnapshot.data().status === false) {
+            setIsLoading(false);
+
+            toast.error("Your account is disabled", {
+              position: toast.POSITION.TOP_RIGHT,
+            });
+            return;
+          }
+
           toast.success("Logged in successfully!", {
             position: toast.POSITION.TOP_RIGHT,
           });
@@ -122,14 +137,11 @@ const Login = () => {
   };
 
   const handleGoogleLogin = () => {
-    setIsLoading(true);
     signInWithPopup(auth, googleProvider)
       .then((result) => {
         handleLoginSocialUser(result.user);
-        setIsLoading(false);
       })
       .catch((error: Error) => {
-        setIsLoading(false);
         toast.error(`Error: ${error.message}`, {
           position: toast.POSITION.TOP_RIGHT,
         });
@@ -137,15 +149,12 @@ const Login = () => {
   };
 
   const handleFacebookLogin = () => {
-    setIsLoading(true);
     signInWithPopup(auth, facebookProvider)
       .then((result) => {
         const user = result.user;
         handleLoginSocialUser(user);
-        setIsLoading(false);
       })
       .catch((error: Error) => {
-        setIsLoading(false);
         toast.error(`Error: ${error.message}`, {
           position: toast.POSITION.TOP_RIGHT,
         });

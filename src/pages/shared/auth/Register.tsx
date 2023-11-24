@@ -42,6 +42,7 @@ const Register = () => {
       displayName: name,
       createdAt: new Date(),
       role: "user",
+      status: true,
     })
       .then(() => {
         logOut();

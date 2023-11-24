@@ -4,4 +4,5 @@ export interface AuthType {
   photoUrl?: string;
   id?: string;
   email?: string;
+  status?: boolean;
 }

@@ -3,6 +3,7 @@ import React, {
   useState,
   useLayoutEffect,
   useCallback,
+  useEffect,
 } from "react";
 import { User, signOut } from "firebase/auth";
 
@@ -26,7 +27,7 @@ type AuthContextProviderProps = {
 
 export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
   const [authState, setAuthState] = useState<AuthType | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const logOut = () => {
     setAuthState(null);
@@ -45,17 +46,22 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
       const userSnapshot = await getDoc(userRef);
 
       if (userSnapshot.exists()) {
-        setCredentialUserForApp(
-          user
-            ? {
-                id: user.uid as string,
-                email: user.email as string,
-                displayName: user.displayName as string,
-                photoUrl: user.photoURL as string,
-                role: userSnapshot.data().role as string,
-              }
-            : null
-        );
+        if (userSnapshot.data().status === false) {
+          setIsLoading(false);
+        } else {
+          setCredentialUserForApp(
+            user
+              ? {
+                  id: user.uid as string,
+                  email: user.email as string,
+                  displayName: userSnapshot.data().displayName as string,
+                  photoUrl: user.photoURL as string,
+                  role: userSnapshot.data().role as string,
+                  status: userSnapshot.data().status as boolean,
+                }
+              : null
+          );
+        }
       }
     } catch (error) {
       toast.error(`Error: ${error}`, {
@@ -64,8 +70,10 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
     }
   };
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
+      console.log(user ? user : null);
+
       setUserData(user ? user : null);
     });
     return () => unsubscribe();
