@@ -47,6 +47,7 @@ const Login = () => {
 
       await setDoc(userDocRef, {
         displayName,
+        search_displayName: displayName?.toLowerCase(),
         photoURL,
         createdAt: new Date(),
         role: "user",

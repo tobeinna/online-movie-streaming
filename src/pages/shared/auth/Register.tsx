@@ -40,6 +40,7 @@ const Register = () => {
     const userDocRef = doc(database, `users/${user.uid}`);
     setDoc(userDocRef, {
       displayName: name,
+      search_displayName: name.toLowerCase(),
       createdAt: new Date(),
       role: "user",
       status: true,

@@ -1,6 +1,6 @@
 import { items } from "./ManageSideNav.constants";
 
-import { ConfigProvider, Menu, Modal } from "antd";
+import { ConfigProvider, Menu } from "antd";
 import Sider from "antd/es/layout/Sider";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -8,11 +8,12 @@ import useAuth from "../../hooks/useAuth";
 import MainButton from "../Buttons/MainButton/MainButton";
 import { AiOutlineFileSync } from "react-icons/ai";
 import { MdLogout } from "react-icons/md";
+import LogoutModal from "../Modal/LogoutModal";
 
 const ManageSideNav = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState<boolean>(false);
-  const { authState, logOut } = useAuth();
+  const { authState } = useAuth();
 
   const navigate = useNavigate();
   return (
@@ -110,18 +111,7 @@ const ManageSideNav = () => {
         </div>
       )}
       <ConfigProvider>
-        <Modal
-          open={isLogoutModalOpen}
-          onOk={() => {
-            logOut();
-            navigate("/auth/login");
-          }}
-          okButtonProps={{ className: "text-[#dd2b0e] hover:text-[#dd2b0e]" }}
-          okText="Log out"
-          onCancel={() => setIsLogoutModalOpen(false)}
-        >
-          <p>Are you sure to log out of this account?</p>
-        </Modal>
+        <LogoutModal open={isLogoutModalOpen} setOpen={setIsLogoutModalOpen} />
       </ConfigProvider>
     </Sider>
   );

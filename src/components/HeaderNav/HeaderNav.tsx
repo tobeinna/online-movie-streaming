@@ -13,6 +13,7 @@ import { Category } from "../../types/movie.types.js";
 import { collection, getDocs } from "firebase/firestore";
 import { database } from "../../configs/firebaseConfig.js";
 import { toast } from "react-toastify";
+import LogoutModal from "../Modal/LogoutModal.js";
 
 const animatedComponents = makeAnimated();
 
@@ -40,7 +41,7 @@ const HeaderNav = () => {
   const sideNavRef = useRef<HTMLDivElement>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
 
-  const { authState, logOut } = useAuth();
+  const { authState } = useAuth();
 
   const getCategories = async () => {
     const categoriesRef = collection(database, "categories");
@@ -309,18 +310,7 @@ const HeaderNav = () => {
         </div>
       </div>
       <ConfigProvider>
-        <Modal
-          open={isLogoutModalOpen}
-          onOk={() => {
-            logOut();
-            navigate("/auth/login");
-          }}
-          okButtonProps={{ className: "text-[#dd2b0e] hover:text-[#dd2b0e]" }}
-          okText="Log out"
-          onCancel={() => setIsLogoutModalOpen(false)}
-        >
-          <p>Are you sure to log out of this account?</p>
-        </Modal>
+        <LogoutModal open={isLogoutModalOpen} setOpen={setIsLogoutModalOpen} />
         <Modal
           title="Search for your movies"
           style={{ top: 20 }}
