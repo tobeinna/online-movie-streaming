@@ -3,8 +3,8 @@ import Search from "antd/es/input/Search";
 import { ColumnType } from "antd/es/table";
 import {
   collection,
+  deleteDoc,
   doc,
-  documentId,
   getDocs,
   orderBy,
   query,
@@ -13,73 +13,70 @@ import {
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { IoIosAddCircle } from "react-icons/io";
-import { database } from "../../configs/firebaseConfig";
 import { toast } from "react-toastify";
-import { MdEdit, MdRefresh } from "react-icons/md";
-import { FaUser, FaUserSlash } from "react-icons/fa6";
-import { User } from "../../types/user.types";
+import { MdDelete, MdEdit, MdRefresh } from "react-icons/md";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { SortOrder } from "antd/es/table/interface";
-import EditUserModal from "../../components/Modal/EditUserModal";
+
+import { Movie } from "../../types/movie.types";
+import EditMovieModal from "../../components/Modal/EditMovieModal";
+import {
+  minutesToHoursAndMinutes,
+  timestampToDate,
+} from "../../utils/timeUtils";
+import { database } from "../../configs/firebaseConfig";
+import AddMovieModal from "../../components/Modal/AddMovieModal";
 
 const ManageMovies = () => {
   const [searchInput, setSearchInput] = useState<string>("");
-  const [tableData, setTableData] = useState<User[]>([]);
+  const [tableData, setTableData] = useState<Movie[]>([]);
   const [isLoadingTable, setIsLoadingTable] = useState<boolean>(false);
   const [isLoadingSearchInput, setIsLoadingSearchInput] =
     useState<boolean>(false);
   const [isDisplayEditModal, setIsDisplayEditModal] = useState<boolean>(false);
-  const [editedUser, setEditedUser] = useState<User | undefined>();
+  const [isDisplayAddModal, setIsDisplayAddModal] = useState<boolean>(false);
+  const [editedMovie, setEditedMovie] = useState<Movie | undefined>();
 
-  const getUsersData = async () => {
+  const getMoviesData = async () => {
     try {
-      const usersRef = collection(database, "users");
-      const usersSnapshot = await getDocs(usersRef);
+      const moviesRef = collection(database, "movies");
+      const moviesSnapshot = await getDocs(moviesRef);
 
-      if (!usersSnapshot.empty) {
-        const result: User[] = [];
-        usersSnapshot.forEach((doc) => {
-          if (doc.data().role !== "admin")
-            result.push({ ...doc.data(), uid: doc.id } as User);
+      if (!moviesSnapshot.empty) {
+        const result: Movie[] = [];
+        moviesSnapshot.forEach((doc) => {
+          result.push({ ...doc.data(), id: doc.id } as Movie);
         });
         setTableData(result);
-        setIsLoadingTable(false);
       } else {
         setTableData([]);
-        setIsLoadingTable(false);
       }
+      setIsLoadingTable(false);
     } catch (error) {
       toast.error(`${error}`, { position: "top-right" });
       setIsLoadingTable(false);
     }
   };
 
-  const searchUsers = async (input: string) => {
+  const searchMovies = async (input: string) => {
     try {
-      const usersRef = collection(database, "users");
-      const qDisplayName = query(
-        usersRef,
-        where("search_displayName", ">=", input.toLowerCase()),
-        where("search_displayName", "<=", input.toLowerCase() + "\uf8ff"),
-        orderBy("search_displayName")
+      const moviesRef = collection(database, "movies");
+      const q = query(
+        moviesRef,
+        where("search_title", ">=", input.toLowerCase()),
+        where("search_title", "<=", input.toLowerCase() + "\uf8ff"),
+        orderBy("search_title")
       );
-
-      const qUid = query(
-        usersRef,
-        where(documentId(), ">=", input),
-        where(documentId(), "<=", input + "\uf8ff"),
-        orderBy(documentId())
-      );
-
-      // Combine results if needed
-      const result = await Promise.all([getDocs(qDisplayName), getDocs(qUid)]);
-      const combinedResults = result[0].docs.concat(result[1].docs);
-      const resultData: User[] = [];
-      combinedResults.forEach((doc) => {
-        if (doc.data().role !== "admin")
-          resultData.push({ ...doc.data(), uid: doc.id } as User);
-      });
-
-      setTableData(resultData);
+      const moviesSnapshot = await getDocs(q);
+      if (!moviesSnapshot.empty) {
+        const result: Movie[] = [];
+        moviesSnapshot.forEach((doc) => {
+          result.push({ ...doc.data(), id: doc.id } as Movie);
+        });
+        setTableData(result);
+      } else {
+        setTableData([]);
+      }
       setIsLoadingTable(false);
       setIsLoadingSearchInput(false);
     } catch (error) {
@@ -91,83 +88,105 @@ const ManageMovies = () => {
     }
   };
 
-  let changeUserStatus = async (record: User, newStatusValue: boolean) => {
+  const changeMovieStatus = async (record: Movie, newStatusValue: boolean) => {
     setIsLoadingTable(true);
-    const userRef = doc(database, `users/${record.uid}`);
+    const movieRef = doc(database, `movies/${record.id}`);
     try {
-      await setDoc(userRef, {
-        createdAt: record.createdAt,
-        displayName: record.displayName,
-        photoURL: record.photoURL ? record.photoURL : null,
-        role: record.role,
-        search_displayName: record.search_displayName,
+      await setDoc(movieRef, {
+        categoriesId: record.categoriesId,
+        description: record.description,
+        duration: record.duration,
+        poster: record.poster,
+        release_date: record.release_date,
+        search_title: record.search_title,
+        title: record.title,
+        video: record.video,
+        votes: record.votes,
         status: newStatusValue,
       });
 
-      toast.success("User's status changed successfully!", {
+      toast.success("Movie's status changed successfully!", {
         position: "top-right",
       });
     } catch (error) {
       toast.error(`${error}`, { position: "top-right" });
     }
-    getUsersData();
+    getMoviesData();
+  };
+
+  const deleteMovie = async (movieId: string) => {
+    setIsLoadingTable(true);
+    const movieRef = doc(database, `movies/${movieId}`);
+    try {
+      await deleteDoc(movieRef)
+
+      toast.success("Movie deleted successfully!", {
+        position: "top-right",
+      });
+    } catch (error) {
+      toast.error(`${error}`, { position: "top-right" });
+    }
+    getMoviesData();
   };
 
   useEffect(() => {
     setIsLoadingTable(true);
-    getUsersData();
+    getMoviesData();
   }, []);
 
   useEffect(() => {
-    if (!isDisplayEditModal) {
-      setEditedUser(undefined);
+    if (!isDisplayEditModal || !isDisplayAddModal) {
+      setEditedMovie(undefined);
       setIsLoadingTable(true);
-      getUsersData();
+      getMoviesData();
     }
-  }, [isDisplayEditModal]);
+  }, [isDisplayEditModal, isDisplayAddModal]);
 
-  const tableColumns: ColumnType<User>[] = [
+  const tableColumns: ColumnType<Movie>[] = [
     {
-      title: "User ID",
-      dataIndex: "uid",
-      key: "uid",
-      width: 300,
-    },
-    {
-      title: "Name",
-      dataIndex: "displayName",
-      key: "displayName",
+      title: "Movie ID",
+      dataIndex: "id",
+      key: "id",
       width: 200,
-      sorter: (a: User, b: User) => a.displayName.localeCompare(b.displayName),
     },
     {
-      title: "Photo",
-      dataIndex: "photoURL",
-      key: "photoURL",
-      width: 100,
+      title: "Title",
+      dataIndex: "title",
+      key: "title",
+      width: 200,
+      sorter: (a: Movie, b: Movie) => a.title.localeCompare(b.title),
+    },
+    {
+      title: "Poster",
+      dataIndex: "poster",
+      key: "poster",
+      width: 150,
       align: "center" as AlignSetting,
-      render: (_: any, record: User) => (
-        <>
-          {record.photoURL ? (
-            <img
-              className="w-12 h-12 rounded-full mx-auto"
-              src={record.photoURL}
-            />
-          ) : (
-            <span>None </span>
-          )}
-        </>
+      render: (_: any, record: Movie) => (
+        <img className={`poster mx-auto rounded-md`} src={record.poster} />
       ),
     },
     {
-      title: "Created at",
-      dataIndex: "createdAt",
-      key: "createdAt",
-      width: 250,
+      title: "Duration",
+      dataIndex: "duration",
+      key: "duration",
+      width: 100,
       align: "center" as AlignSetting,
-      sorter: (a: User, b: User) => a.createdAt.seconds - b.createdAt.seconds,
-      render: (createdAt: { seconds: number; nanoseconds: number }) => (
-        <>{new Date(createdAt?.seconds * 1000).toLocaleString()}</>
+      sorter: (a: Movie, b: Movie) => a.duration - b.duration,
+      render: (_: any, record: Movie) => (
+        <span>{minutesToHoursAndMinutes(record.duration)}</span>
+      ),
+    },
+    {
+      title: "Release date",
+      dataIndex: "release_date",
+      key: "release_date",
+      width: 120,
+      align: "center" as AlignSetting,
+      sorter: (a: Movie, b: Movie) =>
+        a.release_date.seconds - b.release_date.seconds,
+      render: (_: any, record: Movie) => (
+        <span>{timestampToDate(record.release_date.seconds)}</span>
       ),
     },
     {
@@ -177,14 +196,14 @@ const ManageMovies = () => {
       width: 100,
       align: "center" as AlignSetting,
       defaultSortOrder: "descend" as SortOrder,
-      sorter: (a: User, b: User) =>
+      sorter: (a: Movie, b: Movie) =>
         String(a.status).localeCompare(String(b.status)),
       render: (status: boolean) => (
         <>
           {status ? (
-            <span className="text-green-600 font-semibold">Enabled</span>
+            <span className="text-green-600 font-semibold">Showed</span>
           ) : (
-            <span className="text-gray-600 font-semibold">Disabled</span>
+            <span className="text-gray-600 font-semibold">Hidden</span>
           )}
         </>
       ),
@@ -193,51 +212,66 @@ const ManageMovies = () => {
       title: "Action",
       key: "status",
       align: "center" as AlignSetting,
-      render: (_: any, record: User) => (
+      render: (_: any, record: Movie) => (
         <div className="flex gap-2 justify-center">
-          <Tooltip trigger={"hover"} title="Edit user's info">
+          <Tooltip trigger={"hover"} title="Edit movie's info">
             <Button
               type="text"
               icon={<MdEdit />}
               onClick={() => {
-                setEditedUser(record);
+                setEditedMovie(record);
                 setIsDisplayEditModal(true);
               }}
             />
           </Tooltip>
           {record.status ? (
-            <Tooltip title="Disable user">
+            <Tooltip title="Hide movie">
               <Popconfirm
-                title="Disable user"
-                description="Are you sure to disable this user?"
-                onConfirm={() => changeUserStatus(record, false)}
+                title="Hide movie"
+                description={`Are you sure to change this movie's visibility to "Hidden"?`}
+                onConfirm={() => changeMovieStatus(record, false)}
                 okText="Yes"
                 cancelText="No"
                 okButtonProps={{ type: "default" }}
               >
                 <Button
                   type="text"
-                  icon={<FaUserSlash className="text-gray-600" />}
+                  icon={<FaEyeSlash className="text-gray-600" />}
                 />
               </Popconfirm>
             </Tooltip>
           ) : (
-            <Tooltip title="Enable user">
+            <Tooltip title="Show movie">
               <Popconfirm
-                title="Enable user"
-                description="Are you sure to enable this user?"
-                onConfirm={() => changeUserStatus(record, true)}
+                title="Show movie"
+                description={`Are you sure to change this movie's visibility to "Showed"?`}
+                onConfirm={() => changeMovieStatus(record, true)}
                 okText="Yes"
                 cancelText="No"
                 okButtonProps={{ type: "default" }}
               >
                 <Button
                   type="text"
-                  icon={<FaUser className="text-green-600" />}
+                  icon={<FaEye className="text-green-600" />}
                 />
               </Popconfirm>
             </Tooltip>
           )}
+          <Tooltip title="Delete movie">
+              <Popconfirm
+                title="Delete movie"
+                description={`Are you sure to delete this movie?`}
+                onConfirm={() => deleteMovie(record.id)}
+                okText="Yes"
+                cancelText="No"
+                okButtonProps={{ type: "default" }}
+              >
+                <Button
+                  type="text"
+                  icon={<MdDelete className="text-red-600" />}
+                />
+              </Popconfirm>
+            </Tooltip>
         </div>
       ),
     },
@@ -255,7 +289,7 @@ const ManageMovies = () => {
             onSearch={() => {
               setIsLoadingTable(true);
               setIsLoadingSearchInput(true);
-              searchUsers(searchInput);
+              searchMovies(searchInput);
             }}
             loading={isLoadingSearchInput}
             className="w-1/3"
@@ -268,11 +302,11 @@ const ManageMovies = () => {
               onClick={() => {
                 setIsLoadingTable(true);
                 setSearchInput("");
-                getUsersData();
+                getMoviesData();
               }}
             />
-            <Button type="default" icon={<IoIosAddCircle />} size="large">
-              Add user
+            <Button type="default" icon={<IoIosAddCircle />} size="large" onClick={() => setIsDisplayAddModal(true)}>
+              Add movie
             </Button>
           </div>
         </div>
@@ -286,12 +320,13 @@ const ManageMovies = () => {
         pagination={false}
         className="w-11/12 mx-auto mt-4"
       />
-      <EditUserModal
+      <EditMovieModal
         open={isDisplayEditModal}
         setOpen={setIsDisplayEditModal}
-        record={editedUser}
+        record={editedMovie}
         key={"key"}
       />
+      <AddMovieModal open={isDisplayAddModal} setOpen={setIsDisplayAddModal} />
     </div>
   );
 };

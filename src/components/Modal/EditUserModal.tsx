@@ -1,10 +1,11 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Modal, Button } from "antd";
 import { useForm } from "react-hook-form";
-import { User } from "../../types/user.types";
 import { toast } from "react-toastify";
-import { database } from "../../configs/firebaseConfig";
 import { doc, setDoc } from "firebase/firestore";
+
+import { User } from "../../types/user.types";
+import { database } from "../../configs/firebaseConfig";
 
 interface IEditUserModalProps {
   open: boolean;
@@ -17,6 +18,8 @@ const EditUserModal: React.FC<IEditUserModalProps> = ({
   setOpen,
   record,
 }) => {
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
   const {
     register,
     handleSubmit,
@@ -31,6 +34,12 @@ const EditUserModal: React.FC<IEditUserModalProps> = ({
       },
     }
   );
+
+  useEffect(() => {
+    if (open) {
+      setIsLoading(false);
+    }
+  }, [open]);
 
   useEffect(() => {
     if (record) {
@@ -62,6 +71,16 @@ const EditUserModal: React.FC<IEditUserModalProps> = ({
     } catch (error) {
       toast.error(`${error}`, { position: "top-right" });
     }
+    setIsLoading(false);
+  };
+
+  const onSubmit = async (data: {
+    displayName: string;
+    photoURL: string;
+    status: boolean;
+  }) => {
+    setIsLoading(true);
+    handleEditUser(data);
   };
 
   return (
@@ -79,8 +98,8 @@ const EditUserModal: React.FC<IEditUserModalProps> = ({
       destroyOnClose
     >
       <form
-        className="flex w-5/6 mx-auto flex-col gap-4"
-        onSubmit={handleSubmit(handleEditUser)}
+        className="flex w-full mx-auto flex-col gap-4"
+        onSubmit={handleSubmit(onSubmit)}
       >
         <div className="flex flex-col gap-2">
           <p className="">
@@ -92,7 +111,7 @@ const EditUserModal: React.FC<IEditUserModalProps> = ({
             Name
           </label>
           <input
-            className="w-full px-3 py-1.5 border-black bg-slate-50 border-2 rounded-md shadow-sm"
+            className="w-full px-3 py-1.5 border-gray-300  border-[0.5px] rounded-md shadow-sm"
             type="text"
             id="displayName"
             placeholder="Enter user's display name"
@@ -129,7 +148,7 @@ const EditUserModal: React.FC<IEditUserModalProps> = ({
           <select
             id="status"
             {...register("status")}
-            className="px-3 py-1.5 w-fit border-black bg-slate-50 border-2 rounded-md"
+            className="px-3 py-1.5 w-fit border-gray-300  border-[0.5px] rounded-md"
           >
             <option value="true">Enabled</option>
             <option value="false">Disabled</option>
@@ -140,7 +159,7 @@ const EditUserModal: React.FC<IEditUserModalProps> = ({
             Photo URL
           </label>
           <input
-            className="w-full px-3 py-1.5 border-black bg-slate-50 border-2 rounded-md shadow-sm"
+            className="w-full px-3 py-1.5 border-gray-300  border-[0.5px] rounded-md shadow-sm"
             type="text"
             id="photoURL"
             placeholder="Enter user's photo URL"
@@ -158,7 +177,12 @@ const EditUserModal: React.FC<IEditUserModalProps> = ({
           >
             Cancel
           </Button>
-          <Button className="w-full" type="default" htmlType="submit">
+          <Button
+            className="w-full bg-blue-600"
+            type="primary"
+            htmlType="submit"
+            loading={isLoading}
+          >
             Save changes
           </Button>
         </div>

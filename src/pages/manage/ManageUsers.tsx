@@ -12,13 +12,14 @@ import {
   where,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
-// import { IoIosAddCircle } from "react-icons/io";
-import { database } from "../../configs/firebaseConfig";
 import { toast } from "react-toastify";
 import { MdEdit, MdRefresh } from "react-icons/md";
 import { FaUser, FaUserSlash } from "react-icons/fa6";
-import { User } from "../../types/user.types";
 import { SortOrder } from "antd/es/table/interface";
+// import { IoIosAddCircle } from "react-icons/io";
+
+import { database } from "../../configs/firebaseConfig";
+import { User } from "../../types/user.types";
 import EditUserModal from "../../components/Modal/EditUserModal";
 
 const ManageUsers = () => {
@@ -91,7 +92,7 @@ const ManageUsers = () => {
     }
   };
 
-  let changeUserStatus = async (record: User, newStatusValue: boolean) => {
+  const changeUserStatus = async (record: User, newStatusValue: boolean) => {
     setIsLoadingTable(true);
     const userRef = doc(database, `users/${record.uid}`);
     try {
