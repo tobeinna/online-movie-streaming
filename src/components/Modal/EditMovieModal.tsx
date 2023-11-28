@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 import { Modal, Button } from "antd";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
@@ -31,8 +31,12 @@ const EditMovieModal: React.FC<IEditMovieModalProps> = ({
   setOpen,
   record,
 }) => {
+  const [currentRecord, setCurrentRecord] = useState<Movie>()
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [categoriesSelectItem, setCategoriesSelectItem] = useState<
+    ISelectItem[]
+  >([]);
+  const [categoriesSelectOptions, setCategoriesSelectOptions] = useState<
     ISelectItem[]
   >([]);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -45,7 +49,7 @@ const EditMovieModal: React.FC<IEditMovieModalProps> = ({
     formState: { errors },
     setValue,
   } = useForm(
-    record && {
+    currentRecord && {
       defaultValues: {
         title: "",
         poster: "",
@@ -68,12 +72,18 @@ const EditMovieModal: React.FC<IEditMovieModalProps> = ({
         result.push({ id: doc.id, name: doc.data().name })
       );
       setCategories(result);
+
+      const tempCategoryOptions = result.map((item) => {
+        return { value: item.id, label: item.name };
+      })
+
+      setCategoriesSelectOptions(tempCategoryOptions);
     } catch (error) {
       toast("Error while get category list!", { type: "error" });
     }
   };
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (open) {
       getCategories();
       setIsLoading(false);
@@ -82,25 +92,31 @@ const EditMovieModal: React.FC<IEditMovieModalProps> = ({
   }, [open]);
 
   useEffect(() => {
-    if (record && categories) {
-      setValue("title", record.title);
-      setValue("poster", record.poster);
-      setValue("description", record.description);
-      setValue("duration", record.duration);
+    if (record) {
+      setCurrentRecord(record)
+    }
+  }, [record])
+
+  useLayoutEffect(() => {
+    if (currentRecord && categories) {
+      setValue("title", currentRecord.title);
+      setValue("poster", currentRecord.poster);
+      setValue("description", currentRecord.description);
+      setValue("duration", currentRecord.duration);
       setValue(
         "release_date",
-        formatDateToYearMonthDay(new Date(record.release_date.seconds * 1000))
+        formatDateToYearMonthDay(new Date(currentRecord.release_date.seconds * 1000))
       );
-      setValue("video", record.video);
-      setValue("status", record.status);
-      setSelectedCategories(record.categoriesId || []);
+      setValue("video", currentRecord.video);
+      setValue("status", currentRecord.status);
+      setSelectedCategories(currentRecord.categoriesId || []);
 
       if (
-        record.categoriesId &&
-        record.categoriesId?.length > 0 &&
+        currentRecord.categoriesId &&
+        currentRecord.categoriesId?.length > 0 &&
         categories.length > 0
       ) {
-        const movieCategories = record.categoriesId?.map((id) =>
+        const movieCategories = currentRecord.categoriesId?.map((id) =>
           categories.find((category) => category.id === id)
         ) as Category[];
 
@@ -124,6 +140,11 @@ const EditMovieModal: React.FC<IEditMovieModalProps> = ({
     video: string;
     status: boolean;
   }) => {
+    if (!currentRecord) {
+      setIsLoading(false);
+      return;
+    }
+
     if (!(selectedCategories.length > 0)) {
       setCategoriesError("Movie must belong to at least 1 category.");
       setIsLoading(false);
@@ -140,7 +161,7 @@ const EditMovieModal: React.FC<IEditMovieModalProps> = ({
       a.localeCompare(b)
     );
 
-    const movieRef = doc(database, `movies/${record?.id}`);
+    const movieRef = doc(database, `movies/${currentRecord.id}`);
     try {
       await setDoc(movieRef, {
         title: data.title,
@@ -150,7 +171,7 @@ const EditMovieModal: React.FC<IEditMovieModalProps> = ({
         duration: data.duration,
         release_date: convertYearMonthDayToUTCDate(data.release_date),
         video: data.video,
-        votes: record?.votes,
+        votes: currentRecord?.votes || [],
         categoriesId: sortedCategories,
         status: String(data.status) === "true" ? true : false,
       });
@@ -175,7 +196,7 @@ const EditMovieModal: React.FC<IEditMovieModalProps> = ({
     handleEditMovie(data);
   };
 
-  if (categoriesSelectItem) {
+  if (open && currentRecord) {
     return (
       <Modal
         open={open}
@@ -200,7 +221,7 @@ const EditMovieModal: React.FC<IEditMovieModalProps> = ({
             <div className="form-left w-[48%]">
               <div className="flex flex-col gap-2">
                 <p className="">
-                  Movie ID: <span className="font-semibold">{record?.id}</span>
+                  Movie ID: <span className="font-semibold">{currentRecord?.id}</span>
                 </p>
               </div>
               <div className="flex flex-col gap-2">
@@ -319,20 +340,18 @@ const EditMovieModal: React.FC<IEditMovieModalProps> = ({
                 <span className="text-[#28262D] pb-0">
                   Select movie's category
                 </span>
-                <div className="category-list flex flex-wrap gap-2">
+                <div className="category-list w-full flex flex-wrap gap-2">
                   <Select
                     closeMenuOnSelect={false}
                     components={animatedComponents}
                     isMulti
                     value={categoriesSelectItem}
-                    options={categories.map((item) => {
-                      return { value: item.id, label: item.name };
-                    })}
+                    defaultValue={categoriesSelectItem}
+                    options={categoriesSelectOptions}
                     className="w-full z-20"
                     placeholder=""
                     backspaceRemovesValue={false}
                     controlShouldRenderValue
-                    
                     onChange={(
                       newValue: MultiValue<unknown> | ISelectItem[]
                     ) => {
@@ -362,8 +381,8 @@ const EditMovieModal: React.FC<IEditMovieModalProps> = ({
                   {...register("status")}
                   className="px-3 py-1.5 w-fit border-gray-300  border-[0.5px] rounded-md"
                 >
-                  <option value="true">Showed</option>
-                  <option value="false">Hidden</option>
+                  <option value="true">Active</option>
+                  <option value="false">Inactive</option>
                 </select>
               </div>
             </div>

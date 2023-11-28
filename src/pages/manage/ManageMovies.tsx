@@ -118,7 +118,7 @@ const ManageMovies = () => {
     setIsLoadingTable(true);
     const movieRef = doc(database, `movies/${movieId}`);
     try {
-      await deleteDoc(movieRef)
+      await deleteDoc(movieRef);
 
       toast.success("Movie deleted successfully!", {
         position: "top-right",
@@ -144,10 +144,15 @@ const ManageMovies = () => {
 
   const tableColumns: ColumnType<Movie>[] = [
     {
-      title: "Movie ID",
+      title: "",
       dataIndex: "id",
       key: "id",
-      width: 200,
+      width: 100,
+      align: "center" as AlignSetting,
+      render: (_: any, __: any, index) => {
+        ++index;
+        return index;
+      },
     },
     {
       title: "Title",
@@ -201,9 +206,9 @@ const ManageMovies = () => {
       render: (status: boolean) => (
         <>
           {status ? (
-            <span className="text-green-600 font-semibold">Showed</span>
+            <span className="text-green-600 font-semibold">Active</span>
           ) : (
-            <span className="text-gray-600 font-semibold">Hidden</span>
+            <span className="text-gray-600 font-semibold">Inactive</span>
           )}
         </>
       ),
@@ -228,7 +233,7 @@ const ManageMovies = () => {
             <Tooltip title="Hide movie">
               <Popconfirm
                 title="Hide movie"
-                description={`Are you sure to change this movie's visibility to "Hidden"?`}
+                description={`Are you sure to change this movie's status to "Inactive"?`}
                 onConfirm={() => changeMovieStatus(record, false)}
                 okText="Yes"
                 cancelText="No"
@@ -244,7 +249,7 @@ const ManageMovies = () => {
             <Tooltip title="Show movie">
               <Popconfirm
                 title="Show movie"
-                description={`Are you sure to change this movie's visibility to "Showed"?`}
+                description={`Are you sure to change this movie's status to "Active"?`}
                 onConfirm={() => changeMovieStatus(record, true)}
                 okText="Yes"
                 cancelText="No"
@@ -258,20 +263,20 @@ const ManageMovies = () => {
             </Tooltip>
           )}
           <Tooltip title="Delete movie">
-              <Popconfirm
-                title="Delete movie"
-                description={`Are you sure to delete this movie?`}
-                onConfirm={() => deleteMovie(record.id)}
-                okText="Yes"
-                cancelText="No"
-                okButtonProps={{ type: "default" }}
-              >
-                <Button
-                  type="text"
-                  icon={<MdDelete className="text-red-600" />}
-                />
-              </Popconfirm>
-            </Tooltip>
+            <Popconfirm
+              title="Delete movie"
+              description={`Are you sure to delete this movie?`}
+              onConfirm={() => deleteMovie(record.id)}
+              okText="Yes"
+              cancelText="No"
+              okButtonProps={{ type: "default" }}
+            >
+              <Button
+                type="text"
+                icon={<MdDelete className="text-red-600" />}
+              />
+            </Popconfirm>
+          </Tooltip>
         </div>
       ),
     },
@@ -305,7 +310,12 @@ const ManageMovies = () => {
                 getMoviesData();
               }}
             />
-            <Button type="default" icon={<IoIosAddCircle />} size="large" onClick={() => setIsDisplayAddModal(true)}>
+            <Button
+              type="default"
+              icon={<IoIosAddCircle />}
+              size="large"
+              onClick={() => setIsDisplayAddModal(true)}
+            >
               Add movie
             </Button>
           </div>

@@ -129,6 +129,17 @@ const ManageUsers = () => {
 
   const tableColumns: ColumnType<User>[] = [
     {
+      title: "",
+      dataIndex: "id",
+      key: "id",
+      width: 100,
+      align: "center" as AlignSetting,
+      render: (_: any, __: any, index) => {
+        ++index;
+        return index;
+      },
+    },
+    {
       title: "User ID",
       dataIndex: "uid",
       key: "uid",

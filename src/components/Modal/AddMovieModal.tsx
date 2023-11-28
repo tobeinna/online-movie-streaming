@@ -68,11 +68,12 @@ const AddMovieModal: React.FC<IAddMovieModalProps> = ({ open, setOpen }) => {
       getCategories();
       setIsLoading(false);
       setCategoriesError("");
+      setCategoriesSelectItem([])
       reset();
     }
   }, [open]);
 
-  const handleEditMovie = async (data: {
+  const handleAddMovie = async (data: {
     title: string;
     poster: string;
     description: string;
@@ -110,7 +111,7 @@ const AddMovieModal: React.FC<IAddMovieModalProps> = ({ open, setOpen }) => {
         categoriesId: sortedCategories,
         status: String(data.status) === "true" ? true : false,
       });
-      toast.success("Movie's info saved", { position: "top-right" });
+      toast.success("Movie added", { position: "top-right" });
       setOpen(false);
     } catch (error) {
       toast.error(`${error}`, { position: "top-right" });
@@ -128,7 +129,7 @@ const AddMovieModal: React.FC<IAddMovieModalProps> = ({ open, setOpen }) => {
     status: boolean;
   }) => {
     setIsLoading(true);
-    handleEditMovie(data);
+    handleAddMovie(data);
   };
 
   return (
@@ -142,14 +143,14 @@ const AddMovieModal: React.FC<IAddMovieModalProps> = ({ open, setOpen }) => {
       onCancel={() => {
         setOpen(false);
       }}
-      title="Edit movie's info"
+      title="Add movie"
       destroyOnClose
       width={"60%"}
     >
       <form
         className="flex w-full mx-auto flex-col gap-4"
         onSubmit={handleSubmit(onSubmit)}
-        id="edit-movie"
+        id="add-movie"
       >
         <div className="flex justify-between">
           <div className="form-left w-[48%]">
@@ -278,7 +279,6 @@ const AddMovieModal: React.FC<IAddMovieModalProps> = ({ open, setOpen }) => {
                   options={categories.map((item) => {
                     return { value: item.id, label: item.name };
                   })}
-                  className="w-full z-20"
                   placeholder=""
                   backspaceRemovesValue={false}
                   controlShouldRenderValue
@@ -307,8 +307,8 @@ const AddMovieModal: React.FC<IAddMovieModalProps> = ({ open, setOpen }) => {
                 {...register("status")}
                 className="px-3 py-1.5 w-fit border-gray-300  border-[0.5px] rounded-md"
               >
-                <option value="true">Showed</option>
-                <option value="false">Hidden</option>
+                <option value="true">Active</option>
+                <option value="false">Inactive</option>
               </select>
             </div>
           </div>

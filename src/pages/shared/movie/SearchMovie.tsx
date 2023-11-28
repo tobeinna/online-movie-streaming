@@ -302,9 +302,25 @@ const SearchMovie: React.FC = () => {
     }
   };
 
-  // useLayoutEffect(() => {
-  //   handleSearch();
-  // }, []);
+  useEffect(() => {
+    if (
+      selectedCategories &&
+      selectedCategories.length > 0 &&
+      categories.length > 0
+    ) {
+      const movieCategories = selectedCategories.map((id: string) =>
+        categories.find((category) => category.id === id)
+      ) as Category[];
+
+      if (movieCategories.length > 0) {
+        setCategoriesSelectItem(
+          movieCategories.map((item) => {
+            return { value: item.id, label: item.name };
+          })
+        );
+      }
+    }
+  }, [result]);
 
   useEffect(() => {
     getCategories();
