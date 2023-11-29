@@ -47,10 +47,10 @@ const AddCategoryModal: React.FC<IAddCategoryModalProps> = ({
         name: data.name,
       });
 
-      toast.success("Category added", { position: "top-right" });
+      toast.success("Category added");
       setOpen(false);
     } catch (error) {
-      toast.error(`${error}`, { position: "top-right" });
+      toast.error(`${error}`);
     }
     setIsLoading(false);
   };

@@ -1,9 +1,21 @@
-const Spinner = () => {
+import clsx from "clsx";
+import React from "react";
+
+interface ISpinner {
+  className?: string;
+}
+
+const Spinner: React.FC<ISpinner> = ({ className }) => {
   return (
-    <div role="mx-auto my-auto">
+    <div
+      role="mx-auto my-auto"
+      className={clsx(className ? className : "w-4 h-4")}
+    >
       <svg
         aria-hidden="true"
-        className="w-4 h-4 text-gray-200 animate-spin dark:text-gray-600 fill-gray-200"
+        className={
+          "w-max h-max text-gray-200 animate-spin dark:text-gray-600 fill-gray-200"
+        }
         viewBox="0 0 100 101"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"

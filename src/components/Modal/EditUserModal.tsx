@@ -66,10 +66,10 @@ const EditUserModal: React.FC<IEditUserModalProps> = ({
         status: String(data.status) === "true" ? true : false,
       });
 
-      toast.success("User's info saved", { position: "top-right" });
+      toast.success("User's info saved");
       setOpen(false);
     } catch (error) {
-      toast.error(`${error}`, { position: "top-right" });
+      toast.error(`${error}`);
     }
     setIsLoading(false);
   };

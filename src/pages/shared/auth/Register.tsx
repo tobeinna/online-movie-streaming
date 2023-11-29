@@ -47,16 +47,12 @@ const Register = () => {
     })
       .then(() => {
         logOut();
-        toast.success("Registered successfully!", {
-          position: toast.POSITION.TOP_RIGHT,
-        });
+        toast.success("Registered successfully!");
         setIsLoading(false);
         navigate("/auth/login");
       })
       .catch((error: Error) => {
-        toast.error(`Error: ${error.message}`, {
-          position: toast.POSITION.TOP_RIGHT,
-        });
+        toast.error(`Error: ${error.message}`);
         setIsLoading(false);
       });
   };
@@ -73,9 +69,7 @@ const Register = () => {
         console.log(res);
       })
       .catch((error: Error) => {
-        toast.error(`Error: ${error.message}`, {
-          position: toast.POSITION.TOP_RIGHT,
-        });
+        toast.error(`Error: ${error.message}`);
         setIsLoading(false);
       });
   };

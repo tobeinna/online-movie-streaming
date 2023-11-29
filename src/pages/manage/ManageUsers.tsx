@@ -49,7 +49,7 @@ const ManageUsers = () => {
         setIsLoadingTable(false);
       }
     } catch (error) {
-      toast.error(`${error}`, { position: "top-right" });
+      toast.error(`${error}`);
       setIsLoadingTable(false);
     }
   };
@@ -84,7 +84,7 @@ const ManageUsers = () => {
       setIsLoadingTable(false);
       setIsLoadingSearchInput(false);
     } catch (error) {
-      toast.error(`${error}`, { position: "top-right" });
+      toast.error(`${error}`);
       console.log(error);
 
       setIsLoadingTable(false);
@@ -105,11 +105,9 @@ const ManageUsers = () => {
         status: newStatusValue,
       });
 
-      toast.success("User's status changed successfully!", {
-        position: "top-right",
-      });
+      toast.success("User's status changed successfully!");
     } catch (error) {
-      toast.error(`${error}`, { position: "top-right" });
+      toast.error(`${error}`);
     }
     getUsersData();
   };

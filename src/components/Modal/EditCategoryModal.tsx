@@ -57,10 +57,10 @@ const EditCategoryModal: React.FC<IEditCategoryModalProps> = ({
         name: data.name,
       });
 
-      toast.success("Category's info saved", { position: "top-right" });
+      toast.success("Category's info saved");
       setOpen(false);
     } catch (error) {
-      toast.error(`${error}`, { position: "top-right" });
+      toast.error(`${error}`);
     }
     setIsLoading(false);
   };

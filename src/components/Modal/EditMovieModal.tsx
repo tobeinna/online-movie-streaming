@@ -31,7 +31,7 @@ const EditMovieModal: React.FC<IEditMovieModalProps> = ({
   setOpen,
   record,
 }) => {
-  const [currentRecord, setCurrentRecord] = useState<Movie>()
+  const [currentRecord, setCurrentRecord] = useState<Movie>();
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [categoriesSelectItem, setCategoriesSelectItem] = useState<
     ISelectItem[]
@@ -75,7 +75,7 @@ const EditMovieModal: React.FC<IEditMovieModalProps> = ({
 
       const tempCategoryOptions = result.map((item) => {
         return { value: item.id, label: item.name };
-      })
+      });
 
       setCategoriesSelectOptions(tempCategoryOptions);
     } catch (error) {
@@ -84,18 +84,19 @@ const EditMovieModal: React.FC<IEditMovieModalProps> = ({
   };
 
   useLayoutEffect(() => {
+    setCategoriesError("");
+    setCategoriesSelectItem([]);
     if (open) {
       getCategories();
       setIsLoading(false);
-      setCategoriesError("");
     }
   }, [open]);
 
   useEffect(() => {
     if (record) {
-      setCurrentRecord(record)
+      setCurrentRecord(record);
     }
-  }, [record])
+  }, [record]);
 
   useLayoutEffect(() => {
     if (currentRecord && categories) {
@@ -105,29 +106,32 @@ const EditMovieModal: React.FC<IEditMovieModalProps> = ({
       setValue("duration", currentRecord.duration);
       setValue(
         "release_date",
-        formatDateToYearMonthDay(new Date(currentRecord.release_date.seconds * 1000))
+        formatDateToYearMonthDay(
+          new Date(currentRecord.release_date.seconds * 1000)
+        )
       );
       setValue("video", currentRecord.video);
       setValue("status", currentRecord.status);
       setSelectedCategories(currentRecord.categoriesId || []);
+      setCategoriesSelectItem(currentRecord.categoriesSelectItem || []);
 
-      if (
-        currentRecord.categoriesId &&
-        currentRecord.categoriesId?.length > 0 &&
-        categories.length > 0
-      ) {
-        const movieCategories = currentRecord.categoriesId?.map((id) =>
-          categories.find((category) => category.id === id)
-        ) as Category[];
+      // if (
+      //   record?.categoriesId &&
+      //   record?.categoriesId?.length > 0 &&
+      //   categories.length > 0
+      // ) {
+      //   const movieCategories = record?.categoriesId?.map((id) =>
+      //     categories.find((category) => category.id === id)
+      //   ) as Category[];
 
-        if (movieCategories.length > 0) {
-          setCategoriesSelectItem(
-            movieCategories.map((item) => {
-              return { value: item.id, label: item.name };
-            })
-          );
-        }
-      }
+      //   if (movieCategories.length > 0) {
+      //     setCategoriesSelectItem(
+      //       movieCategories.map((item) => {
+      //         return { value: item.id, label: item.name };
+      //       })
+      //     );
+      //   }
+      // }
     }
   }, [record, categories]);
 
@@ -175,10 +179,10 @@ const EditMovieModal: React.FC<IEditMovieModalProps> = ({
         categoriesId: sortedCategories,
         status: String(data.status) === "true" ? true : false,
       });
-      toast.success("Movie's info saved", { position: "top-right" });
+      toast.success("Movie's info saved");
       setOpen(false);
     } catch (error) {
-      toast.error(`${error}`, { position: "top-right" });
+      toast.error(`${error}`);
     }
     setIsLoading(false);
   };
@@ -221,7 +225,8 @@ const EditMovieModal: React.FC<IEditMovieModalProps> = ({
             <div className="form-left w-[48%]">
               <div className="flex flex-col gap-2">
                 <p className="">
-                  Movie ID: <span className="font-semibold">{currentRecord?.id}</span>
+                  Movie ID:{" "}
+                  <span className="font-semibold">{currentRecord?.id}</span>
                 </p>
               </div>
               <div className="flex flex-col gap-2">

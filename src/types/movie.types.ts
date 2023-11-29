@@ -18,6 +18,12 @@ export type Movie = {
   status: boolean;
   categoriesId?: string[];
   categories?: Category[];
+  categoriesSelectItem?: [
+    {
+      value: string;
+      label: string;
+    },
+  ];
   votes?: [
     {
       uid: string;

@@ -6,7 +6,7 @@ import { FloatButton } from "antd";
 const MovieLayout = () => {
   const location = useLocation();
   if (location.pathname === "/movie" || location.pathname === "/movie/") {
-    return <Navigate to={`/`} state={{ from: location }} replace />;
+    return <Navigate to={`/movie/search`} state={{ from: location }} replace />;
   }
 
   return (

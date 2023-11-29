@@ -47,7 +47,7 @@ const ManageCategories = () => {
       }
       setIsLoadingTable(false);
     } catch (error) {
-      toast.error(`${error}`, { position: "top-right" });
+      toast.error(`${error}`);
       setIsLoadingTable(false);
     }
   };
@@ -73,7 +73,7 @@ const ManageCategories = () => {
       setIsLoadingTable(false);
       setIsLoadingSearchInput(false);
     } catch (error) {
-      toast.error(`${error}`, { position: "top-right" });
+      toast.error(`${error}`);
       console.log(error);
 
       setIsLoadingTable(false);
@@ -100,17 +100,14 @@ const ManageCategories = () => {
       try {
         await deleteDoc(categoryRef);
 
-        toast.success("Category deleted successfully!", {
-          position: "top-right",
-        });
+        toast.success("Category deleted successfully!");
       } catch (error) {
-        toast.error(`${error}`, { position: "top-right" });
+        toast.error(`${error}`);
       }
       getCategoriesData();
     } else {
       toast.error(`Deleted category cannot belongs to any movie.`, {
-        position: "top-right",
-        autoClose: 7000,
+        autoClose: 4000,
       });
     }
     setIsLoadingTable(false);

@@ -18,7 +18,7 @@ import { MdDelete, MdEdit, MdRefresh } from "react-icons/md";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { SortOrder } from "antd/es/table/interface";
 
-import { Movie } from "../../types/movie.types";
+import { Category, Movie } from "../../types/movie.types";
 import EditMovieModal from "../../components/Modal/EditMovieModal";
 import {
   minutesToHoursAndMinutes,
@@ -28,6 +28,7 @@ import { database } from "../../configs/firebaseConfig";
 import AddMovieModal from "../../components/Modal/AddMovieModal";
 
 const ManageMovies = () => {
+  const [categories, setCategories] = useState<Category[]>([]);
   const [searchInput, setSearchInput] = useState<string>("");
   const [tableData, setTableData] = useState<Movie[]>([]);
   const [isLoadingTable, setIsLoadingTable] = useState<boolean>(false);
@@ -47,13 +48,35 @@ const ManageMovies = () => {
         moviesSnapshot.forEach((doc) => {
           result.push({ ...doc.data(), id: doc.id } as Movie);
         });
-        setTableData(result);
+
+        const movies = result.map((movie: Movie) => {
+          if (
+            movie?.categoriesId &&
+            movie?.categoriesId?.length > 0 &&
+            categories.length > 0
+          ) {
+            const movieCategories = movie?.categoriesId?.map((id) =>
+              categories.find((category) => category.id === id)
+            ) as Category[];
+
+            if (movieCategories.length > 0) {
+              return {
+                ...movie,
+                categoriesSelectItem: movieCategories.map((item) => {
+                  return { value: item.id, label: item.name };
+                }),
+              };
+            }
+          }
+        }) as Movie[];
+
+        setTableData(movies);
       } else {
         setTableData([]);
       }
       setIsLoadingTable(false);
     } catch (error) {
-      toast.error(`${error}`, { position: "top-right" });
+      toast.error(`${error}`);
       setIsLoadingTable(false);
     }
   };
@@ -80,7 +103,7 @@ const ManageMovies = () => {
       setIsLoadingTable(false);
       setIsLoadingSearchInput(false);
     } catch (error) {
-      toast.error(`${error}`, { position: "top-right" });
+      toast.error(`${error}`);
       console.log(error);
 
       setIsLoadingTable(false);
@@ -105,11 +128,9 @@ const ManageMovies = () => {
         status: newStatusValue,
       });
 
-      toast.success("Movie's status changed successfully!", {
-        position: "top-right",
-      });
+      toast.success("Movie's status changed successfully!");
     } catch (error) {
-      toast.error(`${error}`, { position: "top-right" });
+      toast.error(`${error}`);
     }
     getMoviesData();
   };
@@ -120,19 +141,38 @@ const ManageMovies = () => {
     try {
       await deleteDoc(movieRef);
 
-      toast.success("Movie deleted successfully!", {
-        position: "top-right",
-      });
+      toast.success("Movie deleted successfully!");
     } catch (error) {
-      toast.error(`${error}`, { position: "top-right" });
+      toast.error(`${error}`);
     }
     getMoviesData();
   };
 
+  const getCategories = async () => {
+    const categoriesRef = collection(database, "categories");
+    const catagoriesSnapshot = await getDocs(categoriesRef);
+
+    try {
+      let result: Category[] = [];
+      catagoriesSnapshot.forEach((doc) =>
+        result.push({ id: doc.id, name: doc.data().name })
+      );
+      setCategories(result);
+    } catch (error) {
+      toast("Error while get category list!", { type: "error" });
+    }
+  };
+
   useEffect(() => {
-    setIsLoadingTable(true);
-    getMoviesData();
+    getCategories();
   }, []);
+
+  useEffect(() => {
+    if (categories) {
+      setIsLoadingTable(true);
+      getMoviesData();
+    }
+  }, [categories]);
 
   useEffect(() => {
     if (!isDisplayEditModal || !isDisplayAddModal) {
@@ -159,7 +199,7 @@ const ManageMovies = () => {
       dataIndex: "title",
       key: "title",
       width: 200,
-      sorter: (a: Movie, b: Movie) => a.title.localeCompare(b.title),
+      sorter: (a: Movie, b: Movie) => a?.title.localeCompare(b?.title),
     },
     {
       title: "Poster",
@@ -168,7 +208,7 @@ const ManageMovies = () => {
       width: 150,
       align: "center" as AlignSetting,
       render: (_: any, record: Movie) => (
-        <img className={`poster mx-auto rounded-md`} src={record.poster} />
+        <img className={`poster mx-auto rounded-md`} src={record?.poster || ""} />
       ),
     },
     {
@@ -177,9 +217,9 @@ const ManageMovies = () => {
       key: "duration",
       width: 100,
       align: "center" as AlignSetting,
-      sorter: (a: Movie, b: Movie) => a.duration - b.duration,
+      sorter: (a: Movie, b: Movie) => a?.duration - b?.duration,
       render: (_: any, record: Movie) => (
-        <span>{minutesToHoursAndMinutes(record.duration)}</span>
+        <span>{minutesToHoursAndMinutes(record?.duration || 0)}</span>
       ),
     },
     {
@@ -189,9 +229,9 @@ const ManageMovies = () => {
       width: 120,
       align: "center" as AlignSetting,
       sorter: (a: Movie, b: Movie) =>
-        a.release_date.seconds - b.release_date.seconds,
+        a?.release_date?.seconds - b?.release_date?.seconds,
       render: (_: any, record: Movie) => (
-        <span>{timestampToDate(record.release_date.seconds)}</span>
+        <span>{timestampToDate(record?.release_date?.seconds)}</span>
       ),
     },
     {
@@ -200,9 +240,8 @@ const ManageMovies = () => {
       key: "status",
       width: 100,
       align: "center" as AlignSetting,
-      defaultSortOrder: "descend" as SortOrder,
       sorter: (a: Movie, b: Movie) =>
-        String(a.status).localeCompare(String(b.status)),
+        String(a?.status).localeCompare(String(b?.status)),
       render: (status: boolean) => (
         <>
           {status ? (
@@ -229,7 +268,7 @@ const ManageMovies = () => {
               }}
             />
           </Tooltip>
-          {record.status ? (
+          {record?.status ? (
             <Tooltip title="Hide movie">
               <Popconfirm
                 title="Hide movie"
@@ -266,7 +305,7 @@ const ManageMovies = () => {
             <Popconfirm
               title="Delete movie"
               description={`Are you sure to delete this movie?`}
-              onConfirm={() => deleteMovie(record.id)}
+              onConfirm={() => deleteMovie(record?.id)}
               okText="Yes"
               cancelText="No"
               okButtonProps={{ type: "default" }}
@@ -321,15 +360,17 @@ const ManageMovies = () => {
           </div>
         </div>
       </div>
-      <Table
-        columns={tableColumns}
-        dataSource={tableData}
-        scroll={{ y: 420 }}
-        rowKey={"id"}
-        loading={isLoadingTable}
-        pagination={false}
-        className="w-11/12 mx-auto mt-4"
-      />
+      {tableData && (
+        <Table
+          columns={tableData ? tableColumns : []}
+          dataSource={tableData}
+          scroll={{ y: 420 }}
+          rowKey={"id"}
+          loading={isLoadingTable}
+          pagination={false}
+          className="w-11/12 mx-auto mt-4"
+        />
+      )}
       <EditMovieModal
         open={isDisplayEditModal}
         setOpen={setIsDisplayEditModal}

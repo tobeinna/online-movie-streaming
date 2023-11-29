@@ -195,7 +195,7 @@ const HeaderNav = () => {
               className="text-[black] z-10 absolute float-right top-4 right-4 border-none w-9 h-9 p-0"
               onClick={handleHideModal}
             />
-            {authState && authState.displayName && (
+            {authState && authState !== null && authState.displayName && (
               <div className="user-info flex flex-col gap-1">
                 <p className="user-text mt-7 mb-2 ml-5 w-[184px]">
                   Hello <strong>{authState.displayName}</strong>!
@@ -229,7 +229,7 @@ const HeaderNav = () => {
                 );
               })}
             </ul> */}
-            {!authState && (
+            {authState === undefined && (
               <div className="flex w-[210px] mx-[20px] justify-between absolute bottom-2">
                 <Link to={"/auth/register"}>
                   <MainButton
@@ -248,7 +248,7 @@ const HeaderNav = () => {
               </div>
             )}
           </div>
-          {!authState ? (
+          {authState === undefined ? (
             <>
               <Link to={"/auth/register"} className="max-lg:hidden">
                 <MainButton type="outlined" text="Sign up" />
@@ -257,6 +257,8 @@ const HeaderNav = () => {
                 <MainButton type="filled" text="Login" />
               </Link>
             </>
+          ) : authState === null ? (
+            <></>
           ) : (
             <div className="tooltip-container">
               <img
@@ -284,7 +286,7 @@ const HeaderNav = () => {
                       </p>
                       {authState.role === "admin" && (
                         <Link
-                          to={"manage"}
+                          to={"/manage"}
                           replace
                           state={{ from: location }}
                           onClick={() => {}}

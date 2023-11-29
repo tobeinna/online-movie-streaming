@@ -49,7 +49,7 @@ export const router = createBrowserRouter([
       },
       {
         path: PATH_NOT_FOUND,
-        element: <NotFound />
+        element: <NotFound />,
       },
       {
         path: PATH_MOVIE,
@@ -69,14 +69,14 @@ export const router = createBrowserRouter([
               },
               {
                 path: "*",
-                element: <Navigate to="" replace />,
+                element: <Navigate to="/search" replace />,
               },
             ],
           },
           {
             path: PATH_SEARCH,
-            element: <SearchMovie />
-          }
+            element: <SearchMovie />,
+          },
         ],
       },
       {
@@ -94,24 +94,25 @@ export const router = createBrowserRouter([
         ],
       },
       {
-        path: PATH_MANAGE,
-        element: (
-          <RequireAuth allowedRole="admin">
-            <ManageLayout />
-          </RequireAuth>
-        ),
+        element: <RequireAuth allowedRole="admin" />,
         children: [
           {
-            path: PATH_CATEGORIES,
-            element: <ManageCategories />,
-          },
-          {
-            path: PATH_MOVIES,
-            element: <ManageMovies />,
-          },
-          {
-            path: PATH_USERS,
-            element: <ManageUsers />,
+            path: PATH_MANAGE,
+            element: <ManageLayout />,
+            children: [
+              {
+                path: PATH_CATEGORIES,
+                element: <ManageCategories />,
+              },
+              {
+                path: PATH_MOVIES,
+                element: <ManageMovies />,
+              },
+              {
+                path: PATH_USERS,
+                element: <ManageUsers />,
+              },
+            ],
           },
         ],
       },

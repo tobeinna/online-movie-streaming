@@ -54,27 +54,19 @@ const Login = () => {
         status: true,
       })
         .then(() => {
-          toast.success("Logged in successfully!", {
-            position: toast.POSITION.TOP_RIGHT,
-          });
+          toast.success("Logged in successfully!");
           navigate("/");
         })
         .catch((error: Error) => {
-          toast.error(`Error: ${error.message}`, {
-            position: toast.POSITION.TOP_RIGHT,
-          });
+          toast.error(`Error: ${error.message}`);
         });
     } else {
       if (userSnapshot.data().status === false) {
-        toast.error("Your account is disabled", {
-          position: toast.POSITION.TOP_RIGHT,
-        });
+        toast.error("Your account is disabled");
         return;
       }
 
-      toast.success("Logged in successfully!", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
+      toast.success("Logged in successfully!");
       switch (userSnapshot.data()?.role) {
         case "user":
           navigate("/");
@@ -102,15 +94,11 @@ const Login = () => {
           if (userSnapshot.data().status === false) {
             setIsLoading(false);
 
-            toast.error("Your account is disabled", {
-              position: toast.POSITION.TOP_RIGHT,
-            });
+            toast.error("Your account is disabled");
             return;
           }
 
-          toast.success("Logged in successfully!", {
-            position: toast.POSITION.TOP_RIGHT,
-          });
+          toast.success("Logged in successfully!");
           switch (userSnapshot.data()?.role) {
             case "user":
               navigate("/");
@@ -124,16 +112,12 @@ const Login = () => {
           }
         } else {
           setIsLoading(false);
-          toast.error("User data does not exist in database.", {
-            position: toast.POSITION.TOP_RIGHT,
-          });
+          toast.error("User data does not exist in database.");
         }
       })
       .catch((error: Error) => {
         setIsLoading(false);
-        toast.error(`Error: ${error.message}`, {
-          position: toast.POSITION.TOP_RIGHT,
-        });
+        toast.error(`Error: ${error.message}`);
       });
   };
 
@@ -143,9 +127,7 @@ const Login = () => {
         handleLoginSocialUser(result.user);
       })
       .catch((error: Error) => {
-        toast.error(`Error: ${error.message}`, {
-          position: toast.POSITION.TOP_RIGHT,
-        });
+        toast.error(`Error: ${error.message}`);
       });
   };
 
@@ -156,9 +138,7 @@ const Login = () => {
         handleLoginSocialUser(user);
       })
       .catch((error: Error) => {
-        toast.error(`Error: ${error.message}`, {
-          position: toast.POSITION.TOP_RIGHT,
-        });
+        toast.error(`Error: ${error.message}`);
       });
   };
 

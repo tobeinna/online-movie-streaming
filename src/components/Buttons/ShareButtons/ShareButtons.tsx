@@ -36,10 +36,7 @@ export const CopyURLToClipboardButton: React.FC = () => {
         icon={<HiOutlineLink />}
         className="mx-0"
         onClick={() => {
-          toast.success("Link copied!", {
-            position: toast.POSITION.TOP_RIGHT,
-            autoClose: 1500
-          });
+          toast.success("Link copied!");
         }}
       />
     </CopyToClipboard>

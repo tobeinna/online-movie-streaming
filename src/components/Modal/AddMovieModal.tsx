@@ -111,10 +111,10 @@ const AddMovieModal: React.FC<IAddMovieModalProps> = ({ open, setOpen }) => {
         categoriesId: sortedCategories,
         status: String(data.status) === "true" ? true : false,
       });
-      toast.success("Movie added", { position: "top-right" });
+      toast.success("Movie added");
       setOpen(false);
     } catch (error) {
-      toast.error(`${error}`, { position: "top-right" });
+      toast.error(`${error}`);
     }
     setIsLoading(false);
   };

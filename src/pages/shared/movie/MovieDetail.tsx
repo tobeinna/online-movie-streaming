@@ -7,7 +7,7 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import { useEffect, useLayoutEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router";
+import { useLocation, useNavigate, useParams } from "react-router";
 import { AiFillStar } from "react-icons/ai";
 import ReactStars from "react-stars";
 
@@ -27,6 +27,7 @@ const MovieDetail = () => {
 
   const { authState, logOut } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     if (data) {
@@ -61,6 +62,8 @@ const MovieDetail = () => {
 
     if (movieSnapshot.exists()) {
       setData({ ...(movieSnapshot.data() as Movie), id: movieSnapshot.id });
+    } else {
+      navigate("/movie/search", { replace: true, state: { from: location } });
     }
   };
 
@@ -108,10 +111,8 @@ const MovieDetail = () => {
     if (authState && authState.status === false) {
       logOut();
       navigate("/auth/login");
-      toast.error("Your account is disabled", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
-      return; 
+      toast.error("Your account is disabled");
+      return;
     }
 
     const votes = data?.votes ? [...data.votes] : [];
@@ -208,8 +209,8 @@ const MovieDetail = () => {
     );
   } else {
     return (
-      <span className="mx-auto my-auto">
-        <Spinner />
+      <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+        <Spinner className="w-10 h-10" />
       </span>
     );
   }
