@@ -40,3 +40,14 @@ export type Movie = {
   ];
   averageVote?: number;
 };
+
+export type Comment = {
+  id: string;
+  movie_id: string;
+  uid: string;
+  created_date: {
+    seconds: number;
+    nanoseconds: number;
+  };
+  content: string;
+}

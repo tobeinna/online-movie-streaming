@@ -29,7 +29,6 @@ const EditUserModal: React.FC<IEditUserModalProps> = ({
     handleSubmit,
     formState: { errors },
     setValue,
-    getValues,
   } = useForm(
     record && {
       defaultValues: {
@@ -72,6 +71,8 @@ const EditUserModal: React.FC<IEditUserModalProps> = ({
         const uploadResult = await handleUploadImage(images[0], "photo");
 
         if (uploadResult) {
+          console.log(uploadResult);
+          
           await setDoc(userRef, {
             displayName: data.displayName,
             search_displayName: data.displayName.toLowerCase(),

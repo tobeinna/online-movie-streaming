@@ -53,8 +53,6 @@ const RecommendedMoviesSidebar: React.FC<RecommendedMoviesSidebarProp> = ({
         });
       });
 
-      console.log(data);
-
       setMoviesData(data);
     } catch (error) {
       console.log(error);

@@ -51,7 +51,7 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
             id: user.uid as string,
             email: user.email as string,
             displayName: userSnapshot.data().displayName as string,
-            photoUrl: user.photoURL as string,
+            photoUrl: userSnapshot.data().photoURL as string,
             role: userSnapshot.data().role as string,
             status: userSnapshot.data().status as boolean,
           });

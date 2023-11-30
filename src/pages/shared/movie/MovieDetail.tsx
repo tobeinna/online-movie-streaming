@@ -19,6 +19,7 @@ import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
 import MovieHeadContent from "../../../components/MovieHeadContent/MovieHeadContent";
 import Spinner from "../../../components/Spinner/Spinner";
+import CommentSection from "../../../components/CommentSection/CommentSection";
 
 const MovieDetail = () => {
   const movieParam = useParams();
@@ -72,40 +73,30 @@ const MovieDetail = () => {
     const querySnapshot = await getDocs(collectionRef);
 
     try {
-      let data: Category[] = [];
+      let categories: Category[] = [];
       querySnapshot.docs.map((doc: DocumentData) => {
-        data.push({
+        categories.push({
           id: doc.id,
           ...doc.data(),
         });
       });
-      setCategoriesData(data);
+      setCategoriesData(categories);
     } catch (error) {
       console.log(error);
     }
   }
 
-  const setCategoryToMovie = () => {
-    setData({
-      ...data,
-      categories: data?.categoriesId?.map((id: string) => ({
-        id: id,
-        name: categoriesData?.find((category: Category) => category.id === id)
-          ?.name,
-      })) as Category[],
-    } as Movie);
-  };
+  useLayoutEffect(() => {
+    getMovie();
+  }, []);
 
   useLayoutEffect(() => {
     getMovie();
+  }, [movieParam]);
+
+  useLayoutEffect(() => {
     getCategories();
   }, []);
-
-  useEffect(() => {
-    if (data && categoriesData) {
-      setCategoryToMovie();
-    }
-  }, [categoriesData]);
 
   const handleRatingChange = async (newRating: number) => {
     if (authState && authState.status === false) {
@@ -141,8 +132,8 @@ const MovieDetail = () => {
   if (data) {
     return (
       <div>
-        <MovieHeadContent data={data} />
-        <div className="body-container w-5/6 mx-auto mt-4 flex justify-between max-md:flex-col">
+        <MovieHeadContent data={data} categories_data={categoriesData || []} />
+        <div className="body-container w-5/6 mx-auto mt-4 flex justify-between gap-8 max-md:flex-col">
           <div className="body-left w-full mr-6 flex flex-col gap-2">
             <h4 className="text-slate-50 w-full text-lg">Description</h4>
             <p className="w-full text-slate-400 text-sm font-normal mb-5">
@@ -199,6 +190,9 @@ const MovieDetail = () => {
                   </span>
                 )}
               </div>
+            </div>
+            <div className="comments-container">
+              <CommentSection movie_id={data.id} />
             </div>
           </div>
           <div className="body-right w-fit max-md:w-auto">
