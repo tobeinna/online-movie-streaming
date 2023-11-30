@@ -140,20 +140,17 @@ const ManageUsers = () => {
     {
       title: "User ID",
       dataIndex: "uid",
-      key: "uid",
       width: 300,
     },
     {
       title: "Name",
       dataIndex: "displayName",
-      key: "displayName",
       width: 200,
       sorter: (a: User, b: User) => a.displayName.localeCompare(b.displayName),
     },
     {
       title: "Photo",
       dataIndex: "photoURL",
-      key: "photoURL",
       width: 100,
       align: "center" as AlignSetting,
       render: (_: any, record: User) => (
@@ -172,7 +169,6 @@ const ManageUsers = () => {
     {
       title: "Created at",
       dataIndex: "createdAt",
-      key: "createdAt",
       width: 250,
       align: "center" as AlignSetting,
       sorter: (a: User, b: User) => a.createdAt.seconds - b.createdAt.seconds,
@@ -183,7 +179,6 @@ const ManageUsers = () => {
     {
       title: "Status",
       dataIndex: "status",
-      key: "status",
       width: 100,
       align: "center" as AlignSetting,
       defaultSortOrder: "descend" as SortOrder,
@@ -201,7 +196,6 @@ const ManageUsers = () => {
     },
     {
       title: "Action",
-      key: "status",
       align: "center" as AlignSetting,
       render: (_: any, record: User) => (
         <div className="flex gap-2 justify-center">
@@ -291,7 +285,7 @@ const ManageUsers = () => {
         columns={tableColumns}
         dataSource={tableData}
         scroll={{ y: 420 }}
-        rowKey={"id"}
+        rowKey={record => record?.uid || ""}
         loading={isLoadingTable}
         pagination={false}
         className="w-11/12 mx-auto mt-4"

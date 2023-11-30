@@ -16,7 +16,6 @@ import { IoIosAddCircle } from "react-icons/io";
 import { toast } from "react-toastify";
 import { MdDelete, MdEdit, MdRefresh } from "react-icons/md";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import { SortOrder } from "antd/es/table/interface";
 
 import { Category, Movie } from "../../types/movie.types";
 import EditMovieModal from "../../components/Modal/EditMovieModal";
@@ -197,24 +196,24 @@ const ManageMovies = () => {
     {
       title: "Title",
       dataIndex: "title",
-      key: "title",
       width: 200,
       sorter: (a: Movie, b: Movie) => a?.title.localeCompare(b?.title),
     },
     {
       title: "Poster",
       dataIndex: "poster",
-      key: "poster",
       width: 150,
       align: "center" as AlignSetting,
       render: (_: any, record: Movie) => (
-        <img className={`poster mx-auto rounded-md`} src={record?.poster || ""} />
+        <img
+          className={`poster mx-auto rounded-md`}
+          src={record?.poster || ""}
+        />
       ),
     },
     {
       title: "Duration",
       dataIndex: "duration",
-      key: "duration",
       width: 100,
       align: "center" as AlignSetting,
       sorter: (a: Movie, b: Movie) => a?.duration - b?.duration,
@@ -225,7 +224,6 @@ const ManageMovies = () => {
     {
       title: "Release date",
       dataIndex: "release_date",
-      key: "release_date",
       width: 120,
       align: "center" as AlignSetting,
       sorter: (a: Movie, b: Movie) =>
@@ -237,7 +235,6 @@ const ManageMovies = () => {
     {
       title: "Status",
       dataIndex: "status",
-      key: "status",
       width: 100,
       align: "center" as AlignSetting,
       sorter: (a: Movie, b: Movie) =>
@@ -254,7 +251,6 @@ const ManageMovies = () => {
     },
     {
       title: "Action",
-      key: "status",
       align: "center" as AlignSetting,
       render: (_: any, record: Movie) => (
         <div className="flex gap-2 justify-center">
@@ -365,7 +361,7 @@ const ManageMovies = () => {
           columns={tableData ? tableColumns : []}
           dataSource={tableData}
           scroll={{ y: 420 }}
-          rowKey={"id"}
+          rowKey={(record) => record?.id}
           loading={isLoadingTable}
           pagination={false}
           className="w-11/12 mx-auto mt-4"

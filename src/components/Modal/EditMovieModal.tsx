@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import { collection, doc, getDocs, setDoc } from "firebase/firestore";
 import makeAnimated from "react-select/animated";
 import Select, { MultiValue } from "react-select";
+import { ImageListType } from "react-images-uploading";
 
 import { Category, Movie } from "../../types/movie.types";
 import { database } from "../../configs/firebaseConfig";
@@ -12,6 +13,8 @@ import {
   convertYearMonthDayToUTCDate,
   formatDateToYearMonthDay,
 } from "../../utils/timeUtils";
+import ImageUploader from "../ImageUploader/ImageUploader";
+import { deleteImage, handleUploadImage } from "../../services/upload.services";
 
 interface IEditMovieModalProps {
   open: boolean;
@@ -41,6 +44,7 @@ const EditMovieModal: React.FC<IEditMovieModalProps> = ({
   >([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [categoriesError, setCategoriesError] = useState<string>("");
+  const [images, setImages] = useState<ImageListType>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const {
@@ -48,6 +52,7 @@ const EditMovieModal: React.FC<IEditMovieModalProps> = ({
     handleSubmit,
     formState: { errors },
     setValue,
+    getValues,
   } = useForm(
     currentRecord && {
       defaultValues: {
@@ -86,6 +91,7 @@ const EditMovieModal: React.FC<IEditMovieModalProps> = ({
   useLayoutEffect(() => {
     setCategoriesError("");
     setCategoriesSelectItem([]);
+    setImages([]);
     if (open) {
       getCategories();
       setIsLoading(false);
@@ -114,24 +120,6 @@ const EditMovieModal: React.FC<IEditMovieModalProps> = ({
       setValue("status", currentRecord.status);
       setSelectedCategories(currentRecord.categoriesId || []);
       setCategoriesSelectItem(currentRecord.categoriesSelectItem || []);
-
-      // if (
-      //   record?.categoriesId &&
-      //   record?.categoriesId?.length > 0 &&
-      //   categories.length > 0
-      // ) {
-      //   const movieCategories = record?.categoriesId?.map((id) =>
-      //     categories.find((category) => category.id === id)
-      //   ) as Category[];
-
-      //   if (movieCategories.length > 0) {
-      //     setCategoriesSelectItem(
-      //       movieCategories.map((item) => {
-      //         return { value: item.id, label: item.name };
-      //       })
-      //     );
-      //   }
-      // }
     }
   }, [record, categories]);
 
@@ -166,19 +154,51 @@ const EditMovieModal: React.FC<IEditMovieModalProps> = ({
     );
 
     const movieRef = doc(database, `movies/${currentRecord.id}`);
+
     try {
-      await setDoc(movieRef, {
-        title: data.title,
-        search_title: data.title.toLowerCase(),
-        poster: data.poster,
-        description: data.description,
-        duration: data.duration,
-        release_date: convertYearMonthDayToUTCDate(data.release_date),
-        video: data.video,
-        votes: currentRecord?.votes || [],
-        categoriesId: sortedCategories,
-        status: String(data.status) === "true" ? true : false,
-      });
+      if (images[0]) {
+        const uploadResult = await handleUploadImage(images[0], "poster");
+
+        if (uploadResult) {
+          await setDoc(movieRef, {
+            title: data.title,
+            search_title: data.title.toLowerCase(),
+            poster: uploadResult.url,
+            poster_path: uploadResult.imagePath,
+            description: data.description,
+            duration: data.duration,
+            release_date: convertYearMonthDayToUTCDate(data.release_date),
+            video: data.video,
+            votes: currentRecord?.votes || [],
+            categoriesId: sortedCategories,
+            status: String(data.status) === "true" ? true : false,
+          });
+
+          if (
+            currentRecord.poster_path &&
+            uploadResult.imagePath !== currentRecord.poster_path
+          ) {
+            await deleteImage(currentRecord.poster_path);
+          }
+        } else {
+          toast.error("Could not upload image.");
+        }
+      } else {
+        await setDoc(movieRef, {
+          title: data.title,
+          search_title: data.title.toLowerCase(),
+          poster: currentRecord.poster,
+          poster_path: currentRecord.poster_path && currentRecord.poster_path,
+          description: data.description,
+          duration: data.duration,
+          release_date: convertYearMonthDayToUTCDate(data.release_date),
+          video: data.video,
+          votes: currentRecord?.votes || [],
+          categoriesId: sortedCategories,
+          status: String(data.status) === "true" ? true : false,
+        });
+      }
+
       toast.success("Movie's info saved");
       setOpen(false);
     } catch (error) {
@@ -250,22 +270,16 @@ const EditMovieModal: React.FC<IEditMovieModalProps> = ({
                   {errors.title?.message}
                 </p>
               </div>
-              <div className="flex flex-col gap-2">
-                <label htmlFor="poster" className="text-[#28262D] pb-0">
-                  Poster
-                </label>
-                <input
-                  className="w-full px-3 py-1.5 border-gray-300  border-[0.5px] rounded-md shadow-sm"
-                  type="text"
-                  id="poster"
-                  placeholder="Enter movie's poster URL"
-                  {...register("poster", {
-                    required: "Poster is required.",
-                  })}
-                />
-                <p className="error-message text-[#dd2b0e]">
-                  {errors.poster?.message}
-                </p>
+              <div className="flex flex-col gap-2 w-full">
+                <span className="text-[#28262D] pb-0">Poster</span>
+                <div className="image-upload-container flex justify-between w-full h-fit z-50">
+                  <ImageUploader
+                    images={images}
+                    setImages={setImages}
+                    defaultImageURL={getValues("poster")}
+                    type="poster"
+                  />
+                </div>
               </div>
               <div className="flex flex-col gap-2">
                 <label htmlFor="description" className="text-[#28262D] pb-0">

@@ -141,13 +141,11 @@ const ManageCategories = () => {
     {
       title: "Category ID",
       dataIndex: "id",
-      key: "id",
       width: 350,
     },
     {
       title: "Name",
       dataIndex: "name",
-      key: "name",
       width: 350,
       align: "center" as AlignSetting,
       defaultSortOrder: "ascend" as SortOrder,
@@ -155,7 +153,6 @@ const ManageCategories = () => {
     },
     {
       title: "Action",
-      key: "status",
       align: "center" as AlignSetting,
       render: (_: any, record: Category) => (
         <div className="flex gap-2 justify-center">
@@ -232,7 +229,7 @@ const ManageCategories = () => {
         columns={tableColumns}
         dataSource={tableData}
         scroll={{ y: 420 }}
-        rowKey={"id"}
+        rowKey={record => record?.id}
         loading={isLoadingTable}
         pagination={false}
         className="w-11/12 mx-auto mt-4"

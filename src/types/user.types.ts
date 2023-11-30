@@ -3,6 +3,7 @@ export type User = {
   displayName: string;
   search_displayName?: string;
   photoURL?: string;
+  photo_path?: string;
   createdAt: {
     seconds: number;
     nanoseconds: number;

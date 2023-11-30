@@ -9,6 +9,9 @@ import Select, { MultiValue } from "react-select";
 import { Category } from "../../types/movie.types";
 import { database } from "../../configs/firebaseConfig";
 import { convertYearMonthDayToUTCDate } from "../../utils/timeUtils";
+import { ImageListType } from "react-images-uploading";
+import ImageUploader from "../ImageUploader/ImageUploader";
+import { handleUploadImage } from "../../services/upload.services";
 
 interface IAddMovieModalProps {
   open: boolean;
@@ -29,6 +32,7 @@ const AddMovieModal: React.FC<IAddMovieModalProps> = ({ open, setOpen }) => {
   >([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [categoriesError, setCategoriesError] = useState<string>("");
+  const [images, setImages] = useState<ImageListType>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const {
@@ -36,6 +40,8 @@ const AddMovieModal: React.FC<IAddMovieModalProps> = ({ open, setOpen }) => {
     handleSubmit,
     formState: { errors },
     reset,
+    setError,
+    clearErrors
   } = useForm({
     defaultValues: {
       title: "",
@@ -64,11 +70,12 @@ const AddMovieModal: React.FC<IAddMovieModalProps> = ({ open, setOpen }) => {
   };
 
   useEffect(() => {
+    setImages([]);
     if (open) {
       getCategories();
       setIsLoading(false);
       setCategoriesError("");
-      setCategoriesSelectItem([])
+      setCategoriesSelectItem([]);
       reset();
     }
   }, [open]);
@@ -100,19 +107,30 @@ const AddMovieModal: React.FC<IAddMovieModalProps> = ({ open, setOpen }) => {
 
     const moviesRef = collection(database, "movies");
     try {
-      await addDoc(moviesRef, {
-        title: data.title,
-        search_title: data.title.toLowerCase(),
-        poster: data.poster,
-        description: data.description,
-        duration: data.duration,
-        release_date: convertYearMonthDayToUTCDate(data.release_date),
-        video: data.video,
-        categoriesId: sortedCategories,
-        status: String(data.status) === "true" ? true : false,
-      });
-      toast.success("Movie added");
-      setOpen(false);
+      if (images[0]) {
+        const uploadResult = await handleUploadImage(images[0], "poster");
+
+        if (uploadResult) {
+          await addDoc(moviesRef, {
+            title: data.title,
+            search_title: data.title.toLowerCase(),
+            poster: uploadResult.url,
+            poster_path: uploadResult.imagePath,
+            description: data.description,
+            duration: data.duration,
+            release_date: convertYearMonthDayToUTCDate(data.release_date),
+            video: data.video,
+            categoriesId: sortedCategories,
+            status: String(data.status) === "true" ? true : false,
+          });
+          toast.success("Movie added");
+          setOpen(false);
+        } else {
+          toast.error("Could not upload image.");
+        }
+      } else {
+        toast.error("You must upload movie's poster" );
+      }
     } catch (error) {
       toast.error(`${error}`);
     }
@@ -176,18 +194,14 @@ const AddMovieModal: React.FC<IAddMovieModalProps> = ({ open, setOpen }) => {
               </p>
             </div>
             <div className="flex flex-col gap-2">
-              <label htmlFor="poster" className="text-[#28262D] pb-0">
-                Poster
-              </label>
-              <input
-                className="w-full px-3 py-1.5 border-gray-300  border-[0.5px] rounded-md shadow-sm"
-                type="text"
-                id="poster"
-                placeholder="Enter movie's poster URL"
-                {...register("poster", {
-                  required: "Poster is required.",
-                })}
-              />
+              <span className="text-[#28262D] pb-0">Poster</span>
+              <div className="image-upload-container flex justify-between w-full h-fit z-50">
+                <ImageUploader
+                  images={images}
+                  setImages={setImages}
+                  type="poster"
+                />
+              </div>
               <p className="error-message text-[#dd2b0e]">
                 {errors.poster?.message}
               </p>
@@ -272,6 +286,7 @@ const AddMovieModal: React.FC<IAddMovieModalProps> = ({ open, setOpen }) => {
               </span>
               <div className="category-list flex flex-wrap gap-2">
                 <Select
+                className="w-full"
                   closeMenuOnSelect={false}
                   components={animatedComponents}
                   isMulti

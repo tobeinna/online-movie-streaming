@@ -8,6 +8,7 @@ export type Movie = {
   title: string;
   search_title?: string;
   poster: string;
+  poster_path?: string;
   release_date: {
     seconds: number;
     nanoseconds: number;
