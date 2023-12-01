@@ -27,13 +27,13 @@ const ManageSideNav = () => {
         <Link to={"/manage"} className="overflow-hidden w-max mx-auto">
           {collapsed ? (
             <img
-              src="/src/assets/saint_stream_icon.png"
+              src="/saint_stream_icon.png"
               alt="Logo"
               className="ml-5 w-auto h-9 my-3"
             />
           ) : (
             <img
-              src="/src/assets/saint_stream_logo.png"
+              src="/saint_stream_logo.png"
               alt="Logo"
               className="h-18 w-auto mx-auto"
             />
@@ -55,7 +55,7 @@ const ManageSideNav = () => {
                 className="avatar max-lg:hidden cursor-pointer w-10 h-10 ml-5 rounded-[21px]"
                 src={
                   (authState.photoUrl !== "undefined" && authState.photoUrl) ||
-                  "/src/assets/default-avatar.jpg"
+                  "/default-avatar.jpg"
                 }
                 alt=""
                 onClick={() => setCollapsed(false)}

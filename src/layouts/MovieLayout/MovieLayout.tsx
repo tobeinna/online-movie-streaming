@@ -11,9 +11,7 @@ const MovieLayout = () => {
 
   return (
     <>
-      <header>
-        <HeaderNav />
-      </header>
+      <HeaderNav />
       <Outlet />
       <footer>Footer</footer>
       <FloatButton.BackTop />

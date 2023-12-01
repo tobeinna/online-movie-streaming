@@ -52,35 +52,49 @@ const CommentSection: React.FC<{ movie_id: string }> = ({ movie_id }) => {
     return (
       <div className="comment-section w-full h-fit my-6">
         {authState?.id ? (
-          <div className="comment-input flex gap-4">
-            <img
-              src={authState?.photoUrl}
-              alt=""
-              className="w-12 h-12 rounded-full"
-            />
-            <input
-              type="text"
-              name="content"
-              id="content"
-              placeholder="Share your thoughts about the movie"
-              className="rounded-md border-2 border-slate-300 w-full p-4 disabled:bg-slate-100"
-              value={commentInput}
-              onChange={(e) => setCommentInput(e.target.value)}
-              disabled={isLoading}
-              autoComplete="off"
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  e.preventDefault();
+          <div className="flex flex-col gap-4">
+            <div className="comment-input flex gap-4">
+              <img
+                src={authState?.photoUrl ? authState.photoUrl : "/default-avatar.jpg"}
+                alt=""
+                className="w-12 h-12 rounded-full"
+              />
+              <input
+                type="text"
+                name="content"
+                id="content"
+                placeholder="Share your thoughts"
+                className="rounded-md border-2 border-slate-300 w-full p-4 disabled:bg-slate-100"
+                value={commentInput}
+                onChange={(e) => setCommentInput(e.target.value)}
+                disabled={isLoading}
+                autoComplete="off"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    setIsLoading(true);
+                    handleComment();
+                  }
+                }}
+              ></input>
+              <MainButton
+                type="filled"
+                text="Send"
+                icon={<IoSend />}
+                isDisabled={isLoading}
+                className="max-md:hidden"
+                onClick={() => {
                   setIsLoading(true);
                   handleComment();
-                }
-              }}
-            ></input>
+                }}
+              />
+            </div>
             <MainButton
               type="filled"
               text="Send"
               icon={<IoSend />}
               isDisabled={isLoading}
+              className="w-full hidden max-md:flex"
               onClick={() => {
                 setIsLoading(true);
                 handleComment();

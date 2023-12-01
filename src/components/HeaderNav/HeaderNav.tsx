@@ -148,7 +148,7 @@ const HeaderNav = () => {
       <div className=" flex justify-between w-11/12 lg:w-5/6 mx-auto">
         <Link to={"/"} className="flex flex-col justify-center max-md:w-1/2">
           <img
-            src="/src/assets/saint_stream_logo.png"
+            src="/saint_stream_logo.png"
             alt="Logo"
             className="object-cover w-max h-auto my-auto"
           />
@@ -265,7 +265,7 @@ const HeaderNav = () => {
                 className="avatar max-lg:hidden cursor-pointer w-10 h-10 rounded-[21px]"
                 src={
                   (authState.photoUrl !== "undefined" && authState.photoUrl) ||
-                  "/src/assets/default-avatar.jpg"
+                  "/default-avatar.jpg"
                 }
                 alt=""
                 onClick={handleDisplayTooltip}
@@ -317,7 +317,8 @@ const HeaderNav = () => {
           title="Search for your movies"
           style={{ top: 20 }}
           open={isSearchModalOpen}
-          okButtonProps={{ className: "text-slate-600" }}
+          okButtonProps={{ className: "header-search-modal-ok text-slate-100 bg-green-500" }}
+          cancelButtonProps={{ className: "header-search-modal-cancel" }}
           okText="Search"
           onOk={() => {
             navigate(
@@ -341,7 +342,7 @@ const HeaderNav = () => {
                 name="title"
                 id="title"
                 value={titleInput || ""}
-                className="block px-2.5 py-2 w-full text-sm rounded-md border-2 border-[#28262D] transition-colors duration-300 focus:border-gray-300 focus:outline-none"
+                className="block px-2.5 py-2 w-full text-sm rounded-md border-[0.5px] border-gray-300 transition-colors duration-300 focus:border-gray-300 focus:outline-none"
                 placeholder="Title"
                 onChange={(e) => setTitleInput(e.target.value)}
                 onKeyDown={(e) => {

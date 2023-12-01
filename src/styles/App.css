@@ -5,6 +5,17 @@
 body {
   background-color: #0d0c0f;
   scroll-behavior: smooth;
+  box-sizing: border-box;
+}
+
+.header-search-modal-ok:hover {
+  background-color: rgb(53, 203, 108) !important;
+  color: white !important;
+}
+
+.header-search-modal-cancel:hover {
+  border: rgb(31, 30, 30)  !important;
+  color: rgb(31, 30, 30) !important;
 }
 
 .swiper {

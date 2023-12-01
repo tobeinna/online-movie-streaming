@@ -40,8 +40,6 @@ const AddMovieModal: React.FC<IAddMovieModalProps> = ({ open, setOpen }) => {
     handleSubmit,
     formState: { errors },
     reset,
-    setError,
-    clearErrors
   } = useForm({
     defaultValues: {
       title: "",

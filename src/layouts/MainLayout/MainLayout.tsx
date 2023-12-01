@@ -2,13 +2,14 @@ import { Outlet } from "react-router-dom";
 
 import HeaderSlider from "../../components/HeaderSlider/HeaderSlider";
 import { FloatButton } from "antd";
+import Footer from "../../components/Footer/Footer";
 
 const MainLayout = () => {
   return (
     <div className="w-full">
       <HeaderSlider />
       <Outlet />
-      <footer>Footer</footer>
+      <Footer />
       <FloatButton.BackTop />
     </div>
   );

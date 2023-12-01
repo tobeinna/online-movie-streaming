@@ -31,7 +31,7 @@ const CommentItem: React.FC<ICommentcurrentCommentProp> = ({ comment }) => {
       <div key={currentComment.id} className="mt-4">
         <div className="w-full flex gap-4">
           <img
-            src={currentUser?.photoURL}
+            src={currentUser?.photoURL ? currentUser.photoURL : "/default-avatar.jpg"}
             alt=""
             className="w-12 h-12 rounded-full"
           />

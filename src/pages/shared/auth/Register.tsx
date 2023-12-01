@@ -78,7 +78,7 @@ const Register = () => {
     <div className="w-[300px] sm:w-[500px] mx-auto flex flex-col gap-3 pt-4 pb-8 bg-[#0D0C0F] rounded-lg">
       <Link to="/">
         <img
-          src="/src/assets/saint_stream_logo.png"
+          src="/saint_stream_logo.png"
           className="w-1/2 sm:w-1/3 h-auto mx-auto"
         />
       </Link>

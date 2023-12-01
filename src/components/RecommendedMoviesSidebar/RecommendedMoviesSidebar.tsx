@@ -110,7 +110,7 @@ const RecommendedMoviesSidebar: React.FC<RecommendedMoviesSidebarProp> = ({
     return (
       <>
         {/* When md */}
-        <div className="vertical-list hidden md:block">
+        <div className="vertical-list hidden lg:block">
           <h1 className="text-xl font-bold text-slate-200 mb-4">
             Recommended movies
           </h1>
@@ -128,7 +128,7 @@ const RecommendedMoviesSidebar: React.FC<RecommendedMoviesSidebarProp> = ({
           </div>
         </div>
         {/* When max-md */}
-        <div className="vertical-list max-md:block hidden w-full overflow-hidden mx-auto">
+        <div className="vertical-list max-lg:block hidden w-full overflow-hidden mx-auto">
           <h1 className="text-xl font-bold text-slate-200 my-4">
             Recommended movies
           </h1>
@@ -173,7 +173,7 @@ const RecommendedMoviesSidebar: React.FC<RecommendedMoviesSidebarProp> = ({
                   className="swiper-button-prev h-full w-fit top-[22px] left-0 bg-gradient-to-l from-transparent to-[#0D0C0F] after:text-transparent"
                 >
                   <img
-                    src="/src/assets/left-circle-1-svgrepo-com.svg"
+                    src="/left-circle-1-svgrepo-com.svg"
                     className="w-8 h-8 mx-2"
                   />
                 </div>
@@ -184,7 +184,7 @@ const RecommendedMoviesSidebar: React.FC<RecommendedMoviesSidebarProp> = ({
                   className="swiper-button-next h-full w-fit top-[22px] right-0 bg-gradient-to-r from-transparent to-[#0D0C0F] after:text-transparent"
                 >
                   <img
-                    src="/src/assets/right-circle-svgrepo-com.svg"
+                    src="/right-circle-svgrepo-com.svg"
                     className="w-8 h-8 mx-2"
                   />
                 </div>

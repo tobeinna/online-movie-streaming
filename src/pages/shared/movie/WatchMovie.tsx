@@ -1,7 +1,8 @@
 import { doc, getDoc } from "firebase/firestore";
 import { useEffect, useRef, useState } from "react";
-import { useNavigate, useParams } from "react-router";
+import { useParams } from "react-router";
 import { FaLightbulb, FaRegLightbulb } from "react-icons/fa6";
+import clsx from "clsx";
 
 import { database } from "../../../configs/firebaseConfig";
 import { Movie } from "../../../types/movie.types";
@@ -11,7 +12,6 @@ import {
   FacebookShareButton,
 } from "../../../components/Buttons/ShareButtons/ShareButtons";
 import MainButton from "../../../components/Buttons/MainButton/MainButton";
-import clsx from "clsx";
 
 const WatchMovie = () => {
   const movieParam = useParams();
@@ -104,7 +104,7 @@ const WatchMovie = () => {
                 className="w-full h-full aspect-object-cover relative z-20"
               />
             </div>
-            <div className="body-container mx-auto mt-4 flex max-md:flex-col gap-4">
+            <div className="body-container mx-auto mt-4 flex max-md:flex-col w-full gap-4">
               <div className="body-left w-fit mr-6 flex flex-col gap-2">
                 <h4 className="text-slate-50 w-full text-lg">Description</h4>
                 <p className="w-full text-slate-400 text-sm font-normal mb-5">

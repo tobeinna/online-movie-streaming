@@ -3,7 +3,6 @@ import {
   FacebookIcon,
 } from "react-share";
 import { useLocation } from "react-router-dom";
-import { BsFacebook } from "react-icons/bs";
 import { HiOutlineLink } from "react-icons/hi";
 import CopyToClipboard from "react-copy-to-clipboard";
 

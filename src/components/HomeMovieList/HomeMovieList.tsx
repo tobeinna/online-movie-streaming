@@ -115,7 +115,7 @@ const HomeMovieList = () => {
             setIsDisplayedPrev(true);
           }}
         >
-          {moviesData?.map((item, index) => {
+          {moviesData?.map((item) => {
             return (
               <SwiperSlide className="w-auto" key={item.id}>
                 <MovieCard
@@ -132,7 +132,7 @@ const HomeMovieList = () => {
               className="swiper-button-prev h-full w-fit top-[22px] left-0 bg-gradient-to-l from-transparent to-[#0D0C0F] after:text-transparent"
             >
               <img
-                src="/src/assets/left-circle-1-svgrepo-com.svg"
+                src="/left-circle-1-svgrepo-com.svg"
                 className="w-8 h-8 mx-2"
               />
             </div>
@@ -143,7 +143,7 @@ const HomeMovieList = () => {
               className="swiper-button-next h-full w-fit top-[22px] right-0 bg-gradient-to-r from-transparent to-[#0D0C0F] after:text-transparent"
             >
               <img
-                src="/src/assets/right-circle-svgrepo-com.svg"
+                src="/right-circle-svgrepo-com.svg"
                 className="w-8 h-8 mx-2"
               />
             </div>

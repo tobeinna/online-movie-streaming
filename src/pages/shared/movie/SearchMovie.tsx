@@ -3,7 +3,6 @@ import {
   DocumentData,
   and,
   collection,
-  endAt,
   endBefore,
   getCountFromServer,
   getDocs,
@@ -13,7 +12,6 @@ import {
   orderBy,
   query,
   startAfter,
-  startAt,
   where,
 } from "firebase/firestore";
 import { toast } from "react-toastify";
@@ -22,14 +20,13 @@ import { MdNavigateNext, MdNavigateBefore } from "react-icons/md";
 import { Pagination } from "antd";
 import Select, { MultiValue } from "react-select";
 import makeAnimated from "react-select/animated";
+import { useSearchParams } from "react-router-dom";
 
 import MovieCard from "../../../components/MovieCard/MovieCard";
 import MainButton from "../../../components/Buttons/MainButton/MainButton";
 import { database } from "../../../configs/firebaseConfig";
 import { Category, Movie } from "../../../types/movie.types";
-import CategoryChip from "../../../components/Chip/CategoryChip";
 import MovieCardSkeleton from "../../../components/Skeleton/MovieCardSkeleton";
-import { useSearchParams } from "react-router-dom";
 
 const animatedComponents = makeAnimated();
 
@@ -511,7 +508,7 @@ const SearchMovie: React.FC = () => {
                   pageSizeOptions={[6, 12, 30]}
                   defaultPageSize={6}
                   showSizeChanger
-                  onShowSizeChange={(current, size) => {
+                  onShowSizeChange={(_, size) => {
                     setPageSize(size);
                     setCurrentPage(1);
                     setPreviousPage(1);
@@ -523,7 +520,7 @@ const SearchMovie: React.FC = () => {
                   nextIcon={
                     <MdNavigateNext className="transition-colors duration-300 rounded-md text-slate-300 h-full w-8 mx-auto hover:text-white hover:bg-white hover:bg-opacity-20 px-1" />
                   }
-                  onChange={(page, size) => {
+                  onChange={(page) => {
                     setPreviousPage(currentPage);
                     setCurrentPage(page);
                   }}
