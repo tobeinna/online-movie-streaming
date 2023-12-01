@@ -61,7 +61,7 @@ const MovieDetail = () => {
     const movieRef = doc(database, `movies/${movieParam.movie_id}`);
     const movieSnapshot = await getDoc(movieRef);
 
-    if (movieSnapshot.exists()) {
+    if (movieSnapshot.exists() && movieSnapshot.data().status === true) {
       setData({ ...(movieSnapshot.data() as Movie), id: movieSnapshot.id });
     } else {
       navigate("/movie/search", { replace: true, state: { from: location } });

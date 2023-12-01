@@ -9,6 +9,7 @@ import {
   getDocs,
   limit,
   query,
+  where,
 } from "firebase/firestore";
 
 import "swiper/css";
@@ -16,6 +17,7 @@ import "swiper/swiper-bundle.css"; // Import the Swiper styles
 import { database } from "../../configs/firebaseConfig";
 import { Category, Movie } from "../../types/movie.types";
 import SwiperSlideContent from "./SwiperSlideContent";
+import HeaderSliderSkeleton from "../Skeleton/HeaderSliderSkeleton";
 
 // Install Swiper modules
 SwiperCore.use([Pagination, Autoplay, EffectFade]);
@@ -26,7 +28,7 @@ const HeaderSlider: React.FC = () => {
 
   async function getMovies() {
     const collectionRef = collection(database, "movies");
-    const q = query(collectionRef, limit(4));
+    const q = query(collectionRef, where("status", "==", true), limit(4));
     const querySnapshot = await getDocs(q);
 
     try {
@@ -97,6 +99,13 @@ const HeaderSlider: React.FC = () => {
             </SwiperSlide>
           ))}
         </Swiper>
+      </>
+    );
+  } else {
+    return (
+      <>
+        <HeaderNav />
+        <HeaderSliderSkeleton />
       </>
     );
   }

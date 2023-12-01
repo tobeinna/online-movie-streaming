@@ -69,7 +69,6 @@ const SearchMovie: React.FC = () => {
         res.push({ id: doc.id, name: doc.data().name })
       );
       setCategories(res);
-      
     } catch (error) {
       toast("Error while get category list!", { type: "error" });
     }
@@ -99,7 +98,8 @@ const SearchMovie: React.FC = () => {
               or(
                 where("categoriesId", "array-contains", sortedCategories[0]),
                 where("categoriesId", "==", sortedCategories)
-              )
+              ),
+              where("status", "==", true)
             ),
             orderBy("search_title"),
             limit(pageSize)
@@ -113,7 +113,8 @@ const SearchMovie: React.FC = () => {
               or(
                 where("categoriesId", "array-contains", sortedCategories[0]),
                 where("categoriesId", "==", sortedCategories)
-              )
+              ),
+              where("status", "==", true)
             ),
             orderBy("search_title")
           );
@@ -123,6 +124,7 @@ const SearchMovie: React.FC = () => {
             moviesRef,
             where("search_title", ">=", lowercaseSearchTitle),
             where("search_title", "<=", lowercaseSearchTitle + "\uf8ff"),
+            where("status", "==", true),
             orderBy("search_title"),
             limit(pageSize)
           );
@@ -131,6 +133,7 @@ const SearchMovie: React.FC = () => {
             moviesRef,
             where("search_title", ">=", lowercaseSearchTitle),
             where("search_title", "<=", lowercaseSearchTitle + "\uf8ff"),
+            where("status", "==", true),
             orderBy("search_title")
           );
         }
@@ -148,7 +151,8 @@ const SearchMovie: React.FC = () => {
                 or(
                   where("categoriesId", "array-contains", sortedCategories[0]),
                   where("categoriesId", "==", sortedCategories)
-                )
+                ),
+                where("status", "==", true)
               ),
               orderBy("search_title"),
               startAfter(lastDoc),
@@ -163,7 +167,8 @@ const SearchMovie: React.FC = () => {
                 or(
                   where("categoriesId", "array-contains", sortedCategories[0]),
                   where("categoriesId", "==", sortedCategories)
-                )
+                ),
+                where("status", "==", true)
               ),
               orderBy("search_title")
             );
@@ -173,6 +178,7 @@ const SearchMovie: React.FC = () => {
               moviesRef,
               where("search_title", ">=", lowercaseSearchTitle),
               where("search_title", "<=", lowercaseSearchTitle + "\uf8ff"),
+              where("status", "==", true),
               orderBy("search_title"),
               startAfter(lastDoc),
               limit(pageSize)
@@ -182,6 +188,7 @@ const SearchMovie: React.FC = () => {
               moviesRef,
               where("search_title", ">=", lowercaseSearchTitle),
               where("search_title", "<=", lowercaseSearchTitle + "\uf8ff"),
+              where("status", "==", true),
               orderBy("search_title")
             );
           }
@@ -198,7 +205,8 @@ const SearchMovie: React.FC = () => {
                 or(
                   where("categoriesId", "array-contains", sortedCategories[0]),
                   where("categoriesId", "==", sortedCategories)
-                )
+                ),
+                where("status", "==", true)
               ),
               orderBy("search_title"),
               limitToLast(pageSize),
@@ -213,7 +221,8 @@ const SearchMovie: React.FC = () => {
                 or(
                   where("categoriesId", "array-contains", sortedCategories[0]),
                   where("categoriesId", "==", sortedCategories)
-                )
+                ),
+                where("status", "==", true)
               ),
               orderBy("search_title")
             );
@@ -223,6 +232,7 @@ const SearchMovie: React.FC = () => {
               moviesRef,
               where("search_title", ">=", lowercaseSearchTitle),
               where("search_title", "<=", lowercaseSearchTitle + "\uf8ff"),
+              where("status", "==", true),
               orderBy("search_title"),
               limitToLast(pageSize),
               endBefore(firstDoc)
@@ -232,6 +242,7 @@ const SearchMovie: React.FC = () => {
               moviesRef,
               where("search_title", ">=", lowercaseSearchTitle),
               where("search_title", "<=", lowercaseSearchTitle + "\uf8ff"),
+              where("status", "==", true),
               orderBy("search_title")
             );
           }
@@ -286,9 +297,8 @@ const SearchMovie: React.FC = () => {
   useEffect(() => {
     getCategories();
     console.log(result);
-    
+
     console.log(previousPage, currentPage);
-    
   }, [result]);
 
   useLayoutEffect(() => {
@@ -323,9 +333,7 @@ const SearchMovie: React.FC = () => {
 
       if (JSON.stringify(calculatedVotesResult) !== JSON.stringify(result)) {
         // setresult(calculatedVotesresult);
-        setResult(
-          calculatedVotesResult
-        );
+        setResult(calculatedVotesResult);
       }
     }
   }, [result]);
@@ -338,7 +346,7 @@ const SearchMovie: React.FC = () => {
           Search your movies
         </h3>
         <div className="body flex flex-col lg:flex-row">
-          <div className="filter w-full lg:w-1/4 flex flex-col gap-4">
+          <div className="filter max-w-md w-full lg:w-1/4 flex flex-col gap-4 mx-auto">
             <div className="title-input flex flex-col gap-2">
               <span className="text-white text-lg">Enter movie's title</span>
               <input

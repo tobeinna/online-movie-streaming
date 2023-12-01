@@ -9,6 +9,7 @@ import {
   limit,
   orderBy,
   query,
+  where,
 } from "firebase/firestore";
 
 import { database } from "../../configs/firebaseConfig";
@@ -23,14 +24,9 @@ const JustReleaseSlider = () => {
   const [moviesData, setMoviesData] = useState<Movie[]>();
   const [categoriesData, setCategoriesData] = useState<Category[]>();
 
-
   async function getMovies() {
     const collectionRef = collection(database, "movies");
-    const q = query(
-      collectionRef,
-      orderBy("release_date", "desc"),
-      limit(10)
-    );
+    const q = query(collectionRef, where("status", "==", true), orderBy("release_date", "desc"), limit(10));
     const querySnapshot = await getDocs(q);
 
     try {
@@ -92,10 +88,10 @@ const JustReleaseSlider = () => {
     sliderRef.current.swiper.slideNext();
   }, []);
 
-  if (moviesData) {
-    return (
-      <div className="w-11/12 ml-auto mr-4 max-md:mr-1 pt-3">
-        <h1 className="text-2xl font-bold text-slate-200 mb-4">Just Release</h1>
+  return (
+    <div className="w-11/12 ml-auto mr-4 max-md:mr-1 pt-3">
+      <h1 className="text-2xl font-bold text-slate-200 mb-4">Just Release</h1>
+      {moviesData?.length ? (
         <Swiper
           ref={sliderRef}
           navigation={{
@@ -122,7 +118,10 @@ const JustReleaseSlider = () => {
           {moviesData?.map((item, index) => {
             return (
               <SwiperSlide className="w-auto" key={index}>
-                <MovieCardVertical movie_data={item} categories_data={categoriesData as Category[]}/>
+                <MovieCardVertical
+                  movie_data={item}
+                  categories_data={categoriesData as Category[]}
+                />
               </SwiperSlide>
             );
           })}
@@ -149,9 +148,11 @@ const JustReleaseSlider = () => {
             </div>
           )}
         </Swiper>
-      </div>
-    );
-  }
+      ) : (
+        <div className="w-auto rounded-md h-[370px] bg-gray-500 animate-pulse"></div>
+      )}
+    </div>
+  );
 };
 
 export default JustReleaseSlider;

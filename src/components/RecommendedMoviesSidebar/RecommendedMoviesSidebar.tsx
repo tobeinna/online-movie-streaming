@@ -39,6 +39,7 @@ const RecommendedMoviesSidebar: React.FC<RecommendedMoviesSidebarProp> = ({
         "array-contains-any",
         original_movie_data.categoriesId
       ),
+      where("status", "==", true),
       orderBy("release_date", "desc"),
       limit(5)
     );
@@ -88,8 +89,8 @@ const RecommendedMoviesSidebar: React.FC<RecommendedMoviesSidebarProp> = ({
   }, [original_movie_data]);
 
   useEffect(() => {
-    getCategories()
-  }, [moviesData])
+    getCategories();
+  }, [moviesData]);
 
   // Control slider actions
   const [isDisplayedPrev, setIsDisplayedPrev] = useState<boolean>(false);

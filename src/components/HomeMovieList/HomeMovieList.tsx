@@ -9,6 +9,7 @@ import {
   limit,
   orderBy,
   query,
+  where,
 } from "firebase/firestore";
 
 import { database } from "../../configs/firebaseConfig";
@@ -25,7 +26,7 @@ const HomeMovieList = () => {
 
   async function getMovies() {
     const collectionRef = collection(database, "movies");
-    const q = query(collectionRef, orderBy("release_date", "desc"), limit(10));
+    const q = query(collectionRef, where("status", "==", true), orderBy("release_date", "desc"), limit(10));
     const querySnapshot = await getDocs(q);
 
     try {
@@ -99,12 +100,10 @@ const HomeMovieList = () => {
     sliderRef.current.swiper.slideNext();
   }, []);
 
-  if (moviesData) {
-    return (
-      <div className="w-11/12 ml-auto mr-4 max-md:mr-1 pt-3">
-        <h1 className="text-2xl font-bold text-slate-200 mb-4">
-          Highest Rating
-        </h1>
+  return (
+    <div className="w-11/12 ml-auto mr-4 max-md:mr-1 pt-3">
+      <h1 className="text-2xl font-bold text-slate-200 mb-4">Highest Rating</h1>
+      {moviesData?.length ? (
         <Swiper
           ref={sliderRef}
           navigation={{
@@ -161,9 +160,11 @@ const HomeMovieList = () => {
             </div>
           )}
         </Swiper>
-      </div>
-    );
-  }
+      ) : (
+        <div className="w-auto rounded-md h-[240px] bg-gray-500 animate-pulse"></div>
+      )}
+    </div>
+  );
 };
 
 export default HomeMovieList;

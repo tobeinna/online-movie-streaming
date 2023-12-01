@@ -1,6 +1,6 @@
 import { doc, getDoc } from "firebase/firestore";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router";
+import { useLocation, useNavigate, useParams } from "react-router";
 import { FaLightbulb, FaRegLightbulb } from "react-icons/fa6";
 import clsx from "clsx";
 
@@ -19,6 +19,9 @@ const WatchMovie = () => {
   const movieParam = useParams();
   const [data, setData] = useState<Movie>();
   const [isLightOff, setIsLightOff] = useState<boolean>(false);
+
+  const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     if (data) {
@@ -52,10 +55,10 @@ const WatchMovie = () => {
       const movieRef = doc(database, `movies/${movieParam.movie_id}`);
       const movieSnapshot = await getDoc(movieRef);
 
-      if (movieSnapshot.exists()) {
+      if (movieSnapshot.exists() && movieSnapshot.data().status === true) {
         setData({ ...(movieSnapshot.data() as Movie), id: movieSnapshot.id });
       } else {
-        // navigate("/", { replace: true });
+        navigate("/movie/search", { replace: true, state: { from: location } });
       }
     };
 
