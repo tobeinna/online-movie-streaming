@@ -35,11 +35,7 @@ export const createComment = async (
   }
 };
 
-export const getComments = async (
-  movie_id: string,
-  commentLimit: number,
-  lastDoc?: DocumentData
-) => {
+export const getComments = async (movie_id: string, commentLimit: number) => {
   const commentsRef = collection(database, "comments");
   let q = query(
     commentsRef,
@@ -48,12 +44,12 @@ export const getComments = async (
     orderBy("created_date", "desc")
   );
 
-//   if (lastDoc) {
-//     q = query(q, startAfter(lastDoc));
-//   }
+  let countQuery = query(commentsRef, where("movie_id", "==", movie_id));
 
   try {
     const commentsSnapshot = await getDocs(q);
+
+    const commentsCount = (await getCountFromServer(countQuery)).data().count;
     if (!commentsSnapshot.empty) {
       const result: Comment[] = [];
       commentsSnapshot.forEach((doc) => {
@@ -61,10 +57,51 @@ export const getComments = async (
       });
       return {
         result,
+        commentsCount,
         lastDoc: commentsSnapshot.docs[commentsSnapshot.docs.length - 1],
       };
     } else {
-      return { result: [], lastDoc: lastDoc };
+      return { result: [], commentsCount, lastDoc: undefined };
+    }
+  } catch (error) {
+    toast.error(`${error}`);
+    console.log(error);
+  }
+};
+
+export const getNextComments = async (
+  movie_id: string,
+  commentLimit: number,
+  lastDoc?: DocumentData
+) => {
+  const commentsRef = collection(database, "comments");
+  let q = query(
+    commentsRef,
+    where("movie_id", "==", movie_id),
+    orderBy("created_date", "desc"),
+    startAfter(lastDoc),
+    limit(commentLimit)
+  );
+
+  let countQuery = query(commentsRef, where("movie_id", "==", movie_id));
+
+  try {
+    const commentsSnapshot = await getDocs(q);
+
+    const commentsCount = (await getCountFromServer(countQuery)).data().count;
+
+    if (!commentsSnapshot.empty) {
+      const result: Comment[] = [];
+      commentsSnapshot.forEach((doc) => {
+        result.push({ id: doc.id, ...doc.data() } as Comment);
+      });
+      return {
+        result,
+        commentsCount,
+        lastDoc: commentsSnapshot.docs[commentsSnapshot.docs.length - 1],
+      };
+    } else {
+      return { result: [], commentsCount, lastDoc: lastDoc };
     }
   } catch (error) {
     toast.error(`${error}`);

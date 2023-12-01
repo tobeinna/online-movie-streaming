@@ -2,7 +2,11 @@ import { useEffect, useLayoutEffect, useState } from "react";
 import { DocumentData } from "firebase/firestore";
 
 import { Comment } from "../../types/movie.types";
-import { getComments } from "../../services/movie.services";
+import { getComments, getNextComments } from "../../services/movie.services";
+import CommentItem from "../CommentItem/CommentItem";
+import { toast } from "react-toastify";
+import MainButton from "../Buttons/MainButton/MainButton";
+import Spinner from "../Spinner/Spinner";
 
 const CommentList: React.FC<{ movie_id: string; isReload: boolean }> = ({
   movie_id,
@@ -10,76 +14,82 @@ const CommentList: React.FC<{ movie_id: string; isReload: boolean }> = ({
 }) => {
   const [currentMovieId, setCurrentMovieId] = useState<string>("");
   const [list, setList] = useState<Comment[]>([]);
+  const [newComments, setNewComments] = useState<Comment[]>([]);
   const [lastDoc, setLastDoc] = useState<DocumentData>();
+  const [commentsCount, setCommentsCount] = useState<number>(0);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   useEffect(() => {
-    setCurrentMovieId(movie_id)
-  }, [movie_id])
+    setCurrentMovieId(movie_id);
+  }, [movie_id]);
 
   const getCommentsData = async () => {
-    if (lastDoc) {
-      const respond = await getComments(currentMovieId, 4, lastDoc);
-      if (respond) {
-        setList(respond.result);
-        setLastDoc(respond.lastDoc);
-      } else {
-        setList([]);
-        setLastDoc(undefined);
-      }
-    } else {
-      const respond = await getComments(currentMovieId, 4);
-      if (respond) {
-        setList(respond.result);
-        setLastDoc(respond.lastDoc);
-      } else {
-        setList([]);
-        setLastDoc(undefined);
-      }
+    try {
+      const respond = await getComments(movie_id, 3);
+      setNewComments(respond?.result as Comment[]);
+      setLastDoc(respond?.lastDoc);
+      setCommentsCount(respond?.commentsCount || 0);
+    } catch (error) {
+      toast.error(`${error}`);
     }
+    setIsLoading(false);
   };
 
-  useLayoutEffect(() => {
-    // if (currentMovieId) {
+  const getNextCommentsData = async () => {
+    try {
+      const respond = await getNextComments(currentMovieId, 3, lastDoc);
+
+      setList((prev) => [...prev, ...newComments]);
+      setNewComments(respond?.result as Comment[]);
+      setLastDoc(respond?.lastDoc);
+      setCommentsCount(respond?.commentsCount || 0);
+    } catch (error) {
+      toast.error(`${error}`);
+    }
+    setIsLoading(false);
+  };
+
+  useEffect(() => {
+    setIsLoading(true);
     getCommentsData();
-    // }
   }, []);
 
-  useLayoutEffect(() => {
-    // if (currentMovieId) {
-    getCommentsData();
-    // }
-  }, [currentMovieId]);
-
-  useLayoutEffect(() => {
+  useEffect(() => {
     setList([]);
+    setNewComments([]);
+    setCommentsCount(0);
     setLastDoc(undefined);
+    setIsLoading(true);
     getCommentsData();
-  }, [currentMovieId, isReload]);
+  }, [movie_id, isReload]);
 
   if (movie_id) {
     return (
-      <div className="comment-list-container w-full mt-10">
-        {list ? (
-          list.map((item) => (
-            <div key={item.id} className="mt-4">
-              <div className="w-full flex gap-4">
-                <img src={""} alt="" className="w-12 h-12 rounded-full" />
-
-                <div className="comment bg-gray-600 p-2 rounded-md w-full">
-                  <p className="text-slate-200">{item.content}</p>
-                </div>
-              </div>
-              <div className="w-full text-right">
-                <span className="text-slate-400 w-fit text-xs italic">
-                  {new Date(item.created_date.seconds * 1000).toLocaleString()}
-                </span>
-              </div>
-            </div>
-          ))
-        ) : (
-          <span className="text-slate-300">No comment</span>
-        )}
-      </div>
+      <>
+        <h3 className="text-slate-50 w-full text-lg my-4">
+          {commentsCount === 0 && !isLoading ? "No" : commentsCount} comments
+        </h3>
+        <div className="comment-list-container w-full mt-10">
+          {list &&
+            list.map((item) => <CommentItem comment={item} key={item.id} />)}
+          {newComments &&
+            newComments.map((item) => (
+              <CommentItem comment={item} key={item.id} />
+            ))}
+          {commentsCount > list.length + newComments.length && (
+            <MainButton
+              className="w-full mt-4"
+              type="outlined"
+              text={isLoading ? "" : "Load more"}
+              icon={isLoading && <Spinner />}
+              onClick={() => {
+                setIsLoading(true);
+                getNextCommentsData();
+              }}
+            />
+          )}
+        </div>
+      </>
     );
   }
 };

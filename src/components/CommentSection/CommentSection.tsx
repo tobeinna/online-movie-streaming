@@ -22,8 +22,10 @@ const CommentSection: React.FC<{ movie_id: string }> = ({ movie_id }) => {
   }, [movie_id]);
 
   const handleComment = async () => {
-    if (!commentInput) {
+    const trimmedValue = commentInput.trim();
+    if (trimmedValue === "" || trimmedValue === "\n") {
       toast.error("Your comment cannot be empty!");
+      setCommentInput("");
       setIsLoading(false);
       return;
     }
@@ -36,8 +38,9 @@ const CommentSection: React.FC<{ movie_id: string }> = ({ movie_id }) => {
     }
 
     try {
-      await createComment(authState?.id, currentMovieId, commentInput);
       setCommentInput("");
+
+      await createComment(authState?.id, currentMovieId, trimmedValue);
       setIsReloadCommentList((prev) => !prev);
     } catch (error) {
       toast.error(`${error}`);
@@ -48,7 +51,6 @@ const CommentSection: React.FC<{ movie_id: string }> = ({ movie_id }) => {
   if (movie_id) {
     return (
       <div className="comment-section w-full h-fit my-6">
-        <h3 className="text-slate-50 w-full text-lg mb-4">Comments</h3>
         {authState?.id ? (
           <div className="comment-input flex gap-4">
             <img
@@ -56,15 +58,24 @@ const CommentSection: React.FC<{ movie_id: string }> = ({ movie_id }) => {
               alt=""
               className="w-12 h-12 rounded-full"
             />
-            <textarea
+            <input
+              type="text"
               name="content"
               id="content"
-              rows={3}
               placeholder="Share your thoughts about the movie"
-              className="rounded-md border-2 border-slate-300 w-full p-4 resize-none"
+              className="rounded-md border-2 border-slate-300 w-full p-4 disabled:bg-slate-100"
               value={commentInput}
               onChange={(e) => setCommentInput(e.target.value)}
-            ></textarea>
+              disabled={isLoading}
+              autoComplete="off"
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  setIsLoading(true);
+                  handleComment();
+                }
+              }}
+            ></input>
             <MainButton
               type="filled"
               text="Send"
@@ -85,7 +96,12 @@ const CommentSection: React.FC<{ movie_id: string }> = ({ movie_id }) => {
             to comment
           </span>
         )}
-        <CommentList movie_id={currentMovieId} isReload={isReloadCommentList} />
+        {currentMovieId && (
+          <CommentList
+            movie_id={currentMovieId}
+            isReload={isReloadCommentList}
+          />
+        )}
       </div>
     );
   }

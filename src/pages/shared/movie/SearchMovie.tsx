@@ -57,7 +57,7 @@ const SearchMovie: React.FC = () => {
   // Pagination states
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [previousPage, setPreviousPage] = useState<number>(1);
-  const [pageSize, setPageSize] = useState<number>(2);
+  const [pageSize, setPageSize] = useState<number>(6);
   const [resultCount, setResultCount] = useState<number>(0);
   const [firstDoc, setFirstDoc] = useState<DocumentData>();
   const [lastDoc, setLastDoc] = useState<DocumentData>();
@@ -508,8 +508,8 @@ const SearchMovie: React.FC = () => {
                   defaultCurrent={1}
                   total={resultCount}
                   pageSize={pageSize}
-                  pageSizeOptions={[2, 6, 12, 30]}
-                  defaultPageSize={2}
+                  pageSizeOptions={[6, 12, 30]}
+                  defaultPageSize={6}
                   showSizeChanger
                   onShowSizeChange={(current, size) => {
                     setPageSize(size);
