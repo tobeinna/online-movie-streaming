@@ -133,13 +133,13 @@ const MovieDetail = () => {
     return (
       <div>
         <MovieHeadContent data={data} categories_data={categoriesData || []} />
-        <div className="body-container w-5/6 mx-auto mt-4 flex justify-between gap-8 max-lg:flex-col">
+        <div className="body-container w-5/6 mx-auto mt-4 flex justify-between gap-8 max-md:flex-col">
           <div className="body-left w-full mr-6 flex flex-col gap-2">
             <h4 className="text-slate-50 w-full text-lg">Description</h4>
             <p className="w-full text-slate-400 text-sm font-normal mb-5">
               {data?.description}
             </p>
-            <div className="vote-container w-full flex max-sm:flex-col justify-between gap-4 items-center">
+            <div className="vote-container w-full flex max-lg:flex-col justify-between gap-4 items-center">
               <div className="current-votes flex">
                 <span className="text-slate-50 text-lg max-sm:text-base h-fit my-auto">
                   Rating:
@@ -195,7 +195,7 @@ const MovieDetail = () => {
               <CommentSection movie_id={data.id} />
             </div>
           </div>
-          <div className="body-right w-fit max-lg:w-auto">
+          <div className="body-right w-fit max-md:w-auto">
             <RecommendedMoviesSidebar original_movie_data={data} />
           </div>
         </div>

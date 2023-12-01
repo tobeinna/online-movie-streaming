@@ -110,7 +110,7 @@ const RecommendedMoviesSidebar: React.FC<RecommendedMoviesSidebarProp> = ({
     return (
       <>
         {/* When md */}
-        <div className="vertical-list hidden lg:block">
+        <div className="vertical-list hidden md:block">
           <h1 className="text-xl font-bold text-slate-200 mb-4">
             Recommended movies
           </h1>
@@ -128,7 +128,7 @@ const RecommendedMoviesSidebar: React.FC<RecommendedMoviesSidebarProp> = ({
           </div>
         </div>
         {/* When max-md */}
-        <div className="vertical-list max-lg:block hidden w-full overflow-hidden mx-auto">
+        <div className="vertical-list max-md:block hidden w-full overflow-hidden mx-auto">
           <h1 className="text-xl font-bold text-slate-200 my-4">
             Recommended movies
           </h1>

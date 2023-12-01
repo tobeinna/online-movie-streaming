@@ -84,14 +84,14 @@ const WatchMovie = () => {
                 className="w-full h-full aspect-object-cover relative z-20"
               />
             </div>
-            <div className="body-container mx-auto mt-4 flex max-md:flex-col w-full gap-4">
+            <div className="body-container mx-auto mt-4 flex max-lg:flex-col w-full gap-4">
               <div className="body-left w-fit mr-6 flex flex-col gap-2">
                 <h4 className="text-slate-50 w-full text-lg">Description</h4>
                 <p className="w-full text-slate-400 text-sm font-normal mb-5">
                   {data?.description}
                 </p>
               </div>
-              <div className="share-button flex justify-between gap-3 max-md:gap-4 w-fit h-fit mx-auto">
+              <div className="share-button flex justify-between gap-3 max-md:gap-4 w-fit h-fit ml-auto mr-0 max-lg:mx-auto">
                 <MainButton
                   // ref={lightButtonRef}
                   type="outlined"
@@ -118,7 +118,7 @@ const WatchMovie = () => {
         </div>
         <div
           className={clsx(
-            "transition-colors duration-300 bg-opacity-90 fixed top-0 left-0 w-screen h-screen",
+            "transition-all duration-300 bg-opacity-90 fixed top-0 left-0 w-screen h-screen",
             isLightOff ? "z-10 bg-black" : "-z-10"
           )}
           onClick={() => setIsLightOff(false)}
