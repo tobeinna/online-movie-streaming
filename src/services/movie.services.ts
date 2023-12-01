@@ -65,7 +65,7 @@ export const getComments = async (movie_id: string, commentLimit: number) => {
     }
   } catch (error) {
     toast.error(`${error}`);
-    console.log(error);
+    // console.log(error);
   }
 };
 
@@ -105,6 +105,6 @@ export const getNextComments = async (
     }
   } catch (error) {
     toast.error(`${error}`);
-    console.log(error);
+    // console.log(error);
   }
 };

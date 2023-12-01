@@ -40,7 +40,7 @@ const JustReleaseSlider = () => {
 
       setMoviesData(data);
     } catch (error) {
-      console.log(error);
+      // console.log(error);
     }
   }
 
@@ -59,7 +59,7 @@ const JustReleaseSlider = () => {
       });
       setCategoriesData(data);
     } catch (error) {
-      console.log(error);
+      // console.log(error);
     }
   }
 

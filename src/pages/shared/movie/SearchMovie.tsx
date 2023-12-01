@@ -267,7 +267,7 @@ const SearchMovie: React.FC = () => {
       }
       setIsQuerrying(false);
     } catch (error) {
-      console.log(error);
+      // console.log(error);
 
       toast("Error searching for movies!", { type: "error" });
       setIsQuerrying(false);
@@ -296,9 +296,9 @@ const SearchMovie: React.FC = () => {
 
   useEffect(() => {
     getCategories();
-    console.log(result);
+    // console.log(result);
 
-    console.log(previousPage, currentPage);
+    // console.log(previousPage, currentPage);
   }, [result]);
 
   useLayoutEffect(() => {

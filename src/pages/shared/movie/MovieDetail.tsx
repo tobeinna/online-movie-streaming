@@ -82,7 +82,7 @@ const MovieDetail = () => {
       });
       setCategoriesData(categories);
     } catch (error) {
-      console.log(error);
+      // console.log(error);
     }
   }
 
@@ -124,7 +124,7 @@ const MovieDetail = () => {
       );
       getMovie();
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       getMovie();
     }
   };
