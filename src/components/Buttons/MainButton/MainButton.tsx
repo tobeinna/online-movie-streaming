@@ -8,7 +8,8 @@ interface IButton {
   isSubmit?: boolean;
   onClick?: React.MouseEventHandler<HTMLButtonElement>;
   icon?: ReactNode;
-  isDisabled?: boolean
+  isDisabled?: boolean;
+  ref?: React.RefObject<HTMLButtonElement>;
 }
 
 const MainButton = ({
@@ -18,10 +19,12 @@ const MainButton = ({
   isSubmit,
   onClick,
   icon,
-  isDisabled
+  isDisabled,
+  ref,
 }: IButton) => {
   return (
     <button
+      ref={ref && ref}
       type={isSubmit ? "submit" : "button"}
       className={clsx(
         "flex justify-center gap-1 h-9 mx-auto lg:h-10 transition-colors duration-500",
@@ -41,7 +44,9 @@ const MainButton = ({
       {icon && (
         <span className="h-full flex flex-col justify-center ">{icon}</span>
       )}
-      {text && <span className="self-center font-normal text-sm w-max">{text}</span>}
+      {text && (
+        <span className="self-center font-normal text-sm w-max">{text}</span>
+      )}
     </button>
   );
 };

@@ -36,7 +36,20 @@ const HomeMovieList = () => {
           ...doc.data(),
         });
       });
-      setMoviesData(data);
+      const sortedMoviesByVotes = data
+        .map((movie) => ({
+          ...movie,
+          averageVote: movie?.votes?.length
+            ? Number(
+                (
+                  movie.votes.reduce((acc, cur) => (acc += cur.voted), 0) /
+                  movie.votes.length
+                ).toFixed(1)
+              )
+            : 0,
+        }))
+        .sort((a, b) => b.averageVote - a.averageVote);
+      setMoviesData(sortedMoviesByVotes);
     } catch (error) {
       console.log(error);
     }
@@ -120,7 +133,6 @@ const HomeMovieList = () => {
               <SwiperSlide className="w-auto" key={item.id}>
                 <MovieCard
                   movie_data={item}
-                  key={item.id}
                   categories_data={categoriesData as Category[]}
                 />
               </SwiperSlide>

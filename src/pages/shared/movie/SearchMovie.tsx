@@ -50,7 +50,7 @@ const SearchMovie: React.FC = () => {
   >([]);
   const [result, setResult] = useState<Movie[]>([]);
   const [isReset, setIsReset] = useState<boolean>(false);
-  const [isQuerrying, setIsQuerrying] = useState<boolean>(false);
+  const [isQuerrying, setIsQuerrying] = useState<boolean>(true);
   // Pagination states
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [previousPage, setPreviousPage] = useState<number>(1);
@@ -64,11 +64,12 @@ const SearchMovie: React.FC = () => {
     const catagoriesSnapshot = await getDocs(categoriesRef);
 
     try {
-      let result: Category[] = [];
+      let res: Category[] = [];
       catagoriesSnapshot.forEach((doc) =>
-        result.push({ id: doc.id, name: doc.data().name })
+        res.push({ id: doc.id, name: doc.data().name })
       );
-      setCategories(result);
+      setCategories(res);
+      
     } catch (error) {
       toast("Error while get category list!", { type: "error" });
     }
@@ -85,43 +86,6 @@ const SearchMovie: React.FC = () => {
 
       let q = query(moviesRef);
       let allMoviesQuery = query(moviesRef);
-
-      // let q = query(
-      //   moviesRef,
-      //   and(
-      //     where("search_title", ">=", lowercaseSearchTitle),
-      //     where("search_title", "<=", lowercaseSearchTitle + "\uf8ff"),
-      //     sortedCategories.length > 0
-      //       ? or(
-      //           where("categoriesId", "array-contains", sortedCategories[0]),
-      //           where("categoriesId", "==", sortedCategories)
-      //         )
-      //       : or()
-      //   ),
-      //   currentPage === 1
-      //     ? (orderBy("search_title"), limit(pageSize))
-      //     : currentPage > previousPage
-      //     ? (orderBy("search_title"), startAfter(lastDoc), limit(pageSize))
-      //     : currentPage < previousPage
-      //     ? (orderBy("search_title"),
-      //       limitToLast(pageSize),
-      //       endBefore(firstDoc))
-      //     : (orderBy("search_title"), limit(pageSize))
-      // );
-      // let allMoviesQuery = query(
-      //   moviesRef,
-      //   and(
-      //     where("search_title", ">=", lowercaseSearchTitle),
-      //     where("search_title", "<=", lowercaseSearchTitle + "\uf8ff"),
-      //     sortedCategories.length > 0
-      //       ? or(
-      //           where("categoriesId", "array-contains", sortedCategories[0]),
-      //           where("categoriesId", "==", sortedCategories)
-      //         )
-      //       : or()
-      //   ),
-      //   orderBy("search_title")
-      // );
 
       // If first page
       if (currentPage === 1) {
@@ -321,6 +285,10 @@ const SearchMovie: React.FC = () => {
 
   useEffect(() => {
     getCategories();
+    console.log(result);
+    
+    console.log(previousPage, currentPage);
+    
   }, [result]);
 
   useLayoutEffect(() => {
@@ -356,12 +324,7 @@ const SearchMovie: React.FC = () => {
       if (JSON.stringify(calculatedVotesResult) !== JSON.stringify(result)) {
         // setresult(calculatedVotesresult);
         setResult(
-          calculatedVotesResult.sort((a, b) => {
-            if (!a.averageVote) return 1;
-            if (!b.averageVote) return -1;
-
-            return b.averageVote - a.averageVote;
-          })
+          calculatedVotesResult
         );
       }
     }
@@ -481,7 +444,7 @@ const SearchMovie: React.FC = () => {
               Found {resultCount} movie(s)
             </span>
             <div className="result w-11/12 mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-y-6">
-              {isQuerrying && result.length > 0
+              {isQuerrying
                 ? Array.from({ length: pageSize }, (_, index) => (
                     <MovieCardSkeleton key={index} />
                   ))

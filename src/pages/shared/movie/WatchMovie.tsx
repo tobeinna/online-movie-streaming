@@ -1,5 +1,5 @@
 import { doc, getDoc } from "firebase/firestore";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import { FaLightbulb, FaRegLightbulb } from "react-icons/fa6";
 import clsx from "clsx";
@@ -12,12 +12,13 @@ import {
   FacebookShareButton,
 } from "../../../components/Buttons/ShareButtons/ShareButtons";
 import MainButton from "../../../components/Buttons/MainButton/MainButton";
+import CommentSection from "../../../components/CommentSection/CommentSection";
+import Spinner from "../../../components/Spinner/Spinner";
 
 const WatchMovie = () => {
   const movieParam = useParams();
   const [data, setData] = useState<Movie>();
   const [isLightOff, setIsLightOff] = useState<boolean>(false);
-  const lightRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (data) {
@@ -61,35 +62,14 @@ const WatchMovie = () => {
     getMovie();
   }, [movieParam]);
 
-  const handleClickOverlay = (e: MouseEvent) => {
-    e.stopPropagation();
-    if (lightRef.current && !lightRef.current.contains(e.target as Node)) {
-      setIsLightOff(false);
-    }
-  };
-
-  const handleClickOverlayDocumentMouseDown: EventListener = (e) => {
-    handleClickOverlay(e as unknown as MouseEvent);
-  };
-
-  useEffect(() => {
-    document.addEventListener("mousedown", handleClickOverlayDocumentMouseDown);
-
-    return () => {
-      document.removeEventListener(
-        "mousedown",
-        handleClickOverlayDocumentMouseDown
-      );
-    };
-  }, []);
-
   if (data) {
     return (
       <>
-        <div
-          ref={lightRef}
-          className="nav-temp-overlay fixed bg-black w-full h-[70px] z-30"
-        ></div>
+        <button
+          className={clsx(
+            "nav-temp-overlay fixed bg-black w-full h-[70px] z-30"
+          )}
+        ></button>
         <div className="body-container w-5/6 mx-auto flex max-md:flex-col pt-20">
           <div className="body-left w-full mr-6 flex flex-col gap-2">
             <h4 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl text-white mb-4 font-bold">
@@ -113,6 +93,7 @@ const WatchMovie = () => {
               </div>
               <div className="share-button flex justify-between gap-3 max-md:gap-4 w-fit h-fit mx-auto">
                 <MainButton
+                  // ref={lightButtonRef}
                   type="outlined"
                   text={isLightOff ? "Lights on" : "Lights off"}
                   icon={isLightOff ? <FaLightbulb /> : <FaRegLightbulb />}
@@ -127,6 +108,9 @@ const WatchMovie = () => {
                 <FacebookShareButton />
               </div>
             </div>
+            <div className="comments-container">
+              <CommentSection movie_id={data.id} />
+            </div>
           </div>
           <div className="body-right w-fit max-md:w-auto">
             <RecommendedMoviesSidebar original_movie_data={data} />
@@ -134,14 +118,19 @@ const WatchMovie = () => {
         </div>
         <div
           className={clsx(
-            "z-10 transition-colors duration-300 bg-opacity-90 fixed top-0 left-0 w-screen h-screen",
-            isLightOff && "bg-black"
+            "transition-colors duration-300 bg-opacity-90 fixed top-0 left-0 w-screen h-screen",
+            isLightOff ? "z-10 bg-black" : "-z-10"
           )}
+          onClick={() => setIsLightOff(false)}
         ></div>
       </>
     );
   } else {
-    return <span className="text-white">cannot load data</span>;
+    return (
+      <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+        <Spinner className="w-10 h-10" />
+      </span>
+    );
   }
 };
 
