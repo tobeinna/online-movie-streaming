@@ -17,7 +17,7 @@ const LogoutModal: React.FC<ILogoutModalProps> = ({ open, setOpen }) => {
         logOut();
         navigate("/auth/login");
       }}
-      okButtonProps={{ className: "logout-modal-ok text-[#dd2b0e]" }}
+      okButtonProps={{ className: "logout-modal-ok text-slate-100 bg-[#dd2b0e]" }}
       cancelButtonProps={{ className: "logout-modal-cancel" }}
       okText="Log out"
       onCancel={() => setOpen(false)}
