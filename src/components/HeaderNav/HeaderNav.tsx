@@ -317,7 +317,9 @@ const HeaderNav = () => {
           title="Search for your movies"
           style={{ top: 20 }}
           open={isSearchModalOpen}
-          okButtonProps={{ className: "header-search-modal-ok text-slate-100 bg-green-600" }}
+          okButtonProps={{
+            className: "header-search-modal-ok text-slate-100 bg-green-600",
+          }}
           cancelButtonProps={{ className: "header-search-modal-cancel" }}
           okText="Search"
           onOk={() => {

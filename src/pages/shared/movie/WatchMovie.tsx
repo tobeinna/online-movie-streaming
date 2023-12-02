@@ -130,9 +130,9 @@ const WatchMovie = () => {
     );
   } else {
     return (
-      <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-        <Spinner className="w-10 h-10" />
-      </span>
+      <div className="w-screen h-screen flex flex-col justify-center">
+        <Spinner className="w-10 h-10 mx-auto my-auto" />
+      </div>
     );
   }
 };
