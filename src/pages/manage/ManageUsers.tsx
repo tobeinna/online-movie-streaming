@@ -13,14 +13,12 @@ import {
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { MdEdit, MdRefresh } from "react-icons/md";
+import { MdRefresh } from "react-icons/md";
 import { FaUser, FaUserSlash } from "react-icons/fa6";
 import { SortOrder } from "antd/es/table/interface";
-// import { IoIosAddCircle } from "react-icons/io";
 
 import { database } from "../../configs/firebaseConfig";
 import { User } from "../../types/user.types";
-import EditUserModal from "../../components/Modal/EditUserModal";
 
 const ManageUsers = () => {
   const [searchInput, setSearchInput] = useState<string>("");
@@ -28,8 +26,6 @@ const ManageUsers = () => {
   const [isLoadingTable, setIsLoadingTable] = useState<boolean>(false);
   const [isLoadingSearchInput, setIsLoadingSearchInput] =
     useState<boolean>(false);
-  const [isDisplayEditModal, setIsDisplayEditModal] = useState<boolean>(false);
-  const [editedUser, setEditedUser] = useState<User | undefined>();
 
   const getUsersData = async () => {
     try {
@@ -116,14 +112,6 @@ const ManageUsers = () => {
     setIsLoadingTable(true);
     getUsersData();
   }, []);
-
-  useEffect(() => {
-    if (!isDisplayEditModal) {
-      setEditedUser(undefined);
-      setIsLoadingTable(true);
-      getUsersData();
-    }
-  }, [isDisplayEditModal]);
 
   const tableColumns: ColumnType<User>[] = [
     {
@@ -275,7 +263,7 @@ const ManageUsers = () => {
         columns={tableColumns}
         dataSource={tableData}
         scroll={{ y: "calc(100vh - 20rem)" }}
-        rowKey={record => record?.uid || ""}
+        rowKey={(record) => record?.uid || ""}
         loading={isLoadingTable}
         pagination={false}
         className="w-11/12 mx-auto mt-4"
