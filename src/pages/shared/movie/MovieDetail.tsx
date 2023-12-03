@@ -10,13 +10,13 @@ import { useEffect, useLayoutEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router";
 import { AiFillStar } from "react-icons/ai";
 import ReactStars from "react-stars";
+import { toast } from "react-toastify";
+import { Link } from "react-router-dom";
 
 import { database } from "../../../configs/firebaseConfig";
 import { Category, Movie } from "../../../types/movie.types";
 import RecommendedMoviesSidebar from "../../../components/RecommendedMoviesSidebar/RecommendedMoviesSidebar";
 import useAuth from "../../../hooks/useAuth";
-import { toast } from "react-toastify";
-import { Link } from "react-router-dom";
 import MovieHeadContent from "../../../components/MovieHeadContent/MovieHeadContent";
 import Spinner from "../../../components/Spinner/Spinner";
 import CommentSection from "../../../components/CommentSection/CommentSection";

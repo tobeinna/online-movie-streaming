@@ -57,6 +57,14 @@ body {
   margin: auto 0;
 }
 
+.ant-float-btn-body {
+  background-color: #c3c3c3 !important;
+}
+
+.ant-float-btn-body:hover {
+  background-color: #ffffff !important;
+}
+
 /* width */
 ::-webkit-scrollbar {
   position: relative;

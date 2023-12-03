@@ -31,14 +31,22 @@ const CommentItem: React.FC<ICommentcurrentCommentProp> = ({ comment }) => {
       <div key={currentComment.id} className="mt-4">
         <div className="w-full flex gap-4">
           <img
-            src={currentUser?.photoURL ? currentUser.photoURL : "/default-avatar.jpg"}
+            src={
+              currentUser?.photoURL
+                ? currentUser.photoURL
+                : "/default-avatar.jpg"
+            }
             alt=""
             className="w-12 h-12 rounded-full"
           />
           <div className="flex flex-col gap-2 w-full">
-            <p className="font-semibold text-slate-100">
-              {currentUser?.displayName}
-            </p>
+            {currentUser?.displayName ? (
+              <p className="font-semibold text-slate-100">
+                {currentUser?.displayName}
+              </p>
+            ) : (
+              <div className="h-6 w-36 bg-slate-500 animate-pulse rounded-xl"></div>
+            )}
 
             <div className="comment bg-gray-600 p-2 rounded-md w-full">
               <p className="text-slate-200">{currentComment.content}</p>
