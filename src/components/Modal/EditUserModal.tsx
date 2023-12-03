@@ -161,6 +161,7 @@ const EditUserModal: React.FC<IEditUserModalProps> = ({
         setOpen(false);
       }}
       title="Edit profile"
+      maskClosable={!isLoading}
       destroyOnClose
     >
       <form
@@ -225,6 +226,7 @@ const EditUserModal: React.FC<IEditUserModalProps> = ({
             className="edit-user-cancel w-full"
             type="default"
             onClick={() => setOpen(false)}
+            disabled={isLoading}
           >
             Cancel
           </Button>

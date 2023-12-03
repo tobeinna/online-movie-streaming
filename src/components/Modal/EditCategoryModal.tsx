@@ -85,6 +85,7 @@ const EditCategoryModal: React.FC<IEditCategoryModalProps> = ({
       }}
       title="Edit category's info"
       destroyOnClose
+      maskClosable={!isLoading}
     >
       <form
         className="flex w-full mx-auto flex-col gap-4"
@@ -117,6 +118,7 @@ const EditCategoryModal: React.FC<IEditCategoryModalProps> = ({
             className="w-full"
             type="default"
             onClick={() => setOpen(false)}
+            disabled={isLoading}
           >
             Cancel
           </Button>

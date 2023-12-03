@@ -162,6 +162,7 @@ const AddMovieModal: React.FC<IAddMovieModalProps> = ({ open, setOpen }) => {
       title="Add movie"
       destroyOnClose
       width={"60%"}
+      maskClosable={!isLoading}
     >
       <form
         className="flex w-full mx-auto flex-col gap-4"
@@ -331,6 +332,7 @@ const AddMovieModal: React.FC<IAddMovieModalProps> = ({ open, setOpen }) => {
             className="w-full"
             type="default"
             onClick={() => setOpen(false)}
+            disabled={isLoading}
           >
             Cancel
           </Button>

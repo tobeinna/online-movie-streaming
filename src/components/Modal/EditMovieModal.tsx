@@ -235,6 +235,7 @@ const EditMovieModal: React.FC<IEditMovieModalProps> = ({
         title="Edit movie's info"
         destroyOnClose
         width={"60%"}
+        maskClosable={!isLoading}
       >
         <form
           className="flex w-full mx-auto flex-col gap-4"
@@ -411,6 +412,7 @@ const EditMovieModal: React.FC<IEditMovieModalProps> = ({
               className="w-full"
               type="default"
               onClick={() => setOpen(false)}
+              disabled={isLoading}
             >
               Cancel
             </Button>

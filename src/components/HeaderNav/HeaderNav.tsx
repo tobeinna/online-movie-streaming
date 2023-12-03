@@ -254,7 +254,7 @@ const HeaderNav = () => {
               </div>
             )}
           </div>
-          {authState === undefined ? (
+          {authState === null ? (
             <>
               <Link to={"/auth/register"} className="max-lg:hidden">
                 <MainButton type="outlined" text="Sign up" />
@@ -263,7 +263,7 @@ const HeaderNav = () => {
                 <MainButton type="filled" text="Login" />
               </Link>
             </>
-          ) : authState === null ? (
+          ) : authState === undefined ? (
             <></>
           ) : (
             <div className="tooltip-container">

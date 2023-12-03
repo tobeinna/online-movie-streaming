@@ -74,6 +74,7 @@ const AddCategoryModal: React.FC<IAddCategoryModalProps> = ({
         setOpen(false);
       }}
       title="Add category"
+      maskClosable={!isLoading}
       destroyOnClose
     >
       <form
@@ -102,6 +103,7 @@ const AddCategoryModal: React.FC<IAddCategoryModalProps> = ({
             className="w-full"
             type="default"
             onClick={() => setOpen(false)}
+            disabled={isLoading}
           >
             Cancel
           </Button>
