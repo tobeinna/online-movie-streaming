@@ -235,7 +235,7 @@ const HeaderNav = () => {
                 </button>
               </div>
             )}
-            {authState === undefined && (
+            {authState === null && (
               <div className="flex flex-col gap-4 w-[210px] mx-[20px] mt-12">
                 <Link to={"/auth/register"}>
                   <MainButton
