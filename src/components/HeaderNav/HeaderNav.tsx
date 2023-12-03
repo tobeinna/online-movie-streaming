@@ -14,6 +14,7 @@ import { collection, getDocs } from "firebase/firestore";
 import { database } from "../../configs/firebaseConfig.js";
 import { toast } from "react-toastify";
 import LogoutModal from "../Modal/LogoutModal.js";
+import EditUserModal from "../Modal/EditUserModal.js";
 
 const animatedComponents = makeAnimated();
 
@@ -37,6 +38,7 @@ const HeaderNav = () => {
     ISelectItem[]
   >([]);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [isDisplayEditModal, setIsDisplayEditModal] = useState<boolean>(false);
 
   const sideNavRef = useRef<HTMLDivElement>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
@@ -153,15 +155,6 @@ const HeaderNav = () => {
             className="object-cover w-max h-auto my-auto"
           />
         </Link>
-        {/* <nav className="my-auto hidden lg:block">
-          {headerNavLinks.map((item, index) => (
-            <Link to={item.link} key={index} className="">
-              <span className="transition-colors duration-500 hover:bg-white hover:bg-opacity-20 px-5 py-2 rounded-md text-slate-200 hover:text-white font-medium">
-                {item.text}
-              </span>
-            </Link>
-          ))}
-        </nav> */}
         <div className="nav-button-group flex justify-between gap-2 my-auto">
           {location.pathname !== "/movie/search" && (
             <MainButton
@@ -191,13 +184,23 @@ const HeaderNav = () => {
           >
             <MainButton
               type="icon-only"
-              icon={<IoMdClose />}
-              className="text-[black] z-10 absolute float-right top-4 right-4 border-none w-9 h-9 p-0"
+              icon={<IoMdClose className="text-slate-600" />}
+              className="text-[black] z-10 absolute float-right top-3 right-3 border-none w-9 h-9 p-0"
               onClick={handleHideModal}
             />
             {authState && authState !== null && authState.displayName && (
               <div className="user-info flex flex-col gap-1">
-                <p className="user-text mt-7 mb-2 ml-5 w-[184px]">
+                <img
+                  className="avatar mt-7 mx-auto w-10 h-10 rounded-[21px]"
+                  src={
+                    (authState.photoUrl !== "undefined" &&
+                      authState.photoUrl) ||
+                    "/default-avatar.jpg"
+                  }
+                  alt=""
+                  onClick={handleDisplayTooltip}
+                />
+                <p className="user-text mt-4 mb-2 ml-5 w-[184px]">
                   Hello <strong>{authState.displayName}</strong>!
                 </p>
                 {authState.role === "admin" && (
@@ -212,7 +215,19 @@ const HeaderNav = () => {
                 )}
                 <button
                   onClick={() => {
+                    setIsDisplayEditModal(true);
+                    setDisplayModal("none");
+                    setTooltipVisible(false);
+                  }}
+                  className="font-semibold w-fit mx-5 transition-colors duration-300 hover:bg-slate-300"
+                >
+                  Edit profile
+                </button>
+                <button
+                  onClick={() => {
                     setIsLogoutModalOpen(true);
+                    setDisplayModal("none");
+                    setTooltipVisible(false);
                   }}
                   className="text-[#dd2b0e] font-semibold w-fit mx-5"
                 >
@@ -220,29 +235,20 @@ const HeaderNav = () => {
                 </button>
               </div>
             )}
-            {/* <ul className="mt-5 flex flex-col gap-5 h-max">
-              {headerNavLinks.map((item, index) => {
-                return (
-                  <li key={index} className="mx-5">
-                    <Link to={item.link}>{item.text}</Link>
-                  </li>
-                );
-              })}
-            </ul> */}
             {authState === undefined && (
-              <div className="flex w-[210px] mx-[20px] justify-between absolute bottom-2">
+              <div className="flex flex-col gap-4 w-[210px] mx-[20px] mt-12">
                 <Link to={"/auth/register"}>
                   <MainButton
                     type="outlined"
                     text="Sign up"
-                    className="w-[100px] text-slate-800 border-slate-800"
+                    className="w-full text-slate-800 border-slate-800"
                   />
                 </Link>
                 <Link to={"/auth/login"}>
                   <MainButton
                     type="filled"
                     text="Login"
-                    className="w-[100px]"
+                    className="w-full"
                   />
                 </Link>
               </div>
@@ -297,7 +303,19 @@ const HeaderNav = () => {
                       )}
                       <button
                         onClick={() => {
+                          setIsDisplayEditModal(true);
+                          setDisplayModal("none");
+                          setTooltipVisible(false);
+                        }}
+                        className="mx-2 font-semibold w-fit"
+                      >
+                        Edit profile
+                      </button>
+                      <button
+                        onClick={() => {
                           setIsLogoutModalOpen(true);
+                          setDisplayModal("none");
+                          setTooltipVisible(false);
                         }}
                         className="mx-2 text-[#dd2b0e] font-semibold w-fit"
                       >
@@ -318,9 +336,9 @@ const HeaderNav = () => {
           style={{ top: 20 }}
           open={isSearchModalOpen}
           okButtonProps={{
-            className: "header-search-modal-ok text-slate-100 bg-green-600",
+            className: "header-search-modal-ok w-full text-slate-100 bg-green-600",
           }}
-          cancelButtonProps={{ className: "header-search-modal-cancel" }}
+          cancelButtonProps={{ className: "header-search-modal-cancel w-full" }}
           okText="Search"
           onOk={() => {
             navigate(
@@ -390,6 +408,12 @@ const HeaderNav = () => {
             </div>
           </div>
         </Modal>
+        <EditUserModal
+          open={isDisplayEditModal}
+          setOpen={setIsDisplayEditModal}
+          uid={authState?.id}
+          key={"key"}
+        />
       </ConfigProvider>
     </header>
   );

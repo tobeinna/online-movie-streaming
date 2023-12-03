@@ -199,16 +199,6 @@ const ManageUsers = () => {
       align: "center" as AlignSetting,
       render: (_: any, record: User) => (
         <div className="flex gap-2 justify-center">
-          <Tooltip trigger={"hover"} title="Edit user's info">
-            <Button
-              type="text"
-              icon={<MdEdit />}
-              onClick={() => {
-                setEditedUser(record);
-                setIsDisplayEditModal(true);
-              }}
-            />
-          </Tooltip>
           {record.status ? (
             <Tooltip title="Disable user">
               <Popconfirm
@@ -289,12 +279,6 @@ const ManageUsers = () => {
         loading={isLoadingTable}
         pagination={false}
         className="w-11/12 mx-auto mt-4"
-      />
-      <EditUserModal
-        open={isDisplayEditModal}
-        setOpen={setIsDisplayEditModal}
-        record={editedUser}
-        key={"key"}
       />
     </div>
   );

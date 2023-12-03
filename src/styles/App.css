@@ -8,13 +8,18 @@ body {
   box-sizing: border-box;
 }
 
-.header-search-modal-ok:hover {
+.ant-modal-footer {
+  display: flex !important;
+}
+
+.header-search-modal-ok:hover, .edit-user-ok:hover {
   background-color: rgb(53, 203, 108) !important;
   color: white !important;
 }
 
 .header-search-modal-cancel:hover,
-.logout-modal-cancel:hover {
+.logout-modal-cancel:hover,
+.edit-user-cancel:hover {
   border: 0.5px solid rgb(31, 30, 30) !important;
   color: rgb(0, 0, 0) !important;
 }

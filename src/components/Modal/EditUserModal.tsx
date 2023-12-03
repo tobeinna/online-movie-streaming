@@ -2,35 +2,40 @@ import React, { useEffect, useState } from "react";
 import { Modal, Button } from "antd";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
-import { doc, setDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 import { ImageListType } from "react-images-uploading";
 
 import { User } from "../../types/user.types";
 import { database } from "../../configs/firebaseConfig";
 import ImageUploader from "../ImageUploader/ImageUploader";
 import { deleteImage, handleUploadImage } from "../../services/upload.services";
+import useAuth from "../../hooks/useAuth";
 
 interface IEditUserModalProps {
   open: boolean;
   setOpen: (value: React.SetStateAction<boolean>) => void;
-  record?: User;
+  uid?: string;
 }
 
 const EditUserModal: React.FC<IEditUserModalProps> = ({
   open,
   setOpen,
-  record,
+  uid,
 }) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [images, setImages] = useState<ImageListType>([]);
+  const [currentUser, setCurrentUser] = useState<User>();
+
+  const { setIsRefreshUser } = useAuth();
 
   const {
     register,
     handleSubmit,
     formState: { errors },
     setValue,
+    reset,
   } = useForm(
-    record && {
+    currentUser && {
       defaultValues: {
         displayName: "",
         photoURL: "",
@@ -43,28 +48,51 @@ const EditUserModal: React.FC<IEditUserModalProps> = ({
     setImages([]);
     if (open) {
       setIsLoading(false);
+    } else {
+      reset();
+      setCurrentUser(undefined);
     }
   }, [open]);
 
   useEffect(() => {
-    if (record) {
-      setValue("displayName", record.displayName);
-      setValue("photoURL", record.photoURL || "");
-      setValue("status", record.status);
+    if (open && uid) {
+      getUser(uid);
     }
-  }, [record]);
+  }, [open]);
+
+  useEffect(() => {
+    if (currentUser) {
+      setValue("displayName", currentUser.displayName);
+      setValue("photoURL", currentUser.photoURL || "");
+      setValue("status", currentUser.status);
+    }
+  }, [currentUser]);
+
+  const getUser = async (uid: string) => {
+    try {
+      const userRef = doc(database, `users/${uid}`);
+      const userSnapshot = await getDoc(userRef);
+
+      if (userSnapshot.exists()) {
+        setCurrentUser({ ...userSnapshot.data(), uid: uid } as User);
+      }
+    } catch (error) {
+      toast.error(`${error}`);
+    }
+    setIsLoading(false);
+  };
 
   const handleEditUser = async (data: {
     displayName: string;
     photoURL: string;
     status: boolean;
   }) => {
-    if (!record) {
+    if (!currentUser) {
       setIsLoading(false);
       return;
     }
 
-    const userRef = doc(database, `users/${record?.uid}`);
+    const userRef = doc(database, `users/${currentUser?.uid}`);
 
     try {
       if (images[0]) {
@@ -72,22 +100,22 @@ const EditUserModal: React.FC<IEditUserModalProps> = ({
 
         if (uploadResult) {
           // console.log(uploadResult);
-          
+
           await setDoc(userRef, {
             displayName: data.displayName,
             search_displayName: data.displayName.toLowerCase(),
-            createdAt: record?.createdAt,
+            createdAt: currentUser?.createdAt,
             photoURL: uploadResult.url,
             photo_path: uploadResult.imagePath,
-            role: record?.role,
+            role: currentUser?.role,
             status: String(data.status) === "true" ? true : false,
           });
 
           if (
-            record.photo_path &&
-            uploadResult.imagePath !== record.photo_path
+            currentUser.photo_path &&
+            uploadResult.imagePath !== currentUser.photo_path
           ) {
-            await deleteImage(record.photo_path);
+            await deleteImage(currentUser.photo_path);
           }
         } else {
           toast.error("Could not upload image.");
@@ -96,14 +124,15 @@ const EditUserModal: React.FC<IEditUserModalProps> = ({
         await setDoc(userRef, {
           displayName: data.displayName,
           search_displayName: data.displayName.toLowerCase(),
-          createdAt: record?.createdAt,
+          createdAt: currentUser?.createdAt,
           photoURL: data.photoURL,
-          role: record?.role,
+          role: currentUser?.role,
           status: String(data.status) === "true" ? true : false,
         });
       }
 
       toast.success("User's info saved");
+      setIsRefreshUser((prev) => !prev);
       setOpen(false);
     } catch (error) {
       toast.error(`${error}`);
@@ -131,7 +160,7 @@ const EditUserModal: React.FC<IEditUserModalProps> = ({
       onCancel={() => {
         setOpen(false);
       }}
-      title="Edit user's info"
+      title="Edit profile"
       destroyOnClose
     >
       <form
@@ -140,7 +169,7 @@ const EditUserModal: React.FC<IEditUserModalProps> = ({
       >
         <div className="flex flex-col gap-2">
           <p className="">
-            User ID: <span className="font-semibold">{record?.uid}</span>
+            User ID: <span className="font-semibold">{currentUser?.uid}</span>
           </p>
         </div>
         <div className="flex flex-col gap-2">
@@ -164,7 +193,7 @@ const EditUserModal: React.FC<IEditUserModalProps> = ({
           <p className="">
             Role:{" "}
             <span className="font-semibold">
-              {record?.role === "user" ? "User" : "Admin"}
+              {currentUser?.role === "user" ? "User" : "Admin"}
             </span>
           </p>
         </div>
@@ -172,24 +201,13 @@ const EditUserModal: React.FC<IEditUserModalProps> = ({
           <p className="">
             Created at:{" "}
             <span className="font-semibold">
-              {record?.createdAt?.seconds
-                ? new Date(record?.createdAt?.seconds * 1000).toLocaleString()
+              {currentUser?.createdAt?.seconds
+                ? new Date(
+                    currentUser?.createdAt?.seconds * 1000
+                  ).toLocaleString()
                 : ""}
             </span>
           </p>
-        </div>
-        <div className="flex flex-col gap-2">
-          <label htmlFor="status" className="text-[#28262D] pb-0">
-            Status
-          </label>
-          <select
-            id="status"
-            {...register("status")}
-            className="px-3 py-1.5 w-fit border-gray-300  border-[0.5px] rounded-md"
-          >
-            <option value="true">Enabled</option>
-            <option value="false">Disabled</option>
-          </select>
         </div>
         <div className="flex flex-col gap-2">
           <span className="text-[#28262D] pb-0">Photo</span>
@@ -197,21 +215,21 @@ const EditUserModal: React.FC<IEditUserModalProps> = ({
             <ImageUploader
               images={images}
               setImages={setImages}
-              defaultImageURL={record?.photoURL || ""}
+              defaultImageURL={currentUser?.photoURL || ""}
               type="photo"
             />
           </div>
         </div>
         <div className="button-container flex gap-2">
           <Button
-            className="w-full"
+            className="edit-user-cancel w-full"
             type="default"
             onClick={() => setOpen(false)}
           >
             Cancel
           </Button>
           <Button
-            className="w-full bg-blue-600"
+            className="edit-user-ok w-full text-slate-100 bg-green-600"
             type="primary"
             htmlType="submit"
             loading={isLoading}

@@ -10,6 +10,7 @@ import Spinner from "../components/Spinner/Spinner";
 type AuthContextType = {
   authState: AuthType | null | undefined;
   logOut: () => Promise<void>;
+  setIsRefreshUser: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export const AuthContext = createContext<AuthContextType>(
@@ -25,6 +26,7 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
     undefined
   );
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isRefreshUser, setIsRefreshUser] = useState<boolean>(false);
 
   const logOut = () => {
     setAuthState(undefined);
@@ -52,6 +54,7 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
             email: user.email as string,
             displayName: userSnapshot.data().displayName as string,
             photoUrl: userSnapshot.data().photoURL as string,
+            photo_path: userSnapshot.data().photo_path as string,
             role: userSnapshot.data().role as string,
             status: userSnapshot.data().status as boolean,
           });
@@ -71,12 +74,53 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
     }
   };
 
+  const refreshUserData = async (user: AuthType) => {
+    if (!user) return;
+
+    try {
+      const userRef = doc(database, `users/${user.id}`);
+      const userSnapshot = await getDoc(userRef);
+
+      if (userSnapshot.exists()) {
+        if (userSnapshot.data().status === false) {
+          setIsLoading(false);
+        } else {
+          setCredentialUserForApp({
+            id: user.id as string,
+            email: user.email as string,
+            displayName: userSnapshot.data().displayName as string,
+            photoUrl: userSnapshot.data().photoURL as string,
+            role: userSnapshot.data().role as string,
+            status: userSnapshot.data().status as boolean,
+          });
+        }
+      } else {
+        setCredentialUserForApp({
+          id: user.id as string,
+          email: user.email as string,
+          displayName: user.displayName as string,
+          photoUrl: user.photoUrl as string,
+          role: "user",
+          status: true,
+        });
+      }
+    } catch (error) {
+      toast.error(`Error: ${error}`);
+    }
+  };
+
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       setUserData(user ? user : null);
     });
     return () => unsubscribe();
   }, []);
+
+  useEffect(() => {
+    if (authState) {
+      refreshUserData(authState);
+    }
+  }, [isRefreshUser]);
 
   if (isLoading) {
     return (
@@ -86,7 +130,7 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
     );
   } else {
     return (
-      <AuthContext.Provider value={{ authState, logOut }}>
+      <AuthContext.Provider value={{ authState, logOut, setIsRefreshUser }}>
         {children}
       </AuthContext.Provider>
     );
