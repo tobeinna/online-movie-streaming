@@ -39,7 +39,10 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
   }, []);
 
   const setUserData = async (user: User | null) => {
-    if (!user) return;
+    if (!user) {
+      setAuthState(null);
+      return;
+    }
 
     try {
       const userRef = doc(database, `users/${user.uid}`);
