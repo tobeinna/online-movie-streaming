@@ -41,7 +41,7 @@ const HeaderSlider: React.FC = () => {
       });
       setMoviesData(data);
     } catch (error) {
-      // console.log(error);
+
     }
   }
 
@@ -60,7 +60,7 @@ const HeaderSlider: React.FC = () => {
       });
       setCategoriesData(data);
     } catch (error) {
-      // console.log(error);
+
     }
   }
   // Get all movies data

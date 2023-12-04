@@ -52,7 +52,7 @@ const HomeMovieList = () => {
         .sort((a, b) => b.averageVote - a.averageVote);
       setMoviesData(sortedMoviesByVotes);
     } catch (error) {
-      // console.log(error);
+
     }
   }
 
@@ -71,7 +71,7 @@ const HomeMovieList = () => {
       });
       setCategoriesData(data);
     } catch (error) {
-      // console.log(error);
+
     }
   }
 

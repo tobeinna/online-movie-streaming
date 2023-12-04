@@ -35,8 +35,8 @@ export const handleUploadImage = async (
       imagePath: `${parentPath && parentPath + "/"}${randomId}`,
     };
   } catch (error) {
-    // console.log(error);
   }
+
 };
 
 export const deleteImage = async (imagePath: string) => {
@@ -44,6 +44,6 @@ export const deleteImage = async (imagePath: string) => {
   try {
     await deleteObject(imageRef);
   } catch (error) {
-    // console.log(error);
+
   }
 };

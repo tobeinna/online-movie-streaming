@@ -74,7 +74,6 @@ const ManageCategories = () => {
       setIsLoadingSearchInput(false);
     } catch (error) {
       toast.error(`${error}`);
-      // console.log(error);
 
       setIsLoadingTable(false);
       setIsLoadingSearchInput(false);

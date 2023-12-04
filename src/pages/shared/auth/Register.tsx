@@ -66,7 +66,6 @@ const Register = () => {
     createUserWithEmailAndPassword(auth, data.email, data.password)
       .then((res) => {
         handleCreateUser(res.user, data.name);
-        // console.log(res);
       })
       .catch((error: Error) => {
         toast.error(`Error: ${error.message}`);

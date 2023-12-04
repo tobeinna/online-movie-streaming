@@ -56,7 +56,7 @@ const RecommendedMoviesSidebar: React.FC<RecommendedMoviesSidebarProp> = ({
 
       setMoviesData(data);
     } catch (error) {
-      // console.log(error);
+
     }
   }
 
@@ -75,7 +75,7 @@ const RecommendedMoviesSidebar: React.FC<RecommendedMoviesSidebarProp> = ({
       });
       setCategoriesData(data);
     } catch (error) {
-      // console.log(error);
+
     }
   }
 
