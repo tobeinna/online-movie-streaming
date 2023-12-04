@@ -486,9 +486,14 @@ const SearchMovie: React.FC = () => {
                   nextIcon={
                     <MdNavigateNext className="transition-colors duration-300 rounded-md text-slate-300 h-full w-8 mx-auto hover:text-white hover:bg-white hover:bg-opacity-20 px-1" />
                   }
-                  onChange={(page) => {
+                  onChange={(page, newPageSize) => {
                     setPreviousPage(currentPage);
                     setCurrentPage(page);
+                    const pageSizeChange = pageSize !== newPageSize;
+                    if (pageSizeChange) {
+                      setCurrentPage(1);
+                      setPreviousPage(1);
+                    }
                   }}
                 />
               </div>
